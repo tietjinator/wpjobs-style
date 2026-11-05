@@ -1116,11 +1116,12 @@ body .single_job_listing .job_description p.wpjm-pdf a:focus-visible {
 	background: var(--wpjm-accent);
 }
 
-/* Job category on the form: a checklist (templates/form-fields/term-multiselect-field.php). */
+/* Job category on the form: a checklist (templates/form-fields/term-multiselect-field.php).
+   Two columns that fill top to bottom, so the list reads down the left column and
+   then down the right, and "Other" (always last) ends at the bottom of the right. */
 body form.job-manager-form .wpjm-checks {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 8px 20px;
+	column-count: 2;
+	column-gap: 20px;
 	padding: 6px 0;
 }
 
@@ -1132,7 +1133,8 @@ body form.job-manager-form fieldset div.field .wpjm-checks label.wpjm-check {
 	gap: 8px;
 	float: none;
 	width: auto;
-	margin: 0;
+	margin: 0 0 8px;
+	break-inside: avoid;
 	font-size: var(--wpjm-fs-body);
 	font-weight: 500;
 	line-height: 1.4;
@@ -1147,7 +1149,7 @@ body form.job-manager-form fieldset div.field .wpjm-checks input {
 
 @media (max-width: 560px) {
 	body form.job-manager-form .wpjm-checks {
-		grid-template-columns: minmax(0, 1fr);
+		column-count: 1;
 	}
 }
 
