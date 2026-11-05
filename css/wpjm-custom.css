@@ -1,0 +1,459 @@
+/*
+ * WP Job Manager custom styles
+ * Targets WP Job Manager 2.x markup (verified against 2.4.9).
+ *
+ * Edit the tokens in :root first, most visual changes can be made there.
+ * Each section below maps to one area of the plugin's front end.
+ *
+ * Selectors are prefixed with `body` so they outrank the plugin's own
+ * rules without needing !important.
+ */
+
+/* ==========================================================================
+   1. Design tokens
+   ========================================================================== */
+:root {
+	--wpjm-accent: #2563eb;
+	--wpjm-accent-contrast: #ffffff;
+	--wpjm-text: #1f2937;
+	--wpjm-muted: #6b7280;
+	--wpjm-border: #e5e7eb;
+	--wpjm-surface: #ffffff;
+	--wpjm-surface-alt: #f9fafb;
+	--wpjm-featured-bg: #fffbeb;
+	--wpjm-featured-border: #f59e0b;
+	--wpjm-radius: 8px;
+	--wpjm-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--wpjm-gap: 16px;
+
+	/* Job type colours. Slugs come from your Job Types, add your own below. */
+	--wpjm-type-full-time: #16a34a;
+	--wpjm-type-part-time: #ea580c;
+	--wpjm-type-internship: #7c3aed;
+	--wpjm-type-freelance: #0284c7;
+	--wpjm-type-temporary: #db2777;
+
+	/* Feed the plugin's own UI variables (dashboard, dialogs, newer forms). */
+	--jm-ui-accent-color: var(--wpjm-accent);
+	--jm-ui-accent-color-contrast: var(--wpjm-accent-contrast);
+	--jm-ui-radius: 4px;
+}
+
+/* ==========================================================================
+   2. Notices ([job_manager_message] / error / info)
+   ========================================================================== */
+body .job-manager-message,
+body .job-manager-info,
+body .job-manager-error {
+	border: 1px solid var(--wpjm-border);
+	border-left: 4px solid var(--wpjm-accent);
+	border-radius: var(--wpjm-radius);
+	background: var(--wpjm-surface-alt);
+	color: var(--wpjm-text);
+	box-shadow: none;
+}
+
+body .job-manager-error {
+	border-left-color: #dc2626;
+}
+
+/* ==========================================================================
+   3. Search filters  ([jobs] shortcode, form.job_filters)
+   ========================================================================== */
+body form.job_filters {
+	background: var(--wpjm-surface-alt);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	padding: var(--wpjm-gap);
+	margin-bottom: var(--wpjm-gap);
+}
+
+body form.job_filters label {
+	font-weight: 600;
+	color: var(--wpjm-text);
+}
+
+body form.job_filters input[type="text"],
+body form.job_filters select {
+	border: 1px solid var(--wpjm-border);
+	border-radius: 6px;
+	background: var(--wpjm-surface);
+}
+
+body form.job_filters .search_submit input[type="submit"] {
+	background: var(--wpjm-accent);
+	color: var(--wpjm-accent-contrast);
+	border: 0;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+/* Job type checkboxes ("Full Time", "Part Time", ...) */
+body form.job_filters ul.job_types {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* ==========================================================================
+   4. Listings  (ul.job_listings > li.job_listing)
+   ========================================================================== */
+body ul.job_listings {
+	border-top: 0;
+	display: grid;
+	gap: 12px;
+}
+
+body ul.job_listings li.job_listing {
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	background: var(--wpjm-surface);
+	box-shadow: var(--wpjm-shadow);
+	overflow: hidden;
+	transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+body ul.job_listings li.job_listing:hover,
+body ul.job_listings li.job_listing:focus-within {
+	border-color: var(--wpjm-accent);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body ul.job_listings li.job_listing a {
+	color: var(--wpjm-text);
+}
+
+body ul.job_listings li.job_listing a:hover,
+body ul.job_listings li.job_listing a:focus {
+	background: transparent;
+}
+
+/* Company logo */
+body ul.job_listings li.job_listing a img.company_logo {
+	border-radius: 6px;
+	object-fit: contain;
+}
+
+/* Title / company / location / meta columns */
+body ul.job_listings li.job_listing div.position h3 {
+	font-size: 1.05em;
+	font-weight: 600;
+}
+
+body ul.job_listings li.job_listing div.position .company,
+body ul.job_listings li.job_listing div.location,
+body ul.job_listings li.job_listing .meta {
+	color: var(--wpjm-muted);
+}
+
+/* Job type label as a pill */
+body ul.job_listings li.job_listing .meta .job-type {
+	display: inline-block;
+	margin-left: auto;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background: currentColor;
+	font-size: 0.8em;
+	font-weight: 600;
+	line-height: 1.6;
+	/* Text colour set per type below; pill background uses the same colour
+	   through a pseudo-layer so the label stays readable. */
+	position: relative;
+	z-index: 0;
+	isolation: isolate;
+}
+
+body ul.job_listings li.job_listing .meta .job-type::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--wpjm-surface);
+	border-radius: inherit;
+	opacity: 0.85;
+	z-index: -1;
+}
+
+/* Featured listings */
+body ul.job_listings li.job_listing.job_position_featured {
+	background: var(--wpjm-featured-bg);
+	border-color: var(--wpjm-featured-border);
+}
+
+body ul.job_listings li.job_listing.job_position_featured a,
+body ul.job_listings li.job_listing.job_position_featured a:hover,
+body ul.job_listings li.job_listing.job_position_featured a:focus {
+	background: transparent;
+}
+
+/* Filled listings */
+body ul.job_listings li.job_listing.job_position_filled a {
+	opacity: 0.45;
+}
+
+/* No results */
+body ul.job_listings li.no_job_listings_found {
+	border: 1px dashed var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	text-align: center;
+	color: var(--wpjm-muted);
+}
+
+/* "Load more listings" link */
+body a.load_more_jobs {
+	display: block;
+	text-align: center;
+	margin-top: var(--wpjm-gap);
+	font-weight: 600;
+	color: var(--wpjm-accent);
+}
+
+/* ==========================================================================
+   5. Job type colours
+   Applied to .job-type in listings and on the single page. Add a block per
+   type slug (Job Listings > Job Types) to colour new types.
+   ========================================================================== */
+body .job-types .job-type,
+body .job_listing .job-type { color: var(--wpjm-type-part-time); }
+body .job_listing .job-type.full-time { color: var(--wpjm-type-full-time); }
+body .job_listing .job-type.part-time { color: var(--wpjm-type-part-time); }
+body .job_listing .job-type.internship { color: var(--wpjm-type-internship); }
+body .job_listing .job-type.freelance { color: var(--wpjm-type-freelance); }
+body .job_listing .job-type.temporary { color: var(--wpjm-type-temporary); }
+
+/* ==========================================================================
+   6. Single job page  (.single_job_listing)
+   ========================================================================== */
+body .single_job_listing ul.job-listing-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+	list-style: none;
+	margin: 0 0 var(--wpjm-gap);
+	padding: 0;
+	color: var(--wpjm-muted);
+}
+
+body .single_job_listing ul.job-listing-meta li {
+	margin: 0;
+	padding: 0;
+}
+
+body .single_job_listing ul.job-listing-meta li.job-type {
+	font-weight: 600;
+}
+
+body .single_job_listing ul.job-listing-meta li.salary {
+	color: var(--wpjm-text);
+	font-weight: 600;
+}
+
+body .single_job_listing ul.job-listing-meta li.position-filled,
+body .single_job_listing ul.job-listing-meta li.listing-expired {
+	color: #b91c1c;
+	font-weight: 600;
+}
+
+/* Company box */
+body .single_job_listing .company {
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	background: var(--wpjm-surface-alt);
+	box-shadow: none;
+}
+
+body .single_job_listing .company img {
+	border-radius: 6px;
+	object-fit: contain;
+}
+
+body .single_job_listing .company .name a.website,
+body .single_job_listing .company .name a.company_twitter {
+	color: var(--wpjm-accent);
+}
+
+body .single_job_listing .company .tagline {
+	color: var(--wpjm-muted);
+}
+
+/* Description */
+body .single_job_listing .job_description {
+	line-height: 1.7;
+	color: var(--wpjm-text);
+}
+
+/* Apply button and revealed details */
+body .job_application.application .application_button {
+	background: var(--wpjm-accent);
+	color: var(--wpjm-accent-contrast);
+	border: 0;
+	border-radius: 6px;
+	padding: 0.75em 1.5em;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+body .job_application.application .application_details {
+	margin-top: var(--wpjm-gap);
+	padding: var(--wpjm-gap);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	background: var(--wpjm-surface-alt);
+}
+
+/* ==========================================================================
+   7. Submit / edit listing form  (form.job-manager-form)
+   ========================================================================== */
+body form.job-manager-form fieldset {
+	margin-bottom: var(--wpjm-gap);
+}
+
+body form.job-manager-form fieldset label {
+	font-weight: 600;
+	color: var(--wpjm-text);
+}
+
+body form.job-manager-form fieldset .field input.input-text,
+body form.job-manager-form fieldset .field textarea,
+body form.job-manager-form fieldset .field select {
+	border: 1px solid var(--wpjm-border);
+	border-radius: 6px;
+	background: var(--wpjm-surface);
+	padding: 0.6em 0.8em;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+body form.job-manager-form fieldset .field input.input-text:focus,
+body form.job-manager-form fieldset .field textarea:focus,
+body form.job-manager-form fieldset .field select:focus {
+	outline: 2px solid var(--wpjm-accent);
+	outline-offset: 1px;
+	border-color: var(--wpjm-accent);
+}
+
+body form.job-manager-form small.description {
+	display: block;
+	margin-top: 4px;
+	color: var(--wpjm-muted);
+}
+
+body form.job-manager-form .required-field > label::after,
+body form.job-manager-form fieldset .required-field label::after {
+	/* Plugin marks optional fields with "(optional)" text; keep that and
+	   add your own required-field styling here if you want it. */
+}
+
+body form.job-manager-form input[type="submit"].button,
+body .job_listing_preview_title input.button {
+	background: var(--wpjm-accent);
+	color: var(--wpjm-accent-contrast);
+	border: 0;
+	border-radius: 6px;
+	padding: 0.75em 1.5em;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+body form.job-manager-form input[type="submit"].button.secondary,
+body form.job-manager-form input.save_draft,
+body .job_listing_preview_title input.job-manager-button-edit-listing {
+	background: transparent;
+	color: var(--wpjm-accent);
+	border: 1px solid var(--wpjm-accent);
+}
+
+/* ==========================================================================
+   8. Job dashboard  ([job_dashboard], 2.x markup with jm- prefix)
+   ========================================================================== */
+body .jm-dashboard .jm-dashboard__intro {
+	gap: var(--wpjm-gap);
+}
+
+body .jm-dashboard-table .jm-dashboard-header {
+	font-weight: 600;
+	color: var(--wpjm-muted);
+	text-transform: uppercase;
+	font-size: 0.75em;
+	letter-spacing: 0.04em;
+}
+
+body .jm-dashboard-table .jm-dashboard-job {
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	background: var(--wpjm-surface);
+	box-shadow: var(--wpjm-shadow);
+	margin-bottom: 8px;
+}
+
+body .jm-dashboard-action {
+	color: var(--wpjm-accent);
+}
+
+body .jm-dashboard-action.job-dashboard-action-delete {
+	color: #b91c1c;
+}
+
+body .jm-dashboard-empty {
+	text-align: center;
+	color: var(--wpjm-muted);
+}
+
+/* ==========================================================================
+   9. Pagination
+   ========================================================================== */
+body nav.job-manager-pagination ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	justify-content: center;
+	border: 0;
+}
+
+body nav.job-manager-pagination ul li {
+	border: 1px solid var(--wpjm-border);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+body nav.job-manager-pagination ul li a,
+body nav.job-manager-pagination ul li span {
+	padding: 6px 12px;
+}
+
+body nav.job-manager-pagination ul li span.current,
+body nav.job-manager-pagination ul li a:hover {
+	background: var(--wpjm-accent);
+	color: var(--wpjm-accent-contrast);
+}
+
+/* ==========================================================================
+   10. Widgets (recent / featured jobs)
+   ========================================================================== */
+body .widget ul.job_listings {
+	display: block;
+}
+
+body .widget ul.job_listings li.job_listing {
+	border: 0;
+	border-bottom: 1px solid var(--wpjm-border);
+	border-radius: 0;
+	box-shadow: none;
+}
+
+/* ==========================================================================
+   11. Responsive
+   ========================================================================== */
+@media (max-width: 767px) {
+	body form.job_filters {
+		padding: 12px;
+	}
+
+	body .single_job_listing ul.job-listing-meta {
+		flex-direction: column;
+	}
+}
+
+/* ==========================================================================
+   12. Your overrides
+   Add anything site-specific below this line.
+   ========================================================================== */
