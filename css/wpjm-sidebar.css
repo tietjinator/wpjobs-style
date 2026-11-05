@@ -200,9 +200,19 @@ body form.job_filters .wpjm-drawer[open] > summary::after {
 	transform: rotate(-135deg);
 }
 
+/* Themes draw an outline on :focus, which shows after a mouse click. The
+   sidebar scrolls, so the outline is clipped at the sides and only its top and
+   bottom edges appear, as dark lines. No outline for mouse clicks, and an inset
+   one (kept inside the box, so never clipped) for keyboard users. */
+body form.job_filters .wpjm-drawer > summary:focus,
+body form.job_filters .wpjm-drawer > summary:active {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
 body form.job_filters .wpjm-drawer > summary:focus-visible {
-	outline: 2px solid var(--wpjm-accent);
-	outline-offset: -2px;
+	outline: 2px solid var(--wpjm-accent) !important;
+	outline-offset: -2px !important;
 }
 
 body form.job_filters .wpjm-drawer__body {
