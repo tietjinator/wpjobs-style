@@ -1238,6 +1238,27 @@ body .wpjm-submitted .wpjm-submitted__title {
 	color: var(--wpjm-text);
 }
 
+/* Bullets: some themes put a bullet on every list item (often on the item
+   itself, with a more specific selector than the plugin's list reset). The
+   job details, listing rows and filter lists never want one. */
+body .single_job_listing ul.job-listing-meta,
+body .single_job_listing ul.job-listing-meta li,
+body ul.job_listings,
+body ul.job_listings li,
+body ul.job_listings .meta,
+body ul.job_listings .meta li,
+body form.job_filters ul,
+body form.job_filters li {
+	list-style: none !important;
+}
+
+body .single_job_listing ul.job-listing-meta li::marker,
+body ul.job_listings li::marker,
+body ul.job_listings .meta li::marker,
+body form.job_filters li::marker {
+	content: none;
+}
+
 /* ==========================================================================
    16. Your overrides
    Add anything site-specific below this line. It is the last thing in the
