@@ -1180,7 +1180,6 @@ body .job_application.application .wpjm-apply:focus-visible {
 body .wpjm-submitted {
 	padding: 1.5rem 1.75rem;
 	border: 0;
-	border-left: 4px solid var(--twc-bright-blue);
 	background: var(--wpjm-surface-alt, #f3f0e9);
 	color: var(--wpjm-text);
 	font-size: var(--wpjm-fs-body, 0.9375rem);
