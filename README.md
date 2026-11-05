@@ -128,6 +128,10 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 
 The form was tested end to end in a browser: filling it in, previewing, and publishing. Typing "texas" in State saved `TX`, the combined location `Austin, TX 78701`, and the State / Province dropdown count updated.
 
+## Job page
+
+On screens 900px and wider the single job page is wider than the theme's narrow column and centred on the page, like the Jobs list and the form. The width is `--wpjm-job-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`). The preview step is not affected, because it sits inside the form, which has its own width.
+
 ## Brand colours
 
 The colours come from the Wesleyan brand refresh guide and are defined once at the top of `css/wpjm-custom.css` (`--twc-*`). Everything else points at them, so changing a swatch there changes it everywhere. The guide lists print (CMYK) values only, so these hex values are those swatches converted to RGB. If you have official web values, replace them in that one block.
