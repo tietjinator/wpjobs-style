@@ -711,7 +711,131 @@ body form.job-manager-form .account-sign-in a {
 }
 
 /* ==========================================================================
-   15. Your overrides
+   15. Submit form refinements  ([submit_job_form]: the form, preview, notices)
+   ========================================================================== */
+
+/* Notices were wider than the page column: the plugin pads them but sizes
+   them as content-box, so the padding was added on top of the width. */
+body .job-manager-message,
+body .job-manager-info,
+body .job-manager-error {
+	box-sizing: border-box;
+}
+
+/* Section headings in the form, such as "Company Details". Themes make these
+   very large and thin next to 15px labels. */
+body form.job-manager-form h2 {
+	margin: 2rem 0 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--wpjm-text);
+}
+
+/* Labels get a little more room, so "X / Twitter username (optional)" stays on
+   one line. The plugin stacks label over field on small screens, so leave
+   those alone. */
+@media (min-width: 783px) {
+	body form.job-manager-form fieldset label:not(.full-line-checkbox-field label) {
+		width: 34%;
+	}
+
+	body form.job-manager-form fieldset div.field:not(.full-line-checkbox-field) {
+		width: 65%;
+	}
+}
+
+/* "(optional)" next to a label: smaller and lighter, on the same line. */
+body form.job-manager-form fieldset label small {
+	font-size: var(--wpjm-fs-small);
+	font-weight: 400;
+	opacity: 1;
+	color: var(--wpjm-muted);
+}
+
+/* "Have an account? Sign in" as a soft panel instead of a divider row. */
+body form.job-manager-form fieldset.fieldset-login_required,
+body form.job-manager-form fieldset.fieldset-logged_in {
+	padding: 12px 16px;
+	background: var(--wpjm-surface-alt);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+}
+
+body form.job-manager-form .account-sign-in a {
+	font-weight: 600;
+	color: var(--wpjm-accent);
+}
+
+/* File upload (company logo): the browser default looks out of place. */
+body form.job-manager-form input[type="file"] {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 8px;
+	font-family: inherit;
+	font-size: var(--wpjm-fs-body);
+	color: var(--wpjm-muted);
+	background: var(--wpjm-surface-alt);
+	border: 1px dashed var(--wpjm-input-border);
+	border-radius: 6px;
+}
+
+body form.job-manager-form input[type="file"]::file-selector-button {
+	margin-right: 12px;
+	padding: 6px 14px;
+	font-family: inherit;
+	font-size: var(--wpjm-fs-body);
+	font-weight: 600;
+	color: var(--wpjm-accent);
+	background: var(--wpjm-surface);
+	border: 1px solid var(--wpjm-accent);
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+body form.job-manager-form input[type="file"]::file-selector-button:hover {
+	color: var(--wpjm-accent-contrast);
+	background: var(--wpjm-accent);
+}
+
+/* Preview step: a soft title bar joined to a box with a light border, instead
+   of heavy grey. The bar and the box are siblings in the plugin's markup. */
+body .job_listing_preview_title,
+body .entry-content .job_listing_preview_title {
+	margin: 0;
+	padding: 12px 1.25rem;
+	background: var(--wpjm-surface-alt);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius) var(--wpjm-radius) 0 0;
+}
+
+body .job_listing_preview {
+	padding: 1.25rem;
+	border: 1px solid var(--wpjm-border);
+	border-top: 0;
+	border-radius: 0 0 var(--wpjm-radius) var(--wpjm-radius);
+}
+
+body .job_listing_preview_title h2 {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 2.4rem;
+	color: var(--wpjm-text);
+}
+
+/* Preview and Submit buttons fill the row on phones. */
+@media (max-width: 782px) {
+	body form.job-manager-form input[type="submit"].button,
+	body .job_listing_preview_title input.button {
+		width: 100%;
+		margin: 0 0 8px;
+		float: none;
+	}
+}
+
+/* ==========================================================================
+   16. Your overrides
    Add anything site-specific below this line. It is the last thing in the
    file, so it wins over everything above.
    ========================================================================== */

@@ -94,6 +94,21 @@ WP Job Manager normally sends each listing's location to Google's Geocoding API 
 
 The job page still links the location to Google Maps. Change that with the plugin's `the_job_location_map_link` filter.
 
+## Post a Job form
+
+Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale, the changes are:
+
+- Section headings such as "Company Details" are 20px semi-bold instead of the theme's large thin heading.
+- The label column is a little wider (34%) so "X / Twitter username (optional)" stays on one line. On phones the plugin stacks the label above the field, and that is left alone.
+- "(optional)" is smaller, lighter and on the same line as its label.
+- "Have an account? Sign in" is a soft panel.
+- The company logo upload has a branded Choose File button and a dashed field.
+- The Preview step is a soft title bar joined to a light bordered box, with Edit listing (outlined) and Submit Listing (filled) side by side.
+- Notices ("Job listed successfully") fit the page column. The plugin padded them without including the padding in their width, so they stuck out.
+- Preview and Submit Listing fill the row on phones.
+
+The form was tested end to end in a browser: filling it in, previewing, and publishing. Typing "texas" in State saved `TX`, the combined location `Austin, TX 78701`, and the State / Province dropdown count updated.
+
 ## Brand colours
 
 The colours come from the Wesleyan brand refresh guide and are defined once at the top of `css/wpjm-custom.css` (`--twc-*`). Everything else points at them, so changing a swatch there changes it everywhere. The guide lists print (CMYK) values only, so these hex values are those swatches converted to RGB. If you have official web values, replace them in that one block.
@@ -138,7 +153,7 @@ Related changes: form fields and buttons use the theme font instead of the brows
 
 ## Customising
 
-`css/wpjm-custom.css` is split into numbered sections: tokens, notices, search filters, listings, job type colours, the single job page, the submit form, the dashboard, pagination, widgets, responsive rules, button hover, type scale and job page extras. Put your own rules in the last section, "Your overrides", at the end of the file, so they win over everything above.
+`css/wpjm-custom.css` is split into numbered sections: tokens, notices, search filters, listings, job type colours, the single job page, the submit form, the dashboard, pagination, widgets, responsive rules, button hover, type scale, job page extras and the Post a Job form. Put your own rules in the last section, "Your overrides", at the end of the file, so they win over everything above.
 
 Selectors are prefixed with `body` to beat the plugin's own specificity without `!important`. If a rule does not apply, check specificity in your browser's dev tools before reaching for `!important`.
 
