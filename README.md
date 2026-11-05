@@ -11,7 +11,7 @@ If you would rather not run a plugin, copy `css/wpjm-custom.css` into your child
 
 ## Live preview
 
-Open this in a browser to get a throwaway WordPress site with WP Job Manager, this plugin and sample listings (needs a public repo, and it pulls the `main` branch, so reload after each push). The sample listings are geocoded through the Nominatim setup when the site is created, so the first load takes a few extra seconds, and listings that fail to geocode (for example if the network call is blocked) simply have no coordinates:
+Open this in a browser to get a throwaway WordPress site with WP Job Manager, this plugin and sample listings (needs a public repo, and it pulls the `main` branch, so reload after each push).:
 
 https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json
 
@@ -21,39 +21,11 @@ https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.co
 
 `includes/sidebar-filters.php` adds a **Sort by** dropdown to the form (featured first, newest, oldest, title A to Z, title Z to A) and applies it to the AJAX query. Change the options with the `wpjm_cs_sort_options` filter. Listings without the filter form (`show_filters="false"`, widgets) are not affected.
 
-## Geocoding (replaces Google Maps)
+## Geolocation is off
 
-WP Job Manager geocodes a listing's location text when the listing is saved and stores coordinates, formatted address, state and country as post meta. This repo replaces Google with a configurable provider in `includes/geocoding.php`. Google is always disabled, so the Google Maps API key field in Job Listings > Settings is ignored. Results are cached for 7 days.
+WP Job Manager normally sends each listing's location to Google's Geocoding API on save and stores coordinates. `includes/no-geolocation.php` turns that off, so no location data leaves your site and no API key is needed. Location search still works by matching the text people typed (for example "Austin" matches "Austin, TX"). Searching by state name (such as "Texas") only matches if the listing text contains it. Listings saved earlier keep any coordinates Google already gave them.
 
-The default is OpenStreetMap's Nominatim, with no setup. To change it, add one of these to `wp-config.php`, above the "stop editing" line.
-
-Switch to Geoapify (hosted, OpenStreetMap based, free tier, allows storing results):
-
-```php
-define( 'WPJM_CS_GEOCODER', 'geoapify' );
-define( 'WPJM_CS_GEOAPIFY_KEY', 'your-api-key' );
-```
-
-Turn geocoding off entirely:
-
-```php
-define( 'WPJM_CS_GEOCODER', 'off' );
-```
-
-With geocoding off, nothing is looked up or saved. Location search still works on the text people typed. You lose the stored coordinates and searching by state name when the listing only says a city.
-
-The contact email sent to Nominatim, so OpenStreetMap can reach you if your site causes problems, defaults to `design@wesleyan.org`. Override it with:
-
-```php
-define( 'WPJM_CS_GEOCODER_EMAIL', 'you@example.com' );
-```
-
-Notes:
-
-- Nominatim's public server allows at most 1 request per second and no bulk use. The code waits between requests and caches results, which is fine for people posting jobs, not for importing thousands of listings. See https://operations.osmfoundation.org/policies/nominatim/.
-- Only listings saved or edited after you switch are geocoded. Existing listings keep their Google data. To refresh one, edit its location and save.
-- A failed lookup (network error, bad Geoapify key) is not cached and saves nothing, so the next save tries again. A location with no match is cached for a day.
-- Both providers' responses are mapped onto the plugin's own `geolocation_*` fields, so search and any add-on that reads them keep working. Add-ons that load Google Maps themselves are unaffected by this.
+An OpenStreetMap (Nominatim) and Geoapify version of this, with a switch to turn it off, is in the git history at commit `d3204b1` if you want it back.
 
 ## Customising
 
