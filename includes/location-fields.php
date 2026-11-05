@@ -613,3 +613,21 @@ add_filter(
 	10,
 	2
 );
+
+// ---------------------------------------------------------------------------
+// Keywords box finds places too
+// ---------------------------------------------------------------------------
+
+// The Keywords box searches the title, text, company and the combined location
+// ("Austin, TX 78701"), but not the full state name. Add the field that holds
+// "Texas (TX)" so typing "Texas" or "Austin, Texas" in Keywords finds a Texas
+// listing as well. The Location box is hidden in the sidebar, so Keywords is
+// where people type a city, ZIP or state.
+add_filter(
+	'job_listing_searchable_meta_keys',
+	function ( $keys ) {
+		$keys[] = 'geolocation_state_long';
+
+		return array_values( array_unique( $keys ) );
+	}
+);

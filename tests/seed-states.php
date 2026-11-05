@@ -9,6 +9,9 @@
  * Or: WP_LOAD=/path/to/wp-load.php php tests/seed-states.php
  * (Also inlined into blueprint-states.json for WordPress Playground.)
  *
+ * Listings are titled "Listing 01", "Listing 02" and so on in the order of the
+ * table below (the tests rely on that).
+ *
  * Mixed on purpose: some states typed as full names, some as lower or upper
  * case codes, some with no city (state and ZIP only), to exercise the lot.
  */
@@ -61,15 +64,17 @@ foreach ( $wpjm_states as $code => $row ) {
 
 	$id = wp_insert_post(
 		[
-			'post_title'   => "$name test job",
-			'post_content' => "Sample listing for $name.",
+			// Titles and text avoid the state name and code, so a keyword search
+			// can only match through the saved location.
+			'post_title'   => sprintf( 'Listing %02d', $n + 1 ),
+			'post_content' => 'Sample listing.',
 			'post_type'    => 'job_listing',
 			'post_status'  => 'publish',
 			'post_date'    => gmdate( 'Y-m-d H:i:s', time() - ( $n * 3600 ) ),
 		]
 	);
 	wp_set_object_terms( $id, 0 === $n % 2 ? 'Full Time' : 'Part Time', 'job_listing_type' );
-	update_post_meta( $id, '_company_name', 'Sample Co' );
+	update_post_meta( $id, '_company_name', 'Acme' );
 	update_post_meta( $id, '_filled', 0 );
 	update_post_meta( $id, '_featured', 0 );
 	update_post_meta( $id, '_remote_position', 0 );

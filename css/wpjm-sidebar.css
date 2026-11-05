@@ -429,3 +429,10 @@ body form.job_filters > .search_remote_position label {
 	margin: 0;
 	font-weight: 500;
 }
+
+/* The Location box is hidden: city and ZIP are searched through Keywords, and
+   State / Province has its own dropdown. The field stays in the form, empty, so
+   the plugin's search still works. Delete this rule to show it again. */
+body form.job_filters .search_jobs div.search_location {
+	display: none;
+}

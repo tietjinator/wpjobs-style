@@ -5,25 +5,29 @@
  * get_listings AJAX endpoint with the filter form's data), and reports whether
  * the right listing comes back and what else matches with it.
  *
- * Usage: php tests/search-matrix.php http://127.0.0.1:8099
+ * Usage: php tests/search-matrix.php http://127.0.0.1:8099 [location|keywords]
+ *
+ * The second argument chooses which sidebar box the terms are typed into:
+ * the Location box (default) or the Keywords box.
  */
 
-$base = isset( $argv[1] ) ? rtrim( $argv[1], '/' ) : 'http://127.0.0.1:8099';
+$base  = isset( $argv[1] ) ? rtrim( $argv[1], '/' ) : 'http://127.0.0.1:8099';
+$field = isset( $argv[2] ) && 'keywords' === $argv[2] ? 'search_keywords' : 'search_location';
 
 // Pull the seed table out of the seed file without running it.
 $src = file_get_contents( __DIR__ . '/seed-states.php' );
 preg_match( '/\$wpjm_states = \[(.*?)\n\];/s', $src, $m );
 eval( '$states = [' . $m[1] . '];' ); // phpcs:ignore Squiz.PHP.Eval -- test script reading its own data table.
 
-function search( $base, $term ) {
+function search( $base, $term, $field = 'search_location' ) {
 	$body    = http_build_query(
 		[
-			'search_location' => $term,
+			$field            => $term,
 			'per_page'        => 200,
 			'page'            => 1,
 			'orderby'         => 'featured',
 			'order'           => 'DESC',
-			'form_data'       => http_build_query( [ 'search_location' => $term, 'sort' => '' ] ),
+			'form_data'       => http_build_query( [ $field => $term, 'sort' => '' ] ),
 		]
 	);
 	$context = stream_context_create( [ 'http' => [ 'method' => 'POST', 'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => $body, 'timeout' => 30 ] ] );
@@ -55,8 +59,8 @@ $details = [];
 $index = -1;
 foreach ( $states as $code => $row ) {
 	list( $name, $city, $zip ) = $row;
-	$expected                  = "$name test job";
 	++$index;
+	$expected = sprintf( 'Listing %02d', $index + 1 );
 	// tests/seed-states.php leaves the city off every 7th listing.
 	$has_city = 0 !== $index % 7;
 	foreach ( $types as $label => $make ) {
@@ -64,7 +68,7 @@ foreach ( $states as $code => $row ) {
 			continue;
 		}
 		$term   = $make( $code, $name, $city, $zip );
-		$titles = search( $base, $term );
+		$titles = search( $base, $term, $field );
 		$hit    = in_array( $expected, $titles, true );
 		$extras = array_values( array_diff( $titles, [ $expected ] ) );
 

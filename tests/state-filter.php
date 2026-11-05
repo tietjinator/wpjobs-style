@@ -25,7 +25,7 @@ function wpjm_post( $base, $fields ) {
 	$json                = json_decode( file_get_contents( $base . '/?jm-ajax=get_listings', false, $ctx ), true );
 	preg_match_all( '#<h3>(.*?)</h3>#s', isset( $json['html'] ) ? $json['html'] : '', $titles );
 
-	return array_map( fn( $t ) => str_replace( ' test job', '', html_entity_decode( $t ) ), $titles[1] );
+	return array_map( 'html_entity_decode', $titles[1] );
 }
 
 $fail = 0;
@@ -37,21 +37,27 @@ $check = function ( $label, $ok, $got = '' ) use ( &$fail ) {
 };
 
 // 1. Each state, chosen on its own, returns exactly its listing.
+// Listings are titled "Listing 01", "Listing 02"... in the order of the seed table.
+$title = [];
+$i     = 0;
+foreach ( array_keys( $states ) as $code ) {
+	$title[ $code ] = sprintf( 'Listing %02d', ++$i );
+}
 foreach ( $states as $code => $row ) {
 	$got = wpjm_post( $base, [ 'filter_state' => $code ] );
-	$check( "filter $code", $got === [ $row[0] ], '=> ' . implode( ', ', $got ) );
+	$check( "filter $code", $got === [ $title[ $code ] ], '=> ' . implode( ', ', $got ) );
 }
 echo 'Each of ' . count( $states ) . " states and provinces alone: done\n";
 
 // 2. Combined with the other filters.
 $got = wpjm_post( $base, [ 'filter_state' => 'TX', 'search_location' => 'Texas' ] );
-$check( 'TX + location Texas', $got === [ 'Texas' ], implode( ',', $got ) );
+$check( 'TX + location Texas', $got === [ $title['TX'] ], implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'TX', 'search_location' => 'Ohio' ] );
 $check( 'TX + location Ohio gives nothing', [] === $got, implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'OH', 'search_keywords' => 'Ohio' ] );
-$check( 'OH + keyword Ohio', $got === [ 'Ohio' ], implode( ',', $got ) );
-$got = wpjm_post( $base, [ 'filter_state' => 'OH', 'search_keywords' => 'Texas' ] );
-$check( 'OH + keyword Texas gives nothing', [] === $got, implode( ',', $got ) );
+$check( 'OH + keyword Cleveland-free text', [ $title['OH'] ] === wpjm_post( $base, [ 'filter_state' => 'OH', 'search_keywords' => 'Columbus' ] ), '' );
+$got = wpjm_post( $base, [ 'filter_state' => 'OH', 'search_keywords' => 'Austin' ] );
+$check( 'OH + keyword Austin gives nothing', [] === $got, implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'OH', 'remote_position' => 'true' ] );
 $check( 'OH + remote only gives nothing (Ohio is not remote)', [] === $got, implode( ',', $got ) );
 
@@ -63,11 +69,11 @@ $check( 'unknown state gives nothing', [] === $got, implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => "TX' OR 1=1 -- " ] );
 $check( 'injection attempt gives nothing', [] === $got, implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'IN' ] );
-$check( 'IN is only Indiana, not every listing with "in"', $got === [ 'Indiana' ], implode( ',', $got ) );
+$check( 'IN is only Indiana, not every listing with "in"', $got === [ $title['IN'] ], implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'VA' ] );
-$check( 'VA is not West Virginia', $got === [ 'Virginia' ], implode( ',', $got ) );
+$check( 'VA is not West Virginia', $got === [ $title['VA'] ], implode( ',', $got ) );
 $got = wpjm_post( $base, [ 'filter_state' => 'WA' ] );
-$check( 'WA is not DC', $got === [ 'Washington' ], implode( ',', $got ) );
+$check( 'WA is not DC', $got === [ $title['WA'] ], implode( ',', $got ) );
 
 echo $fail ? "\n$fail FAILED\n" : "\nAll state filter checks passed.\n";
 exit( $fail ? 1 : 0 );
