@@ -254,3 +254,8 @@ body form.job_filters .showing_jobs a {
 		width: 100%;
 	}
 }
+
+/* Belt and braces: hide the RSS link if another plugin or theme re-adds it. */
+body form.job_filters .showing_jobs a.rss_link {
+	display: none;
+}

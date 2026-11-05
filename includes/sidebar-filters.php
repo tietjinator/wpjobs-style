@@ -71,3 +71,13 @@ add_filter(
 		return $args;
 	}
 );
+
+// Remove the RSS link from the "Showing N jobs" line under the filters.
+// Keeps the Reset link. (The feed endpoint itself still exists.)
+add_filter(
+	'job_manager_job_filters_showing_jobs_links',
+	function ( $links ) {
+		unset( $links['rss_link'] );
+		return $links;
+	}
+);
