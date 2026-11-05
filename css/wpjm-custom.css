@@ -1195,6 +1195,16 @@ body .wpjm-submitted p:last-child {
 	margin-bottom: 0;
 }
 
+body .wpjm-submitted a:not(.button) {
+	color: var(--wpjm-accent);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+body .wpjm-submitted a:not(.button):hover {
+	color: var(--wpjm-accent-hover);
+}
+
 body .wpjm-submitted .wpjm-submitted__title {
 	margin: 0 0 0.75rem;
 	font-size: 1.25rem;
