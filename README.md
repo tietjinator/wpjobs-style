@@ -11,7 +11,7 @@ If you would rather not run a plugin, copy `css/wpjm-custom.css` into your child
 
 ## Live preview
 
-Open this in a browser to get a throwaway WordPress site with WP Job Manager, this plugin and sample listings (needs a public repo, and it pulls the `main` branch, so reload after each push):
+Open this in a browser to get a throwaway WordPress site with WP Job Manager, this plugin and sample listings (needs a public repo, and it pulls the `main` branch, so reload after each push). The sample listings are geocoded through the Nominatim setup when the site is created, so the first load takes a few extra seconds, and listings that fail to geocode (for example if the network call is blocked) simply have no coordinates:
 
 https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json
 
