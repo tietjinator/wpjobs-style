@@ -6,7 +6,10 @@
  * clicked, with a direct link:
  *   - a website: the button goes straight to that address (new tab)
  *   - an email: the button opens the person's mail app addressed to that
- *     address, with the job in the subject line (see includes/apply-button.php)
+ *     address, with the job in the subject line (see includes/apply-button.php).
+ *     A browser has no way to tell whether a mail app opened, so the address
+ *     and subject are always shown under the button for anyone it did not
+ *     work for.
  *
  * Loaded through the `job_manager_locate_template` filter, so nothing in the
  * theme or in WP Job Manager is edited. The plugin's own hooks are kept so
@@ -35,6 +38,15 @@ if ( $apply ) :
 		<?php do_action( 'job_application_start', $apply ); ?>
 
 		<a class="wpjm-apply" href="<?php echo 'email' === $apply->type ? esc_attr( $href ) : esc_url( $href ); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput -- Fixed strings above. ?>><?php esc_html_e( 'Apply for job', 'wp-job-manager' ); ?></a>
+
+		<?php if ( 'email' === $apply->type ) : ?>
+			<p class="wpjm-apply-fallback">
+				<?php esc_html_e( 'Button not opening your email? Send your application to', 'wpjm-custom-styles' ); ?>
+				<a href="mailto:<?php echo esc_attr( $apply->email ); ?>"><?php echo esc_html( $apply->email ); ?></a><?php if ( ! empty( $apply->subject ) ) : ?>
+				<?php esc_html_e( 'with the subject', 'wpjm-custom-styles' ); ?>
+				<em><?php echo esc_html( wp_specialchars_decode( $apply->subject, ENT_QUOTES ) ); ?></em><?php endif; ?>.
+			</p>
+		<?php endif; ?>
 
 		<?php do_action( 'job_application_end', $apply ); ?>
 	</div>

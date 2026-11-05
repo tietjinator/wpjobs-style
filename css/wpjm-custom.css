@@ -1208,6 +1208,21 @@ body .job_application.application .wpjm-apply:focus-visible {
 	border-color: var(--wpjm-accent-hover);
 }
 
+/* Under an email Apply button: the address, for when the mail app does not open. */
+body .job_application.application .wpjm-apply-fallback {
+	margin: 0.75rem 0 0;
+	font-size: var(--wpjm-fs-small);
+	line-height: 1.5;
+	color: var(--wpjm-muted);
+	overflow-wrap: anywhere;
+}
+
+body .job_application.application .wpjm-apply-fallback a {
+	color: var(--wpjm-accent);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
 /* After submitting: the "in review" confirmation */
 body .wpjm-submitted {
 	padding: 1.5rem 1.75rem;
