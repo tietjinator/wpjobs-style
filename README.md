@@ -46,6 +46,8 @@ The preview site also has the other screens. Add `&url=/page/` to the link to op
 
 For example, https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json&url=/post-a-job/
 
+GitHub caches raw files for about five minutes, so a link opened right after a push can build the site from the previous version (for example a menu with no "Post a Job" page). To be sure of the latest, replace `main` in the link with the full commit ID (`git rev-parse HEAD`), which is never cached.
+
 ## Sidebar and sorting
 
 `css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right on screens 900px and wider. Below that the filters stack above the results. It works on the plugin's own markup, with no template overrides. Wrappers without a filter form (`[jobs show_filters="false"]`, widgets) are not touched.
