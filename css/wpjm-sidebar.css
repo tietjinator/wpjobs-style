@@ -67,7 +67,7 @@ body form.job_filters .search_jobs {
 
 /* Cancel the plugin's floated half-width columns and hidden labels. */
 /* :is() raises specificity above the plugin's `.search_jobs div.search_*` rules. */
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort) {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort, .search_reset) {
 	float: none;
 	width: 100%;
 	clear: none;
@@ -75,7 +75,7 @@ body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, 
 	border-bottom: 1px solid var(--wpjm-border);
 }
 
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort) label {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort, .search_reset) label {
 	display: block;
 	margin-bottom: 6px;
 	font-size: 0.8em;
@@ -110,6 +110,7 @@ body form.job_filters .search_categories { order: 4; }
 body form.job_filters ul.job_types { order: 5; }
 body form.job_filters .search_sort { order: 6; }
 body form.job_filters .search_submit { order: 7; }
+body form.job_filters .search_reset { order: 8; }
 
 /* Remote toggle: label sits beside the checkbox */
 body form.job_filters .search_jobs div.search_remote_position {
@@ -195,7 +196,7 @@ body form.job_filters ul.job_types label.internship::after { background: var(--w
 body form.job_filters ul.job_types label.freelance::after { background: var(--wpjm-type-freelance); }
 body form.job_filters ul.job_types label.temporary::after { background: var(--wpjm-type-temporary); }
 
-/* ---------- Submit + results summary ---------- */
+/* ---------- Submit + reset ---------- */
 body form.job_filters .search_jobs div.search_submit {
 	border-bottom: 0;
 }
@@ -203,21 +204,6 @@ body form.job_filters .search_jobs div.search_submit {
 body form.job_filters .search_submit input[type="submit"] {
 	width: 100%;
 	padding: 0.7em 1em;
-}
-
-body form.job_filters .showing_jobs {
-	padding: 12px 18px;
-	background: var(--wpjm-surface-alt);
-	border-top: 1px solid var(--wpjm-border);
-	border-radius: 0 0 var(--wpjm-radius) var(--wpjm-radius);
-	font-size: 0.85em;
-	color: var(--wpjm-muted);
-}
-
-body form.job_filters .showing_jobs a {
-	float: none;
-	color: var(--wpjm-accent);
-	font-weight: 600;
 }
 
 /* ---------- Small screens: filters stack above the results ---------- */
@@ -255,7 +241,35 @@ body form.job_filters .showing_jobs a {
 	}
 }
 
-/* Belt and braces: hide the RSS link if another plugin or theme re-adds it. */
-body form.job_filters .showing_jobs a.rss_link {
-	display: none;
+/* The "Showing N jobs" message is not used. Hidden here as well, because the
+   plugin's JS shows it again with an inline style after each search. */
+body form.job_filters .showing_jobs {
+	display: none !important;
+}
+
+/* Search Jobs sits right above Reset Filters. */
+body form.job_filters .search_jobs div.search_submit {
+	padding-bottom: 8px;
+}
+
+body form.job_filters .search_jobs div.search_reset {
+	padding-top: 0;
+	border-bottom: 0;
+}
+
+body form.job_filters .search_reset button.reset {
+	width: 100%;
+	padding: 0.7em 1em;
+	background: transparent;
+	color: var(--wpjm-accent);
+	border: 1px solid var(--wpjm-accent);
+	border-radius: 6px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+body form.job_filters .search_reset button.reset:hover,
+body form.job_filters .search_reset button.reset:focus-visible {
+	background: var(--wpjm-accent);
+	color: var(--wpjm-accent-contrast);
 }

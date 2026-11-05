@@ -72,12 +72,23 @@ add_filter(
 	}
 );
 
-// Remove the RSS link from the "Showing N jobs" line under the filters.
-// Keeps the Reset link. (The feed endpoint itself still exists.)
+// Drop the "Showing N jobs" message and its Reset and RSS links. Reset is
+// replaced by the "Reset Filters" button rendered inside the form below.
 add_filter(
 	'job_manager_job_filters_showing_jobs_links',
-	function ( $links ) {
-		unset( $links['rss_link'] );
-		return $links;
+	function () {
+		return [];
 	}
+);
+add_filter( 'job_manager_get_listings_custom_filter_text', '__return_empty_string' );
+
+// "Reset Filters" button, under the Search Jobs button. The plugin's JS handles
+// clicks on any `.reset` element inside the filter form: it clears the keyword,
+// location, category, job type, remote and sort fields and reloads the results.
+add_action(
+	'job_manager_job_filters_search_jobs_end',
+	function () {
+		echo '<div class="search_reset"><button type="button" class="reset">' . esc_html__( 'Reset Filters', 'wpjm-custom-styles' ) . '</button></div>';
+	},
+	30
 );
