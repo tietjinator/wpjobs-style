@@ -55,7 +55,7 @@ $ensure   = function ( $name, $taxonomy ) use ( &$term_ids ) {
 foreach ( [ 'Full Time', 'Part Time', 'Internship', 'Freelance', 'Temporary' ] as $t ) {
 	$ensure( $t, 'job_listing_type' );
 }
-foreach ( [ 'Pastoral & Leadership', 'Worship & Creative Arts', 'Children & Youth', 'Administration & Operations', 'Missions & Outreach', 'Communications & Media' ] as $c ) {
+foreach ( [ 'Pastoral & Leadership', 'Worship & Creative Arts', 'Children & Youth', 'Administration & Operations', 'Missions & Outreach', 'Communications & Media', 'Other' ] as $c ) {
 	$ensure( $c, 'job_listing_category' );
 }
 
@@ -116,7 +116,7 @@ $listings = [
 	[
 		'title' => 'Lead Pastor', 'church' => 'Grace Community Church', 'site' => 'https://example.org/grace',
 		'loc' => [ 'Fort Wayne', 'IN', '46802' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 2,
-		'flags' => [ 'featured', 'pdf' ], 'pay' => [ '85,000 - 110,000', 'year' ],
+		'flags' => [ 'featured', 'pdf' ], 'pay' => [ '85,000 - 110,000', 'YEAR' ],
 		'intro' => 'Grace Community Church, a congregation of about 450 across two Sunday services, is searching for a Lead Pastor to shepherd our church into its next season of growth. We are a multigenerational community in the heart of Fort Wayne with a strong tradition of prayer, hospitality and service to our neighbours.',
 		'do'    => [ 'Preach and teach on Sundays and lead the vision and spiritual direction of the church', 'Shepherd, equip and care for a staff team of six and a volunteer base of over 150', 'Provide pastoral care, including hospital visits, weddings, funerals and counselling', 'Work with the elder board on strategy, budget and long-term planning', 'Represent the church in the community and to our partner ministries' ],
 		'need'  => [ 'Ordained, or eligible for ordination, with at least five years of pastoral experience', 'A track record of preaching and teaching the Scriptures with clarity and care', 'Demonstrated leadership of staff and volunteers', 'A seminary degree is preferred but not required' ],
@@ -125,7 +125,7 @@ $listings = [
 	[
 		'title' => 'Executive Pastor', 'church' => 'Crossroads Church', 'site' => 'https://example.org/crossroads',
 		'loc' => [ 'Dallas', 'TX', '75201' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 1,
-		'flags' => [ 'featured', 'pdf' ], 'pay' => [ '95,000 - 120,000', 'year' ],
+		'flags' => [ 'featured', 'pdf' ], 'pay' => [ '95,000 - 120,000', 'YEAR' ],
 		'intro' => 'Crossroads Church is looking for an Executive Pastor to lead the day-to-day operations of a multi-site church of 1,800 and to free our pastors to focus on ministry. You will oversee staff, finance, facilities and systems, and help us steward rapid growth well.',
 		'do'    => [ 'Lead and develop a staff of 28 across three campuses', 'Oversee a $4.2M operating budget, financial reporting and annual planning', 'Manage facilities, technology and operations, including the new building project', 'Build clear systems, policies and communication across campuses', 'Serve as the key partner to the Lead Pastor and the elder board' ],
 		'need'  => [ 'Eight or more years of leadership experience, ideally in a church or nonprofit', 'Strong financial and organizational skills', 'A collaborative, calm and decisive leadership style', 'A deep commitment to the mission and theology of the church' ],
@@ -134,7 +134,7 @@ $listings = [
 	[
 		'title' => 'Worship Pastor', 'church' => 'New Hope Church', 'site' => 'https://example.org/newhope',
 		'loc' => [ 'Colorado Springs', 'CO', '80903' ], 'type' => 'Full Time', 'cat' => 'Worship & Creative Arts', 'days' => 5,
-		'flags' => [ 'pdf' ], 'pay' => [ '62,000 - 76,000', 'year' ],
+		'flags' => [ 'pdf' ], 'pay' => [ '62,000 - 76,000', 'YEAR' ],
 		'intro' => 'New Hope Church is looking for a Worship Pastor who loves to lead people into the presence of God and to develop the musicians, vocalists and technical volunteers who serve alongside them.',
 		'do'    => [ 'Plan and lead worship for two Sunday services and special services throughout the year', 'Recruit, coach and schedule a team of about 40 musicians, singers and tech volunteers', 'Select songs, build set lists and coordinate with the preaching team', 'Lead rehearsals and develop emerging worship leaders', 'Oversee audio, lighting and livestream production' ],
 		'need'  => [ 'Proficiency on guitar or keys and strong vocal ability', 'Experience leading worship in a church setting', 'The ability to build teams and give clear, kind feedback', 'Working knowledge of sound and presentation software' ],
@@ -143,7 +143,7 @@ $listings = [
 	[
 		'title' => 'Youth Pastor', 'church' => 'Riverside Community Church', 'site' => 'https://example.org/riverside',
 		'loc' => [ 'Marion', 'IN', '46952' ], 'type' => 'Full Time', 'cat' => 'Children & Youth', 'days' => 3,
-		'flags' => [ 'featured' ], 'pay' => [ '48,000 - 58,000', 'year' ],
+		'flags' => [ 'featured' ], 'pay' => [ '48,000 - 58,000', 'YEAR' ],
 		'intro' => 'Riverside Community Church is seeking a Youth Pastor to lead our middle and high school ministry of about 70 students. You will help young people meet Jesus, grow in their faith and find a home in the church.',
 		'do'    => [ 'Lead weekly youth gatherings and small groups for grades 6 to 12', 'Build and train a team of volunteer leaders and mentors', 'Plan retreats, camps, service projects and a summer mission trip', 'Partner with parents and communicate regularly with families', 'Follow our child protection policies and keep clear records' ],
 		'need'  => [ 'Experience in youth ministry, paid or volunteer', 'A genuine love for students and a strong sense of humour', 'Willingness to complete a background check and safe church training' ],
@@ -152,7 +152,7 @@ $listings = [
 	[
 		'title' => 'Campus Pastor', 'church' => 'Summit Church', 'site' => 'https://example.org/summit',
 		'loc' => [ 'Denver', 'CO', '80202' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 3,
-		'flags' => [], 'pay' => [ '70,000 - 88,000', 'year' ],
+		'flags' => [], 'pay' => [ '70,000 - 88,000', 'YEAR' ],
 		'intro' => 'Summit Church is launching a fourth campus in south Denver and is looking for a Campus Pastor to lead it from the start. This is an opportunity to build a new community alongside an experienced, supportive multi-site team.',
 		'do'    => [ 'Lead and shepherd the new campus, including the weekend experience and staff', 'Build a launch team and a culture of prayer, hospitality and discipleship', 'Provide pastoral care and develop lay leaders and small groups', 'Collaborate with central ministries on teaching, kids and student ministry' ],
 		'need'  => [ 'At least three years of pastoral or ministry leadership experience', 'Experience in church planting or a campus launch is a plus', 'Entrepreneurial, relational and resilient' ],
@@ -161,7 +161,7 @@ $listings = [
 	[
 		'title' => "Children's Ministry Director", 'church' => 'Cornerstone Fellowship', 'site' => 'https://example.org/cornerstone',
 		'loc' => [ 'Greenville', 'SC', '29601' ], 'type' => 'Full Time', 'cat' => 'Children & Youth', 'days' => 6,
-		'flags' => [], 'pay' => [ '44,000 - 52,000', 'year' ],
+		'flags' => [], 'pay' => [ '44,000 - 52,000', 'YEAR' ],
 		'intro' => 'Cornerstone Fellowship is looking for a Children\'s Ministry Director with a passion for helping kids know and love Jesus. You will lead our nursery through fifth grade ministry and equip families to disciple their children at home.',
 		'do'    => [ 'Oversee Sunday programming for about 120 children each week', 'Recruit, train and care for more than 60 volunteers', 'Choose and adapt curriculum and plan seasonal events such as VBS', 'Maintain a safe, welcoming environment and follow all safety policies', 'Resource parents with simple, practical tools for faith at home' ],
 		'need'  => [ 'Experience in children\'s ministry or elementary education', 'Strong organization and a warm, energetic presence', 'A bachelor\'s degree or equivalent experience' ],
@@ -170,7 +170,7 @@ $listings = [
 	[
 		'title' => 'Communications Director', 'church' => 'Mosaic Church', 'site' => 'https://example.org/mosaic',
 		'loc' => [ 'Portland', 'OR', '97201' ], 'type' => 'Full Time', 'cat' => 'Communications & Media', 'days' => 7,
-		'flags' => [ 'remote' ], 'pay' => [ '58,000 - 72,000', 'year' ],
+		'flags' => [ 'remote' ], 'pay' => [ '58,000 - 72,000', 'YEAR' ],
 		'intro' => 'Mosaic Church is looking for a Communications Director to tell the story of what God is doing in our city. You will shape our voice, manage our channels and lead a small creative team. This role is open to remote candidates, with occasional visits to Portland.',
 		'do'    => [ 'Develop and carry out a communications plan across web, email, social and print', 'Lead a team of one designer, one videographer and several volunteers', 'Write and edit stories, announcements and newsletters', 'Maintain brand standards and a consistent, warm voice', 'Report on what is working and adjust the plan' ],
 		'need'  => [ 'Three or more years in communications, marketing or journalism', 'Excellent writing and editing skills', 'Comfort with design tools, email platforms and basic analytics' ],
@@ -179,7 +179,7 @@ $listings = [
 	[
 		'title' => 'Associate Pastor of Discipleship', 'church' => 'Trinity Fellowship', 'site' => 'https://example.org/trinity',
 		'loc' => [ 'Nashville', 'TN', '37201' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 14,
-		'flags' => [], 'pay' => [ '60,000 - 72,000', 'year' ],
+		'flags' => [], 'pay' => [ '60,000 - 72,000', 'YEAR' ],
 		'intro' => 'Trinity Fellowship is looking for an Associate Pastor of Discipleship to design and lead how people at our church grow in faith, from new believers to seasoned leaders.',
 		'do'    => [ 'Design clear pathways for spiritual growth, including classes, groups and mentoring', 'Lead and train small group leaders', 'Teach in adult classes and occasionally preach', 'Support new members as they find their place in the church' ],
 		'need'  => [ 'Ministry experience and a seminary degree or equivalent training', 'A teacher\'s heart and the ability to organize people and process' ],
@@ -188,7 +188,7 @@ $listings = [
 	[
 		'title' => 'Church Administrator', 'church' => 'Good Shepherd Church', 'site' => 'https://example.org/goodshepherd',
 		'loc' => [ 'Albany', 'NY', '12207' ], 'type' => 'Full Time', 'cat' => 'Administration & Operations', 'days' => 18,
-		'flags' => [], 'pay' => [ '50,000 - 62,000', 'year' ],
+		'flags' => [], 'pay' => [ '50,000 - 62,000', 'YEAR' ],
 		'intro' => 'Good Shepherd Church is looking for an organized, gracious Church Administrator to keep our ministry running smoothly and support our pastor and staff.',
 		'do'    => [ 'Manage the church office, calendar, building use and vendor relationships', 'Support payroll, accounts payable and basic bookkeeping', 'Maintain membership records and communication tools', 'Coordinate volunteers and welcome visitors to the office' ],
 		'need'  => [ 'Three years of office or administrative experience', 'Proficiency with email, spreadsheets and church management software', 'Discretion, kindness and attention to detail' ],
@@ -197,7 +197,7 @@ $listings = [
 	[
 		'title' => 'Facilities & Grounds Manager', 'church' => 'Lakeside Church', 'site' => 'https://example.org/lakeside',
 		'loc' => [ 'Orlando', 'FL', '32801' ], 'type' => 'Full Time', 'cat' => 'Administration & Operations', 'days' => 9,
-		'flags' => [], 'pay' => [ '46,000 - 58,000', 'year' ],
+		'flags' => [], 'pay' => [ '46,000 - 58,000', 'YEAR' ],
 		'intro' => 'Lakeside Church is looking for a Facilities & Grounds Manager to care for our 40-acre campus and the people who use it each week.',
 		'do'    => [ 'Maintain buildings, systems and grounds, including routine repairs and preventive care', 'Set up and tear down for services and events', 'Manage contractors, vendors and a small team of volunteers', 'Keep the campus safe, clean and welcoming' ],
 		'need'  => [ 'Experience in facilities, maintenance or a related trade', 'Ability to lift 50 lbs and work some evenings and weekends', 'A valid driver\'s license' ],
@@ -206,7 +206,7 @@ $listings = [
 	[
 		'title' => 'Audio / Video Technician', 'church' => 'Lighthouse Church', 'site' => 'https://example.org/lighthouse',
 		'loc' => [ 'Phoenix', 'AZ', '85004' ], 'type' => 'Part Time', 'cat' => 'Worship & Creative Arts', 'days' => 2,
-		'flags' => [], 'pay' => [ '20 - 26', 'hour' ],
+		'flags' => [], 'pay' => [ '20 - 26', 'HOUR' ],
 		'intro' => 'Lighthouse Church needs a part-time Audio / Video Technician to run sound, lighting and video for our weekend services and special events, about 20 hours a week.',
 		'do'    => [ 'Mix audio for services and rehearsals', 'Operate lighting, slides and the livestream', 'Maintain equipment and train volunteer technicians' ],
 		'need'  => [ 'Experience with digital mixing consoles and streaming software', 'Availability on Sundays and Wednesday evenings' ],
@@ -215,7 +215,7 @@ $listings = [
 	[
 		'title' => 'Administrative Assistant', 'church' => 'Hillcrest Church', 'site' => 'https://example.org/hillcrest',
 		'loc' => [ 'Wichita', 'KS', '67202' ], 'type' => 'Part Time', 'cat' => 'Administration & Operations', 'days' => 4,
-		'flags' => [], 'pay' => [ '18 - 22', 'hour' ],
+		'flags' => [], 'pay' => [ '18 - 22', 'HOUR' ],
 		'intro' => 'Hillcrest Church is hiring a part-time Administrative Assistant, about 24 hours per week, to greet visitors, answer the phone and support our pastor.',
 		'do'    => [ 'Welcome visitors and answer calls and email', 'Prepare bulletins and weekly announcements', 'Keep records and support the office team' ],
 		'need'  => [ 'A friendly, dependable approach and good computer skills' ],
@@ -224,7 +224,7 @@ $listings = [
 	[
 		'title' => 'Student Ministries Assistant', 'church' => 'Oak Grove Church', 'site' => 'https://example.org/oakgrove',
 		'loc' => [ 'Charlotte', 'NC', '28202' ], 'type' => 'Part Time', 'cat' => 'Children & Youth', 'days' => 6,
-		'flags' => [], 'pay' => [ '17 - 20', 'hour' ],
+		'flags' => [], 'pay' => [ '17 - 20', 'HOUR' ],
 		'intro' => 'Oak Grove Church is looking for a part-time Student Ministries Assistant to help our youth pastor with events, communication and care for students.',
 		'do'    => [ 'Help plan and run weekly youth events', 'Send weekly communication to students and parents', 'Mentor a group of students' ],
 		'need'  => [ 'A heart for students and the ability to pass a background check' ],
@@ -233,7 +233,7 @@ $listings = [
 	[
 		'title' => 'Missions Coordinator', 'church' => 'Pathways Church', 'site' => 'https://example.org/pathways',
 		'loc' => [ 'Seattle', 'WA', '98101' ], 'type' => 'Part Time', 'cat' => 'Missions & Outreach', 'days' => 8,
-		'flags' => [], 'pay' => [ '24,000 - 30,000', 'year' ],
+		'flags' => [], 'pay' => [ '24,000 - 30,000', 'YEAR' ],
 		'intro' => 'Pathways Church is looking for a part-time Missions Coordinator to connect our congregation with local outreach and the missionaries we support around the world.',
 		'do'    => [ 'Coordinate partnerships with local nonprofits and global missions partners', 'Organize short-term mission trips and service days', 'Communicate stories and needs to the congregation' ],
 		'need'  => [ 'Cross-cultural experience, strong communication and organization' ],
@@ -242,7 +242,7 @@ $listings = [
 	[
 		'title' => 'Bilingual Outreach Coordinator', 'church' => 'Esperanza Church', 'site' => 'https://example.org/esperanza',
 		'loc' => [ 'San Antonio', 'Texas', '78205' ], 'type' => 'Full Time', 'cat' => 'Missions & Outreach', 'days' => 7,
-		'flags' => [], 'pay' => [ '42,000 - 50,000', 'year' ],
+		'flags' => [], 'pay' => [ '42,000 - 50,000', 'YEAR' ],
 		'intro' => 'Esperanza Church is looking for a Bilingual Outreach Coordinator (English and Spanish) to build relationships with our neighbourhood and connect families with the church and community resources.',
 		'do'    => [ 'Lead neighbourhood outreach, food distribution and family events', 'Build partnerships with schools, clinics and local agencies', 'Recruit and train bilingual volunteers' ],
 		'need'  => [ 'Fluent in English and Spanish', 'Experience in community outreach or ministry', 'Reliable transportation' ],
@@ -251,7 +251,7 @@ $listings = [
 	[
 		'title' => 'Director of Care Ministries', 'church' => 'Gracepoint Church', 'site' => 'https://example.org/gracepoint',
 		'loc' => [ 'Minneapolis', 'MN', '55401' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 5,
-		'flags' => [], 'pay' => [ '52,000 - 64,000', 'year' ],
+		'flags' => [], 'pay' => [ '52,000 - 64,000', 'YEAR' ],
 		'intro' => 'Gracepoint Church is looking for a Director of Care Ministries to lead how we walk with people through illness, grief, crisis and life transitions.',
 		'do'    => [ 'Lead and train a team of lay care volunteers and visitors', 'Provide pastoral care and coordinate meals, visits and support groups', 'Connect people to counselling and community resources' ],
 		'need'  => [ 'Experience in pastoral care, chaplaincy or counselling', 'Compassion, discretion and clear boundaries' ],
@@ -260,7 +260,7 @@ $listings = [
 	[
 		'title' => 'Chaplain (Hospital Partnership)', 'church' => 'Mercy Chapel Ministries', 'site' => 'https://example.org/mercychapel',
 		'loc' => [ 'Chicago', 'IL', '60601' ], 'type' => 'Part Time', 'cat' => 'Pastoral & Leadership', 'days' => 13,
-		'flags' => [], 'pay' => [ '28 - 34', 'hour' ],
+		'flags' => [], 'pay' => [ '28 - 34', 'HOUR' ],
 		'intro' => 'Mercy Chapel Ministries partners with two Chicago hospitals and is looking for a part-time Chaplain to offer spiritual care to patients, families and staff.',
 		'do'    => [ 'Visit patients and families and offer prayer and support', 'Be available for on-call needs one weekend a month', 'Work with the hospital care team' ],
 		'need'  => [ 'Ordained or commissioned, with CPE training or equivalent experience' ],
@@ -269,7 +269,7 @@ $listings = [
 	[
 		'title' => 'Church Planting Resident', 'church' => 'Harvest City Church', 'site' => 'https://example.org/harvestcity',
 		'loc' => [ 'Atlanta', 'GA', '30303' ], 'type' => 'Internship', 'cat' => 'Missions & Outreach', 'days' => 11,
-		'flags' => [], 'pay' => [ '1,800', 'month' ],
+		'flags' => [], 'pay' => [ '1,800', 'MONTH' ],
 		'intro' => 'Harvest City Church is offering a twelve-month Church Planting Residency for emerging leaders who sense a call to plant or revitalize a church. You will work alongside our lead planting pastor and learn by doing.',
 		'do'    => [ 'Take part in every part of a young church: preaching, care, outreach and administration', 'Meet weekly with a mentor and join a cohort of fellow residents', 'Help lead a new community group' ],
 		'need'  => [ 'A sense of calling and a record of faithful service', 'A bachelor\'s degree or equivalent' ],
@@ -278,7 +278,7 @@ $listings = [
 	[
 		'title' => 'Worship Arts Intern', 'church' => 'Harbor Church', 'site' => 'https://example.org/harbor',
 		'loc' => [ 'Boston', 'MA', '02108' ], 'type' => 'Internship', 'cat' => 'Worship & Creative Arts', 'days' => 15,
-		'flags' => [], 'pay' => [ '1,500', 'month' ],
+		'flags' => [], 'pay' => [ '1,500', 'MONTH' ],
 		'intro' => 'Harbor Church is offering a nine-month Worship Arts Internship for musicians, vocalists and creatives who want to grow in leading and producing worship.',
 		'do'    => [ 'Serve on the worship team and learn from our staff', 'Help with production, rehearsals and planning', 'Complete a reading and mentoring program' ],
 		'need'  => [ 'Musical ability, a teachable spirit and flexible evenings' ],
@@ -287,7 +287,7 @@ $listings = [
 	[
 		'title' => 'Summer Camp Counselor', 'church' => 'Lakeshore Camp & Retreat', 'site' => 'https://example.org/lakeshore',
 		'loc' => [ 'Muskegon', 'MI', '49440' ], 'type' => 'Temporary', 'cat' => 'Children & Youth', 'days' => 12,
-		'flags' => [], 'pay' => [ '15', 'hour' ],
+		'flags' => [], 'pay' => [ '15', 'HOUR' ],
 		'intro' => 'Lakeshore Camp & Retreat is hiring summer counselors for ten weeks of overnight camps on the shore of Lake Michigan. Housing and meals are included.',
 		'do'    => [ 'Lead a cabin of campers and help them make friends and grow in faith', 'Lead games, crafts, worship and outdoor activities', 'Keep campers safe and follow all camp policies' ],
 		'need'  => [ 'At least 18 years old, energetic and kind', 'First aid training (we can provide it)' ],
@@ -296,7 +296,7 @@ $listings = [
 	[
 		'title' => 'Interim Pastor', 'church' => 'Maple Street Church', 'site' => 'https://example.org/maplestreet',
 		'loc' => [ 'Burlington', 'VT', '05401' ], 'type' => 'Temporary', 'cat' => 'Pastoral & Leadership', 'days' => 16,
-		'flags' => [], 'pay' => [ '4,500', 'month' ],
+		'flags' => [], 'pay' => [ '4,500', 'MONTH' ],
 		'intro' => 'Maple Street Church is seeking an Interim Pastor for about eight months while we search for our next senior pastor. We need a steady, caring leader to preach, provide pastoral care and help the church through a season of transition.',
 		'do'    => [ 'Preach each Sunday and lead worship', 'Provide pastoral care and support the staff', 'Work with the search committee as needed' ],
 		'need'  => [ 'Experience in pastoral ministry, ideally as an interim' ],
@@ -305,7 +305,7 @@ $listings = [
 	[
 		'title' => 'Bookkeeper (Contract)', 'church' => 'Cedar Valley Church', 'site' => 'https://example.org/cedarvalley',
 		'loc' => [ 'Cedar Rapids', 'IA', '52401' ], 'type' => 'Freelance', 'cat' => 'Administration & Operations', 'days' => 10,
-		'flags' => [ 'remote' ], 'pay' => [ '35 - 45', 'hour' ],
+		'flags' => [ 'remote' ], 'pay' => [ '35 - 45', 'HOUR' ],
 		'intro' => 'Cedar Valley Church is looking for an experienced contract Bookkeeper, about 15 hours a month, to keep our books accurate and our reporting clear. This work can be done remotely.',
 		'do'    => [ 'Record income and expenses and reconcile accounts monthly', 'Prepare financial reports for the finance committee', 'Support the annual audit and tax filings' ],
 		'need'  => [ 'Bookkeeping experience, ideally with a church or nonprofit', 'Proficiency with QuickBooks Online' ],
@@ -313,8 +313,8 @@ $listings = [
 	],
 	[
 		'title' => 'Graphic Designer (Freelance)', 'church' => 'Beacon Church', 'site' => 'https://example.org/beacon',
-		'loc' => [], 'type' => 'Freelance', 'cat' => 'Communications & Media', 'days' => 20,
-		'flags' => [ 'remote' ], 'pay' => [ '40 - 60', 'hour' ],
+		'loc' => [ 'Tulsa', 'OK', '74103' ], 'type' => 'Freelance', 'cat' => 'Communications & Media', 'days' => 20,
+		'flags' => [ 'remote' ], 'pay' => [ '40 - 60', 'HOUR' ],
 		'intro' => 'Beacon Church is looking for a freelance Graphic Designer for sermon series branding, social graphics and printed pieces. Projects come up about twice a month and the work is fully remote.',
 		'do'    => [ 'Design series branding, social graphics and event materials', 'Prepare print-ready files for local printers', 'Work from a brand guide and a clear creative brief' ],
 		'need'  => [ 'A portfolio showing strong typography and layout', 'Experience with Adobe Creative Cloud or Figma', 'Reliable turnaround on short timelines' ],
@@ -323,7 +323,7 @@ $listings = [
 	[
 		'title' => 'Preschool Teacher', 'church' => 'Little Lambs Preschool at First Church', 'site' => 'https://example.org/littlelambs',
 		'loc' => [ 'Omaha', 'NE', '68102' ], 'type' => 'Full Time', 'cat' => 'Children & Youth', 'days' => 21,
-		'flags' => [ 'filled' ], 'pay' => [ '17 - 21', 'hour' ],
+		'flags' => [ 'filled' ], 'pay' => [ '17 - 21', 'HOUR' ],
 		'intro' => 'Little Lambs Preschool is hiring a lead teacher for our four-year-old classroom. This position has been filled.',
 		'do'    => [ 'Plan and teach a play-based curriculum', 'Partner with families and our director' ],
 		'need'  => [ 'Early childhood education experience' ],
@@ -332,7 +332,7 @@ $listings = [
 	[
 		'title' => 'Pastor of Community Life', 'church' => 'Westside Fellowship', 'site' => 'https://example.org/westside',
 		'loc' => [ 'Calgary', 'AB', 'T2P 1J9' ], 'type' => 'Full Time', 'cat' => 'Pastoral & Leadership', 'days' => 4,
-		'flags' => [], 'pay' => [ '68,000 - 82,000', 'year', 'CAD' ],
+		'flags' => [], 'pay' => [ '68,000 - 82,000', 'YEAR', 'CAD' ],
 		'intro' => 'Westside Fellowship is looking for a Pastor of Community Life to lead our small groups, hospitality and care for newcomers, and to help people in our growing neighbourhood find belonging.',
 		'do'    => [ 'Lead and multiply small groups', 'Welcome and connect newcomers', 'Provide pastoral care alongside the lead pastor' ],
 		'need'  => [ 'Pastoral experience and a relational, organized approach', 'Eligible to work in Canada' ],
@@ -341,10 +341,28 @@ $listings = [
 	[
 		'title' => 'Worship Leader', 'church' => 'Bayview Church', 'site' => 'https://example.org/bayview',
 		'loc' => [ 'Toronto', 'Ontario', 'M5H 2N2' ], 'type' => 'Part Time', 'cat' => 'Worship & Creative Arts', 'days' => 9,
-		'flags' => [], 'pay' => [ '32 - 40', 'hour', 'CAD' ],
+		'flags' => [], 'pay' => [ '32 - 40', 'HOUR', 'CAD' ],
 		'intro' => 'Bayview Church in downtown Toronto is looking for a part-time Worship Leader, about 20 hours a week, to lead our Sunday gathering and grow our worship team.',
 		'do'    => [ 'Lead worship and plan the Sunday gathering', 'Coach vocalists and musicians' ],
 		'need'  => [ 'Guitar or piano, a strong voice and a collaborative spirit' ],
+		'about' => '',
+	],
+	[
+		'title' => 'Church Van Driver', 'church' => 'Riverside Community Church', 'site' => 'https://example.org/riverside',
+		'loc' => [ 'Marion', 'IN', '46952' ], 'type' => 'Part Time', 'cat' => 'Other', 'days' => 5,
+		'flags' => [], 'pay' => [ '16 - 19', 'HOUR' ],
+		'intro' => 'Riverside Community Church needs a part-time Van Driver to bring members who cannot drive to our Sunday services and midweek events, about 12 hours a week.',
+		'do'    => [ 'Drive the church van on set routes on Sundays and Wednesdays', 'Help passengers get in and out safely', 'Keep the van clean and report any maintenance needs' ],
+		'need'  => [ 'A clean driving record and a valid driver\'s license', 'Patience and a kind manner with older adults', 'Willingness to complete a background check' ],
+		'about' => '',
+	],
+	[
+		'title' => 'Security & Safety Coordinator', 'church' => 'Crossroads Church', 'site' => 'https://example.org/crossroads',
+		'loc' => [ 'Dallas', 'TX', '75201' ], 'type' => 'Part Time', 'cat' => 'Other', 'days' => 8,
+		'flags' => [], 'pay' => [ '24 - 30', 'HOUR' ],
+		'intro' => 'Crossroads Church is looking for a part-time Security & Safety Coordinator to lead our volunteer safety team and keep our three campuses welcoming and safe.',
+		'do'    => [ 'Lead and train a team of volunteer greeters and safety volunteers', 'Write and practice emergency plans with staff', 'Coordinate with local police and fire services' ],
+		'need'  => [ 'Experience in security, law enforcement, the military or emergency services', 'Calm under pressure and good with people' ],
 		'about' => '',
 	],
 ];
@@ -409,7 +427,7 @@ foreach ( $listings as $L ) {
 	// Salary: text, unit and optional currency.
 	update_post_meta( $id, '_job_salary', $L['pay'][0] );
 	update_post_meta( $id, '_job_salary_unit', $L['pay'][1] );
-	update_post_meta( $id, '_job_salary_currency', isset( $L['pay'][2] ) ? $L['pay'][2] : '' );
+	update_post_meta( $id, '_job_salary_currency', isset( $L['pay'][2] ) ? $L['pay'][2] : 'USD' );
 
 	// Location the way the form saves it: raw values first, then the plugin's action.
 	$loc = $L['loc'] + [ '', '', '' ];

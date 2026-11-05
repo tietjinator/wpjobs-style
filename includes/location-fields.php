@@ -174,6 +174,50 @@ function wpjm_cs_format_location( $city, $state, $postcode ) {
 }
 
 /**
+ * A US ZIP code (12345 or 12345-6789) or a Canadian postal code (A1A 1A1).
+ * Turn this check off with the `wpjm_cs_validate_postcode` filter.
+ */
+function wpjm_cs_is_valid_postcode( $postcode ) {
+	$postcode = trim( (string) $postcode );
+
+	return (bool) preg_match( '/^\d{5}(-\d{4})?$/', $postcode )
+		|| (bool) preg_match( '/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/', $postcode );
+}
+
+/**
+ * Tidy a postal code: Canadian ones are upper-cased with a space ("T2P 1J9").
+ * Anything else is returned as typed.
+ */
+function wpjm_cs_normalize_postcode( $postcode ) {
+	$postcode = trim( (string) $postcode );
+
+	if ( preg_match( '/^([A-Za-z]\d[A-Za-z])[ -]?(\d[A-Za-z]\d)$/', $postcode, $m ) ) {
+		return strtoupper( $m[1] . ' ' . $m[2] );
+	}
+
+	return $postcode;
+}
+
+// ZIP / postal code must look like one, once the required fields are filled in.
+add_filter(
+	'submit_job_form_validate_fields',
+	function ( $valid, $fields, $values ) {
+		if ( is_wp_error( $valid ) || ! apply_filters( 'wpjm_cs_validate_postcode', true ) ) {
+			return $valid;
+		}
+
+		$postcode = isset( $values['job']['job_postcode'] ) ? trim( (string) $values['job']['job_postcode'] ) : '';
+		if ( '' !== $postcode && ! wpjm_cs_is_valid_postcode( $postcode ) ) {
+			return new WP_Error( 'validation-error', __( 'Enter a US ZIP code (such as 78701) or a Canadian postal code (such as T2P 1J9).', 'wpjm-custom-styles' ) );
+		}
+
+		return $valid;
+	},
+	10,
+	3
+);
+
+/**
  * Save the combined location for a listing from the three parts.
  *
  * If any part is filled in, `_job_location` is rebuilt from them. If all are
@@ -184,11 +228,13 @@ function wpjm_cs_format_location( $city, $state, $postcode ) {
 function wpjm_cs_save_combined_location( $job_id, $city, $state, $postcode ) {
 	$city     = sanitize_text_field( $city );
 	$state    = wpjm_cs_abbreviate_state( sanitize_text_field( $state ) );
-	$postcode = sanitize_text_field( $postcode );
+	$postcode = wpjm_cs_normalize_postcode( sanitize_text_field( $postcode ) );
 
 	if ( '' !== $city || '' !== $state || '' !== $postcode ) {
-		// Store the short code, so the form and admin box show "TX" next time.
+		// Store the short code, so the form and admin box show "TX" next time, and
+		// the tidied postal code ("t2p1j9" becomes "T2P 1J9").
 		update_post_meta( $job_id, '_job_state', $state );
+		update_post_meta( $job_id, '_job_postcode', $postcode );
 
 		// WP Job Manager's Location search also looks in `geolocation_state_long`.
 		// Geolocation is off, so fill it ourselves. Searching "Texas" or "TX"
@@ -230,24 +276,24 @@ add_filter(
 		$fields['job']['job_city']     = [
 			'label'       => __( 'City', 'wpjm-custom-styles' ),
 			'type'        => 'text',
-			'required'    => false,
+			'required'    => true,
 			'placeholder' => __( 'e.g. "Austin"', 'wpjm-custom-styles' ),
 			'priority'    => $priority,
 		];
 		$fields['job']['job_state']    = [
 			'label'       => __( 'State / Province', 'wpjm-custom-styles' ),
 			'type'        => 'text',
-			'required'    => false,
+			'required'    => true,
 			'description' => __( 'Full names are shortened automatically, for example Texas becomes TX.', 'wpjm-custom-styles' ),
 			'placeholder' => __( 'e.g. "TX"', 'wpjm-custom-styles' ),
 			'priority'    => $priority + 0.1,
 		];
 		$fields['job']['job_postcode'] = [
 			'label'       => __( 'ZIP / Postal code', 'wpjm-custom-styles' ),
-			'description' => __( 'Leave city, state and ZIP blank if the location is not important.', 'wpjm-custom-styles' ),
+			'description' => __( 'A US ZIP code or a Canadian postal code. For a remote position, use the church or company\'s own location.', 'wpjm-custom-styles' ),
 			'type'        => 'text',
-			'required'    => false,
-			'placeholder' => __( 'e.g. "78701"', 'wpjm-custom-styles' ),
+			'required'    => true,
+			'placeholder' => __( 'e.g. "78701" or "T2P 1J9"', 'wpjm-custom-styles' ),
 			'priority'    => $priority + 0.2,
 		];
 

@@ -41,6 +41,11 @@ $terms = get_terms(
 if ( is_wp_error( $terms ) || ! $terms ) {
 	return;
 }
+
+// "Other" last, not sorted into the middle.
+if ( function_exists( 'wpjm_cs_other_last' ) ) {
+	$terms = wpjm_cs_other_last( $terms );
+}
 ?>
 <div class="wpjm-checks" id="<?php echo esc_attr( $key ); ?>">
 	<?php foreach ( $terms as $term ) : ?>

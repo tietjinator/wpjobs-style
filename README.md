@@ -76,9 +76,10 @@ Sidebar order: **Keywords or city**, **State / Province**, the **Job type** draw
 
 ### Fields
 
-`includes/location-fields.php` replaces the single Location field with **City**, **State / Province** (free text) and **ZIP / Postal code** on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are optional. They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only reads that combined value, so listing cards, the job page and search keep working.
+`includes/location-fields.php` replaces the single Location field with **City**, **State / Province** (free text) and **ZIP / Postal code** on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are required on the "Post a Job" form (the admin box does not require them). They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only reads that combined value, so listing cards, the job page and search keep working.
 
-- Remote listings with no city, state or ZIP show just "Remote".
+- **ZIP / postal code must look like one:** a US ZIP code (`78701` or `78701-1234`) or a Canadian postal code (`T2P 1J9`). Canadian codes are tidied to capitals with a space (`t2p1j9` becomes `T2P 1J9`). Anything else is rejected with a message. Turn the check off with the `wpjm_cs_validate_postcode` filter if you ever list outside the US and Canada.
+- For a remote position, people enter the church or company's own location, and the "Remote" tick adds "(Remote)" to it on the job page.
 - Older listings keep their existing location text until someone fills in the new fields. Editing an old listing without filling them in does not wipe its location.
 - In the admin the old field is relabelled "Location (combined)" and is filled in automatically when any part is set.
 - Listing page URLs no longer include the location, because the plugin builds that from the old single field. Titles and company names still apply.
@@ -127,8 +128,9 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 - On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`; use `80vw` to match the Jobs page exactly or `100%` to stay in the theme's column).
 - Checkbox fields such as Remote Position show their help text to the right of the box instead of underneath.
 - Wording: "Company Details", "Company name" and the name placeholder become "Church / Company ...", set in `includes/submit-form.php`. This applies on the public site only, not in the admin.
+- **Other category.** An "Other" category is created once (and never re-created if you delete it in Job Listings > Job categories), and is always listed last in both the sidebar drawer and the form checklist, not sorted into the middle alphabetically.
 - **Job category.** The plugin adds a required "Job category" field once categories are switched on. It is shown as a checklist, two columns, instead of the plugin's search-as-you-type box, which is awkward for a short list and made the page jump when it lost focus. At least one must be ticked (the plugin checks this on the server). The boxes are named like the original field, so saving works as before. Template: `templates/form-fields/term-multiselect-field.php`.
-- **Salary.** If Salary is switched on in Job Listings > Settings, the form asks for a salary, and optionally a currency and a unit (per year, month or hour). It shows on the job page as "52,000 - 61,000 USD / year".
+- **Salary.** If Salary is switched on in Job Listings > Settings (and Currency and Unit under it), the form asks for a salary, a currency and a unit (per year, month, week, day or hour). The salary takes whole dollars only: `52,000`, `100` or a range like `18 - 22` are fine, and anything with cents (`100.02`, `52,000.00`) is rejected with a message. The dollar sign is dropped when it is saved ("$52,000 to $61,000" becomes "52,000 - 61,000"), because the currency is shown after the number. The currency is a dropdown of **USD** (default) and **CAD** (Canadian dollars), also in the admin box. Change the choices with the `wpjm_cs_currencies` filter. It shows on the job page as "52,000 - 61,000 USD / Year". The unit can be left blank.
 - **Approval.** By default the plugin holds new submissions for approval before they appear ("Your listing will be visible once approved"). That is a setting in Job Listings > Settings.
 - **Job description PDF.** An optional "Job description (PDF)" upload sits right after the Description box. It accepts only `.pdf`, up to 5 MB (or the server's upload limit if that is lower; change it with the `wpjm_cs_pdf_max_size` filter). A "Download the full job description (PDF)" button then appears under the description on the preview and the job page. It is not shown on the Jobs list rows. In the admin "Job Listing Data" box the field is a file address plus an Upload button, so staff can attach or replace a PDF. The file is saved in the plugin's `uploads/job-manager-uploads/` folder, and is public to anyone with the link, like logos were. Only files in this site's uploads folder are linked.
 - **Account panel.** The "Your account: You are currently signed in as ... Sign out" panel is hidden for logged-in people. Visitors who are not signed in still see "Have an account? Sign in", because that is how returning users sign in and where account creation fields live. Return `true` from the `submit_job_form_show_signin` filter (the plugin's own) to bring the logged-in panel back.
@@ -211,6 +213,8 @@ The plugin only loads its CSS on pages it detects as job pages. If you use the s
 | `wpjm_cs_abbreviate_state` | Return `false` to keep state names as typed |
 | `wpjm_cs_state_terms_also_searched_as_text` | Names that should also be searched as plain text (default: `washington`) |
 | `wpjm_cs_format_location` | Change the combined location text |
+| `wpjm_cs_validate_postcode` | Return `false` to accept any ZIP / postal code |
+| `wpjm_cs_currencies` | The salary currency choices (default USD and CAD) |
 | `wpjm_cs_application_subject` | Change the subject of the Apply email link |
 | `wpjm_cs_pdf_max_size` | Largest job description PDF in bytes (default 5 MB) |
 | `wpjm_cs_removed_company_fields` | Which company fields are removed from the Post a Job form (default: Twitter, tagline, video, logo) |
@@ -231,10 +235,10 @@ Two files in `templates/` are copies of WP Job Manager templates (`job-applicati
 
 ## Sample listings
 
-The Playground preview comes with 26 realistic, made-up listings so every screen has something to show. They are in `sample-data/seed.php`:
+The Playground preview comes with 28 realistic, made-up listings so every screen has something to show. They are in `sample-data/seed.php`:
 
 - Churches and ministries across 22 states and provinces, including a Canadian role with a CAD salary. All names, people and websites are invented, and websites and emails use `example.org`.
-- Every job type: full time, part time, internship, freelance and temporary, across six categories.
+- Every job type: full time, part time, internship, freelance and temporary, across seven categories (including Other).
 - Most apply by email, and six send people to the church's own application page, so both Apply behaviours show.
 - Salaries by the year, month or hour; featured listings; three remote roles; one position marked filled; and PDFs attached to three listings (generated when the site is built).
 - Descriptions with an introduction, "What you will do", "What we are looking for", "What we offer", "About" and "How to apply" sections, from a long Lead Pastor posting to short part-time ones.

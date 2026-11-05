@@ -54,6 +54,7 @@ add_action(
 		if ( is_wp_error( $terms ) || ! $terms ) {
 			return;
 		}
+		$terms = wpjm_cs_other_last( $terms );
 
 		echo '<details class="wpjm-drawer wpjm-drawer--categories">';
 		echo '<summary>' . esc_html__( 'Category', 'wpjm-custom-styles' ) . '<span class="wpjm-drawer__hint"></span></summary>';
@@ -69,4 +70,53 @@ add_action(
 		echo '</ul></div></details>';
 	},
 	22
+);
+
+// ---------------------------------------------------------------------------
+// An "Other" category, listed last
+// ---------------------------------------------------------------------------
+
+/**
+ * Moves the "Other" category to the end of a list of terms, so it is not sorted
+ * into the middle alphabetically. Used by the sidebar drawer and the form.
+ */
+function wpjm_cs_other_last( $terms ) {
+	if ( ! is_array( $terms ) ) {
+		return $terms;
+	}
+
+	$other = [];
+	$rest  = [];
+	foreach ( $terms as $term ) {
+		if ( is_object( $term ) && 'other' === $term->slug ) {
+			$other[] = $term;
+		} else {
+			$rest[] = $term;
+		}
+	}
+
+	return array_merge( $rest, $other );
+}
+
+// Create the "Other" category once, if categories are in use and it is not there.
+// A marker is saved, so deleting it later in Job Listings > Job categories sticks.
+add_action(
+	'init',
+	function () {
+		if ( get_option( 'wpjm_cs_other_category_created' ) || ! get_option( 'job_manager_enable_categories' ) ) {
+			return;
+		}
+
+		$taxonomy = WP_Job_Manager_Post_Types::TAX_LISTING_CATEGORY;
+		if ( ! taxonomy_exists( $taxonomy ) ) {
+			return;
+		}
+
+		if ( ! term_exists( 'other', $taxonomy ) ) {
+			wp_insert_term( 'Other', $taxonomy, [ 'slug' => 'other' ] );
+		}
+
+		update_option( 'wpjm_cs_other_category_created', 1 );
+	},
+	20
 );
