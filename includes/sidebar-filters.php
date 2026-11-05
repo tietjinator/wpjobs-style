@@ -194,3 +194,18 @@ add_filter(
 	10,
 	3
 );
+
+// "Filter" bar for small screens. Under 900px the sidebar becomes a block above
+// the results, which pushes the listings far down the page, so it is folded away
+// behind this bar and starts closed. On wider screens the bar is hidden and the
+// sidebar is always shown. js/sidebar.js opens and closes it; the plugin's own
+// form is not changed or moved.
+add_action(
+	'job_manager_job_filters_before',
+	function () {
+		echo '<button type="button" class="wpjm-filter-toggle" aria-expanded="false">';
+		echo '<span class="wpjm-filter-toggle__label">' . esc_html__( 'Filter', 'wpjm-custom-styles' ) . '</span>';
+		echo '<span class="wpjm-filter-toggle__hint"></span>';
+		echo '</button>';
+	}
+);

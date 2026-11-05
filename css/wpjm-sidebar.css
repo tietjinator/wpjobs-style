@@ -19,7 +19,7 @@
 	/* Width of the whole filters + results block on desktop. Breaks out of the
 	   theme's content column and centres itself. Use e.g. 1440px for a fixed
 	   width, or 100% to stay inside the theme's column. */
-	--wpjm-listings-width: 80vw;
+	--wpjm-listings-width: min(80vw, 1440px);
 	/* How far the Sort by control sits above the filters and results. Lower it
 	   to move the dropdown down, raise it to move it up, until it lines up with
 	   the bottom of your page heading ("Jobs"). */
@@ -486,4 +486,84 @@ body form.job_filters .wpjm-checklist__count {
 	margin-left: auto;
 	font-size: var(--wpjm-fs-small);
 	color: var(--wpjm-muted);
+}
+
+/* ---------- "Filter" bar on small screens ----------
+   includes/sidebar-filters.php prints the bar before the form, and js/sidebar.js
+   adds .wpjm-filters-open to the listings wrapper when it is opened. Closed to
+   start with. On wider screens the bar is hidden and the sidebar always shows. */
+body div.job_listings > .wpjm-filter-toggle {
+	display: none;
+}
+
+@media (max-width: 899px) {
+	body div.job_listings > .wpjm-filter-toggle {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		margin: 0 0 12px;
+		padding: 14px 18px;
+		font-family: inherit;
+		text-align: left;
+		color: var(--wpjm-muted);
+		background: var(--wpjm-surface);
+		border: 1px solid var(--wpjm-border);
+		border-radius: var(--wpjm-radius);
+		cursor: pointer;
+	}
+
+	body div.job_listings > .wpjm-filter-toggle .wpjm-filter-toggle__label {
+		font-size: var(--wpjm-fs-label);
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		line-height: 1.3;
+		text-transform: uppercase;
+	}
+
+	body div.job_listings > .wpjm-filter-toggle .wpjm-filter-toggle__hint {
+		margin: 0 12px 0 auto;
+		font-size: var(--wpjm-fs-small);
+		font-weight: 500;
+		color: var(--wpjm-accent);
+	}
+
+	/* The caret, down when closed and up when open, like the drawers. */
+	body div.job_listings > .wpjm-filter-toggle::after {
+		content: "";
+		width: 7px;
+		height: 7px;
+		margin: -4px 2px 0 0;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(45deg);
+		transition: transform 0.15s ease, margin 0.15s ease;
+	}
+
+	body div.job_listings.wpjm-filters-open > .wpjm-filter-toggle {
+		margin-bottom: 0;
+		background: var(--wpjm-drawer-bg);
+		border-radius: var(--wpjm-radius) var(--wpjm-radius) 0 0;
+	}
+
+	body div.job_listings.wpjm-filters-open > .wpjm-filter-toggle::after {
+		margin-top: 4px;
+		transform: rotate(-135deg);
+	}
+
+	body div.job_listings > .wpjm-filter-toggle:focus-visible {
+		outline: 2px solid var(--wpjm-accent);
+		outline-offset: -2px;
+	}
+
+	/* The filters themselves: hidden until the bar is opened, then joined to it. */
+	body div.job_listings:has(> .wpjm-filter-toggle) > form.job_filters {
+		display: none;
+	}
+
+	body div.job_listings.wpjm-filters-open > form.job_filters {
+		display: flex;
+		margin-top: 0;
+		border-top: 0;
+		border-radius: 0 0 var(--wpjm-radius) var(--wpjm-radius);
+	}
 }
