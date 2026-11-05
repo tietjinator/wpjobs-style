@@ -1,0 +1,248 @@
+/*
+ * Sidebar layout for the [jobs] shortcode.
+ *
+ * div.job_listings is the wrapper the plugin outputs. Its children are:
+ *   form.job_filters        (search, location, remote, category, types, sort)
+ *   ul.job_listings         (results)
+ *   a.load_more_jobs / nav.job-manager-pagination
+ * so a two-column grid on the wrapper is all that is needed, no template
+ * overrides. Only wrappers that contain a filter form get the layout, so
+ * [jobs show_filters="false"] and widgets are untouched.
+ */
+
+:root {
+	--wpjm-sidebar-width: 290px;
+	--wpjm-sidebar-gap: 28px;
+	/* Raise this if you have a sticky site header. */
+	--wpjm-sidebar-top: 24px;
+}
+
+/* ---------- Layout ---------- */
+@media (min-width: 900px) {
+	body div.job_listings:has(> form.job_filters) {
+		display: grid;
+		grid-template-columns: var(--wpjm-sidebar-width) minmax(0, 1fr);
+		column-gap: var(--wpjm-sidebar-gap);
+		align-items: start;
+	}
+
+	body div.job_listings > form.job_filters {
+		grid-column: 1;
+		grid-row: 1 / span 20;
+		position: sticky;
+		top: var(--wpjm-sidebar-top);
+		margin: 0;
+		max-height: calc(100vh - var(--wpjm-sidebar-top) * 2);
+		overflow-y: auto;
+	}
+
+	body div.job_listings > ul.job_listings,
+	body div.job_listings > a.load_more_jobs,
+	body div.job_listings > nav.job-manager-pagination {
+		grid-column: 2;
+	}
+}
+
+/* ---------- Sidebar card ---------- */
+body form.job_filters {
+	background: var(--wpjm-surface);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+	padding: 0;
+}
+
+body form.job_filters .search_jobs {
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+}
+
+/* Cancel the plugin's floated half-width columns and hidden labels. */
+/* :is() raises specificity above the plugin's `.search_jobs div.search_*` rules. */
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort) {
+	float: none;
+	width: 100%;
+	clear: none;
+	padding: 16px 18px;
+	border-bottom: 1px solid var(--wpjm-border);
+}
+
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort) label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wpjm-muted);
+}
+
+/* The plugin's `<div style="clear: both">` spacer. */
+body form.job_filters .search_jobs > div[style] {
+	display: none;
+}
+
+body form.job_filters input[type="text"],
+body form.job_filters select {
+	padding: 0.55em 0.7em;
+}
+
+body form.job_filters input[type="text"],
+body form.job_filters select,
+body form.job_filters .select2-container {
+	width: 100% !important;
+	box-sizing: border-box;
+}
+
+/* ---------- Order of the groups ---------- */
+body form.job_filters .search_keywords { order: 1; }
+body form.job_filters .search_location { order: 2; }
+body form.job_filters .search_remote_position { order: 3; }
+body form.job_filters .search_categories { order: 4; }
+body form.job_filters ul.job_types { order: 5; }
+body form.job_filters .search_sort { order: 6; }
+body form.job_filters .search_submit { order: 7; }
+
+/* Remote toggle: label sits beside the checkbox */
+body form.job_filters .search_jobs div.search_remote_position {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+body form.job_filters .search_jobs div.search_remote_position input {
+	width: auto !important;
+	margin: 0;
+}
+
+body form.job_filters .search_jobs div.search_remote_position label,
+body form.job_filters .search_jobs div.search_remote_position label#remote_position_label {
+	display: inline;
+	margin: 0;
+	font-size: 0.95em;
+	font-weight: 600;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--wpjm-text);
+}
+
+/* ---------- Job type checklist ---------- */
+body form.job_filters ul.job_types {
+	list-style: none;
+	margin: 0;
+	padding: 16px 18px;
+	font-size: 1em;
+	background: transparent;
+	border-top: 0;
+	border-bottom: 1px solid var(--wpjm-border);
+}
+
+body form.job_filters ul.job_types::before {
+	content: "Job type";
+	display: block;
+	margin-bottom: 8px;
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wpjm-muted);
+}
+
+body form.job_filters ul.job_types li {
+	float: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body form.job_filters ul.job_types label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 0;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+body form.job_filters ul.job_types label input {
+	order: -2;
+	width: auto !important;
+	margin: 0;
+}
+
+body form.job_filters ul.job_types label::after {
+	/* Colour dot, matched to the job type colours in wpjm-custom.css. */
+	content: "";
+	order: -1;
+	flex: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--wpjm-muted);
+}
+
+body form.job_filters ul.job_types label.full-time::after { background: var(--wpjm-type-full-time); }
+body form.job_filters ul.job_types label.part-time::after { background: var(--wpjm-type-part-time); }
+body form.job_filters ul.job_types label.internship::after { background: var(--wpjm-type-internship); }
+body form.job_filters ul.job_types label.freelance::after { background: var(--wpjm-type-freelance); }
+body form.job_filters ul.job_types label.temporary::after { background: var(--wpjm-type-temporary); }
+
+/* ---------- Submit + results summary ---------- */
+body form.job_filters .search_jobs div.search_submit {
+	border-bottom: 0;
+}
+
+body form.job_filters .search_submit input[type="submit"] {
+	width: 100%;
+	padding: 0.7em 1em;
+}
+
+body form.job_filters .showing_jobs {
+	padding: 12px 18px;
+	background: var(--wpjm-surface-alt);
+	border-top: 1px solid var(--wpjm-border);
+	border-radius: 0 0 var(--wpjm-radius) var(--wpjm-radius);
+	font-size: 0.85em;
+	color: var(--wpjm-muted);
+}
+
+body form.job_filters .showing_jobs a {
+	float: none;
+	color: var(--wpjm-accent);
+	font-weight: 600;
+}
+
+/* ---------- Small screens: filters stack above the results ---------- */
+@media (max-width: 899px) {
+	body div.job_listings > form.job_filters {
+		position: static;
+		max-height: none;
+		margin-bottom: var(--wpjm-gap);
+	}
+
+	/* Two-up for the short fields so the stack is not endless. */
+	body form.job_filters .search_jobs {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	body form.job_filters .search_jobs > div,
+	body form.job_filters ul.job_types {
+		flex: 1 1 100%;
+	}
+
+	body form.job_filters .search_jobs div.search_keywords,
+	body form.job_filters .search_jobs div.search_location {
+		flex: 1 1 50%;
+		width: 50%;
+		box-sizing: border-box;
+	}
+}
+
+@media (max-width: 560px) {
+	body form.job_filters .search_jobs div.search_keywords,
+	body form.job_filters .search_jobs div.search_location {
+		flex-basis: 100%;
+		width: 100%;
+	}
+}
