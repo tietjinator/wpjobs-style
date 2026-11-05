@@ -139,6 +139,30 @@ function wpjm_cs_abbreviate_state( $state ) {
 }
 
 /**
+ * Full name for a code, for example "TX" gives "Texas". Returns the input
+ * unchanged if it is not in the list.
+ */
+function wpjm_cs_state_name( $code ) {
+	static $names = null;
+
+	if ( null === $names ) {
+		$names = [];
+		foreach ( wpjm_cs_state_map() as $name => $abbr ) {
+			// The first name listed for a code is the canonical one.
+			if ( ! isset( $names[ $abbr ] ) ) {
+				$pretty          = ucwords( $name );
+				$pretty          = str_replace( [ ' And ', ' Of ', 'U.s.' ], [ ' and ', ' of ', 'U.S.' ], $pretty );
+				$names[ $abbr ] = $pretty;
+			}
+		}
+	}
+
+	$code = strtoupper( trim( (string) $code ) );
+
+	return isset( $names[ $code ] ) ? $names[ $code ] : $code;
+}
+
+/**
  * Combine the parts, for example "Austin, TX 78701". Filterable.
  */
 function wpjm_cs_format_location( $city, $state, $postcode ) {
@@ -165,10 +189,23 @@ function wpjm_cs_save_combined_location( $job_id, $city, $state, $postcode ) {
 	if ( '' !== $city || '' !== $state || '' !== $postcode ) {
 		// Store the short code, so the form and admin box show "TX" next time.
 		update_post_meta( $job_id, '_job_state', $state );
+
+		// WP Job Manager's Location search also looks in `geolocation_state_long`.
+		// Geolocation is off, so fill it ourselves with the full name. Searching
+		// "Texas" then finds the listing even when it has no city.
+		if ( '' !== $state ) {
+			update_post_meta( $job_id, 'geolocation_state_long', wpjm_cs_state_name( $state ) );
+			update_post_meta( $job_id, 'geolocation_state_short', $state );
+		} else {
+			delete_post_meta( $job_id, 'geolocation_state_long' );
+			delete_post_meta( $job_id, 'geolocation_state_short' );
+		}
 		update_post_meta( $job_id, '_job_location', wpjm_cs_format_location( $city, $state, $postcode ) );
 		update_post_meta( $job_id, '_wpjm_cs_location_split', 1 );
 	} elseif ( get_post_meta( $job_id, '_wpjm_cs_location_split', true ) ) {
 		update_post_meta( $job_id, '_job_location', '' );
+		delete_post_meta( $job_id, 'geolocation_state_long' );
+		delete_post_meta( $job_id, 'geolocation_state_short' );
 	}
 }
 
@@ -286,8 +323,9 @@ add_action(
 // Search: keep "Texas" working now that listings store "TX".
 // ---------------------------------------------------------------------------
 
-// The plugin matches the Location box against the saved text. If someone types
-// a full state name, also search for its code, written ", TX" (the way it
+// Backup for listings saved before the full state name was stored (see
+// wpjm_cs_save_combined_location). The plugin matches the Location box against
+// the saved text. If someone types a full state name, also search for its code, written ", TX" (the way it
 // appears after the city) so a short code does not match inside other words.
 add_filter(
 	'job_manager_get_listings_args',
