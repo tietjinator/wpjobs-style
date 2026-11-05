@@ -107,9 +107,10 @@ body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, 
 body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_state, .search_categories, .search_submit, .search_reset) label {
 	display: block;
 	margin-bottom: 6px;
-	font-size: 0.8em;
+	font-size: var(--wpjm-fs-label);
 	font-weight: 700;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.06em;
+	line-height: 1.3;
 	text-transform: uppercase;
 	color: var(--wpjm-muted);
 }
@@ -164,16 +165,17 @@ body form.job_filters .wpjm-drawer > summary {
 	padding: 16px 18px;
 	cursor: pointer;
 	list-style: none;
-	font-size: 0.8em;
+	font-size: var(--wpjm-fs-label);
 	font-weight: 700;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.06em;
+	line-height: 1.3;
 	text-transform: uppercase;
 	color: var(--wpjm-muted);
 }
 
 body form.job_filters .wpjm-drawer__hint {
 	margin: 0 12px 0 auto;
-	font-size: 1.1em;
+	font-size: var(--wpjm-fs-small);
 	font-weight: 500;
 	letter-spacing: 0;
 	text-transform: none;
@@ -235,7 +237,7 @@ body form.job_filters .wpjm-drawer ul.job_types {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	font-size: 1em;
+	font-size: var(--wpjm-fs-body);
 	background: transparent;
 	border: 0;
 }
@@ -256,6 +258,7 @@ body form.job_filters .wpjm-drawer .search_remote_position input {
 }
 
 body form.job_filters .wpjm-drawer .search_remote_position label {
+	font-size: var(--wpjm-fs-body);
 	display: inline;
 	margin: 0;
 	font-weight: 500;
@@ -269,6 +272,7 @@ body form.job_filters ul.job_types li {
 }
 
 body form.job_filters ul.job_types label {
+	font-size: var(--wpjm-fs-body);
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -393,9 +397,9 @@ body .wpjm-sort-bar {
 }
 
 body .wpjm-sort-bar label {
-	font-size: 0.8em;
+	font-size: var(--wpjm-fs-label);
 	font-weight: 700;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
 	color: var(--wpjm-muted);
 }
@@ -427,6 +431,7 @@ body form.job_filters > .search_remote_position input {
 }
 
 body form.job_filters > .search_remote_position label {
+	font-size: var(--wpjm-fs-body);
 	display: inline;
 	margin: 0;
 	font-weight: 500;

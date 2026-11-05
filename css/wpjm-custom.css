@@ -45,6 +45,16 @@
 	--wpjm-featured-bg: #fdf3e5;
 	--wpjm-featured-border: var(--twc-gold);
 	--wpjm-radius: 8px;
+
+	/* Type scale. rem, so it does not depend on how large the theme sets its
+	   body text (many themes use 20px or more, which made the listings huge). */
+	--wpjm-fs-label: 0.75rem;   /* 12px  small uppercase labels, pills */
+	--wpjm-fs-small: 0.8125rem; /* 13px  dates, hints, help text */
+	--wpjm-fs-body: 0.9375rem;  /* 15px  most text, buttons, checkbox labels */
+	--wpjm-fs-input: 0.9375rem; /* 15px  form fields; 16px under 900px, see below */
+	--wpjm-fs-title: 1.125rem;  /* 18px  listing titles, company name */
+	--wpjm-fs-reading: 1rem;    /* 16px  job description text */
+	--wpjm-lh: 1.5;
 	--wpjm-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 	--wpjm-gap: 16px;
 
@@ -62,6 +72,13 @@
 	--jm-ui-accent-color-contrast: var(--wpjm-accent-contrast);
 	--jm-ui-danger-color: var(--twc-scarlet);
 	--jm-ui-radius: 4px;
+}
+
+/* Phones and tablets zoom the page when a field under 16px is tapped. */
+@media (max-width: 899px) {
+	:root {
+		--wpjm-fs-input: 1rem;
+	}
 }
 
 /* ==========================================================================
@@ -153,16 +170,94 @@ body ul.job_listings li.job_listing a:focus {
 	background: transparent;
 }
 
-/* Company logo */
-body ul.job_listings li.job_listing a img.company_logo {
-	border-radius: 6px;
-	object-fit: contain;
+/* No company logo or placeholder icon beside the title. */
+body ul.job_listings li.job_listing a img.company_logo,
+body .widget ul.job_listings li.job_listing .image {
+	display: none;
+}
+
+/* Row layout. The plugin floats three columns by percentage, which wraps badly
+   once text is a sensible size. Use a grid instead: title and company, then
+   location, then job type and date. On phones the location drops under the title. */
+body div.job_listings > ul.job_listings li.job_listing > a {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(130px, 24%) minmax(110px, 18%);
+	grid-template-areas: "position location meta";
+	column-gap: var(--wpjm-gap);
+	align-items: start;
+	padding: 14px 18px;
+	line-height: var(--wpjm-lh);
+}
+
+body div.job_listings > ul.job_listings li.job_listing > a div.position {
+	grid-area: position;
+	float: none;
+	width: auto;
+	padding: 0;
+}
+
+body div.job_listings > ul.job_listings li.job_listing > a div.location {
+	grid-area: location;
+	float: none;
+	width: auto;
+	padding: 0;
+	text-align: left;
+}
+
+body div.job_listings > ul.job_listings li.job_listing > a ul.meta {
+	grid-area: meta;
+	float: none;
+	width: auto;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	text-align: right;
+}
+
+/* Stack the location under the title when the list itself is narrow. This
+   looks at the width of the listings column, not the screen, so it also
+   applies on a laptop where the sidebar takes up part of the page. */
+body div.job_listings > ul.job_listings {
+	container: wpjm-list / inline-size;
+}
+
+@container wpjm-list (max-width: 640px) {
+	body div.job_listings > ul.job_listings li.job_listing > a {
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas:
+			"position meta"
+			"location location";
+		row-gap: 6px;
+		padding: 12px 14px;
+	}
 }
 
 /* Title / company / location / meta columns */
 body ul.job_listings li.job_listing div.position h3 {
-	font-size: 1.05em;
+	margin: 0;
+	font-size: var(--wpjm-fs-title);
 	font-weight: 600;
+	line-height: 1.3;
+}
+
+body ul.job_listings li.job_listing div.position .company {
+	margin-top: 2px;
+	font-size: var(--wpjm-fs-body);
+}
+
+body ul.job_listings li.job_listing div.position .company .tagline {
+	font-size: var(--wpjm-fs-small);
+}
+
+body ul.job_listings li.job_listing div.location {
+	font-size: var(--wpjm-fs-body);
+}
+
+/* The date under the job type. */
+body ul.job_listings li.job_listing .meta li.date {
+	font-size: var(--wpjm-fs-small);
 }
 
 body ul.job_listings li.job_listing div.position .company,
@@ -175,11 +270,10 @@ body ul.job_listings li.job_listing .meta {
    (colours are set per type in section 5). */
 body ul.job_listings li.job_listing .meta .job-type {
 	display: inline-block;
-	margin-left: auto;
 	padding: 2px 10px;
 	border-radius: 999px;
 	background: color-mix(in srgb, var(--wpjm-c) 18%, #fff);
-	font-size: 0.8em;
+	font-size: var(--wpjm-fs-label);
 	font-weight: 600;
 	line-height: 1.6;
 }
@@ -394,7 +488,7 @@ body .jm-dashboard-table .jm-dashboard-header {
 	font-weight: 600;
 	color: var(--wpjm-muted);
 	text-transform: uppercase;
-	font-size: 0.75em;
+	font-size: var(--wpjm-fs-label);
 	letter-spacing: 0.04em;
 }
 
@@ -487,4 +581,132 @@ body form.job-manager-form input[type="submit"].button:hover,
 body .job_listing_preview_title input.button:hover,
 body form.job_filters .search_submit input[type="submit"]:hover {
 	background: var(--wpjm-accent-hover);
+}
+
+/* ==========================================================================
+   Type scale
+   Sizes for everything outside the listing rows (those are in section 4 and
+   the sidebar sizes are in wpjm-sidebar.css). All use the --wpjm-fs-* tokens
+   at the top, so changing the scale in one place resizes the whole layout.
+   Form fields, selects and buttons are set to inherit the theme font: the
+   browser default is a small system font that did not match the page.
+   ========================================================================== */
+
+/* Fields and buttons in the filters, the submit form and the apply box. */
+body form.job_filters input[type="text"],
+body form.job_filters select,
+body form.job-manager-form input.input-text,
+body form.job-manager-form textarea,
+body form.job-manager-form select,
+body .wpjm-sort-bar select {
+	font-family: inherit;
+	font-size: var(--wpjm-fs-input);
+	line-height: 1.4;
+}
+
+body form.job_filters input[type="submit"],
+body form.job_filters button,
+body form.job-manager-form input[type="submit"],
+body .job_listing_preview_title input.button,
+body .job_application.application .application_button {
+	font-family: inherit;
+	font-size: var(--wpjm-fs-body);
+	line-height: 1.3;
+}
+
+/* Notices */
+body .job-manager-message,
+body .job-manager-info,
+body .job-manager-error {
+	font-size: var(--wpjm-fs-body);
+	line-height: var(--wpjm-lh);
+}
+
+/* "Load more listings" and pagination */
+body a.load_more_jobs,
+body nav.job-manager-pagination {
+	font-size: var(--wpjm-fs-body);
+}
+
+/* Single job page */
+body .single_job_listing ul.job-listing-meta {
+	font-size: var(--wpjm-fs-body);
+}
+
+body .single_job_listing .company .name,
+body .single_job_listing .company .name strong {
+	font-size: var(--wpjm-fs-title);
+	line-height: 1.3;
+}
+
+body .single_job_listing .company .name a.website,
+body .single_job_listing .company .name a.company_twitter,
+body .single_job_listing .company .tagline {
+	font-size: var(--wpjm-fs-body);
+}
+
+body .single_job_listing .job_description {
+	font-size: var(--wpjm-fs-reading);
+}
+
+body .job_application.application .application_details {
+	font-size: var(--wpjm-fs-body);
+}
+
+/* Submit and edit form */
+body form.job-manager-form fieldset label {
+	font-size: var(--wpjm-fs-body);
+}
+
+body form.job-manager-form small.description {
+	font-size: var(--wpjm-fs-small);
+	line-height: var(--wpjm-lh);
+}
+
+/* Dashboard */
+body .jm-dashboard-table,
+body .jm-dashboard-action {
+	font-size: var(--wpjm-fs-body);
+}
+
+/* Single job page: the job type as the same soft pill used in the listings
+   (the plugin default is white text on a bright block). */
+body .single_job_listing ul.job-listing-meta li.job-type {
+	--wpjm-c: var(--twc-charcoal);
+	--wpjm-c-mix: 45%;
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--wpjm-c) 18%, #fff);
+	color: color-mix(in srgb, var(--wpjm-c) var(--wpjm-c-mix), var(--twc-deep-navy));
+	font-size: var(--wpjm-fs-label);
+	line-height: 1.5;
+}
+body .single_job_listing ul.job-listing-meta li.job-type.full-time { --wpjm-c: var(--wpjm-type-full-time); }
+body .single_job_listing ul.job-listing-meta li.job-type.part-time { --wpjm-c: var(--wpjm-type-part-time); }
+body .single_job_listing ul.job-listing-meta li.job-type.internship { --wpjm-c: var(--wpjm-type-internship); }
+body .single_job_listing ul.job-listing-meta li.job-type.freelance { --wpjm-c: var(--wpjm-type-freelance); }
+body .single_job_listing ul.job-listing-meta li.job-type.temporary {
+	--wpjm-c: var(--wpjm-type-temporary);
+	--wpjm-c-mix: 70%;
+}
+
+/* Company box. The plugin sizes the logo and the text indent in em, so the
+   whole box has to use one font size or the text runs under the logo. */
+body .single_job_listing .company {
+	font-size: var(--wpjm-fs-body);
+}
+
+body .single_job_listing .company .company_header {
+	margin-left: 3.75em;
+}
+
+body .single_job_listing .company .name,
+body .single_job_listing .company .tagline {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+/* "Sign in" / "Sign out" on the submit form */
+body form.job-manager-form .account-sign-in a {
+	font-size: var(--wpjm-fs-body);
 }

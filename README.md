@@ -89,6 +89,21 @@ The colours come from the Wesleyan brand refresh guide and are defined once at t
 
 Two accessibility choices follow from the palette. White text on Bright Blue is only 2.7:1, so buttons and links use Navy (9.6:1) and Bright Blue is kept for accents. Celery, Seafoam and Gold are about 2:1 as text on white, so the job type pills use a darker mix of each colour (45% of the colour, 55% Deep Navy; 70% for Scarlet) on a light tint of it, which gives 4.9:1 or better. The coloured dots in the sidebar use the pure brand colours. The Job type drawer header is `#e7e7e7`, which you asked for and is not a brand colour. Change `--wpjm-drawer-bg` in `css/wpjm-sidebar.css` to `var(--twc-milky)` or `var(--twc-hazy)` to bring it into the palette.
 
+## Type scale
+
+All sizes come from a few tokens at the top of `css/wpjm-custom.css` (`--wpjm-fs-*`), in `rem`, so they no longer depend on how large the theme sets its text (many themes use 20px or more, which made the listings huge and the form fields tiny by comparison).
+
+| Token | Size | Used for |
+|---|---|---|
+| `--wpjm-fs-label` | 12px | Sidebar labels, drawer header, job type pills, "Sort by" |
+| `--wpjm-fs-small` | 13px | Posted dates, the drawer hint, help text, tagline |
+| `--wpjm-fs-body` | 15px | Company, location, checkbox labels, buttons, notices, form labels |
+| `--wpjm-fs-input` | 15px (16px under 900px) | Form fields. Phones zoom the page on fields smaller than 16px |
+| `--wpjm-fs-title` | 18px | Listing titles, company name on the job page |
+| `--wpjm-fs-reading` | 16px | Job description |
+
+Other changes made with it: form fields and buttons use the theme font instead of the browser default, the company logo/placeholder icon is hidden in the listing rows, and each row is a grid (title and company, location, then job type and date) instead of the plugin's floated percentage columns. The row switches to a stacked layout when the listings column is narrower than 640px, which happens on phones and also on a laptop with the sidebar open, so dates no longer wrap.
+
 ## Customising
 
 Start with the tokens at the top of `css/wpjm-custom.css` (colours, radius, spacing, job type colours). The file is split into numbered sections, one per area: notices, search filters, listings, single page, submit form, dashboard, pagination, widgets. Put site-specific rules in section 12.
