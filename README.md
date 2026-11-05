@@ -19,6 +19,7 @@ What it does:
 | `css/wpjm-sidebar.css` | The sidebar layout, Job type drawer and Sort by control. |
 | `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, and keeps the drawer hint up to date. |
 | `includes/sidebar-filters.php` | Sort by, the Job type drawer markup, the Reset Filters button, and removing the "Showing N jobs" message and RSS link. |
+| `includes/submit-form.php` | The Post a Job form's wording ("Church / Company") and which company fields are removed. |
 | `includes/location-fields.php` | City / State / ZIP fields, state shortening, the State / Province filter, and the location search rules. |
 | `includes/no-geolocation.php` | Turns off Google geolocation. |
 | `includes/compat.php` | Admin warning when WP Job Manager is a newer major version than this was built for. |
@@ -116,6 +117,10 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 - The Preview step is a soft title bar joined to a light bordered box, with Edit listing (outlined) and Submit Listing (filled) side by side.
 - Notices ("Job listed successfully") fit the page column. The plugin padded them without including the padding in their width, so they stuck out.
 - Preview and Submit Listing fill the row on phones.
+- On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`; use `80vw` to match the Jobs page exactly or `100%` to stay in the theme's column).
+- Checkbox fields such as Remote Position show their help text to the right of the box instead of underneath.
+- Wording: "Company Details", "Company name" and the name placeholder become "Church / Company ...", set in `includes/submit-form.php`. This applies on the public site only, not in the admin.
+- Removed from the form: X / Twitter username, tagline, video and logo upload. Because no listing gets a logo now, the placeholder icon in the company box on the job page and preview is hidden. This only stops the form asking for them. Listings that already have those values keep them, and the admin edit screen still shows the fields. To bring one back, return a shorter list from the `wpjm_cs_removed_company_fields` filter.
 
 The form was tested end to end in a browser: filling it in, previewing, and publishing. Typing "texas" in State saved `TX`, the combined location `Austin, TX 78701`, and the State / Province dropdown count updated.
 
@@ -181,6 +186,7 @@ The plugin only loads its CSS on pages it detects as job pages. If you use the s
 | `wpjm_cs_abbreviate_state` | Return `false` to keep state names as typed |
 | `wpjm_cs_state_terms_also_searched_as_text` | Names that should also be searched as plain text (default: `washington`) |
 | `wpjm_cs_format_location` | Change the combined location text |
+| `wpjm_cs_removed_company_fields` | Which company fields are removed from the Post a Job form (default: Twitter, tagline, video, logo) |
 
 ## Keeping up with WP Job Manager updates
 

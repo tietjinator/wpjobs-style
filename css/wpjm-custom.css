@@ -48,6 +48,11 @@
 
 	/* Type scale. rem, so it does not depend on how large the theme sets its
 	   body text (many themes use 20px or more, which made the listings huge). */
+	/* Width of the Post a Job form and its preview on screens 900px and wider.
+	   It breaks out of the theme's narrow column and centres itself. Use 80vw to
+	   match the Jobs page, or 100% to stay inside the theme's column. */
+	--wpjm-form-width: min(80vw, 1000px);
+
 	--wpjm-fs-label: 0.75rem;   /* 12px  small uppercase labels, pills */
 	--wpjm-fs-small: 0.8125rem; /* 13px  dates, hints, help text */
 	--wpjm-fs-body: 0.9375rem;  /* 15px  most text, buttons, checkbox labels */
@@ -832,6 +837,49 @@ body .job_listing_preview_title h2 {
 		margin: 0 0 8px;
 		float: none;
 	}
+}
+
+/* Wider form and preview. The plugin's markup is a form directly inside the
+   theme's column, so size it and centre it on the page, as the Jobs page does. */
+@media (min-width: 900px) {
+	body form#submit-job-form,
+	body form#job_preview {
+		width: var(--wpjm-form-width);
+		max-width: 100vw;
+		margin-inline: calc(50% - var(--wpjm-form-width) / 2);
+	}
+}
+
+/* Checkbox fields (Remote Position): the help text goes to the right of the
+   box instead of underneath it. */
+body form.job-manager-form fieldset.fieldset-type-checkbox div.field {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	/* As tall as a text field, so the label beside it lines up with the box. */
+	min-height: 40px;
+}
+
+body form.job-manager-form fieldset.fieldset-type-checkbox input[type="checkbox"] {
+	flex: none;
+	width: auto;
+	margin: 0;
+}
+
+body form.job-manager-form fieldset.fieldset-type-checkbox small.description {
+	display: inline;
+	margin: 0;
+}
+
+/* The logo upload is gone from the form, so no listing has a logo: hide the
+   placeholder icon in the company box on the job page and the preview, and give
+   the text back the space reserved for it. */
+body .single_job_listing .company img.company_logo {
+	display: none;
+}
+
+body .single_job_listing .company .company_header {
+	margin-left: 0;
 }
 
 /* ==========================================================================
