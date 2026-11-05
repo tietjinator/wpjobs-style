@@ -19,6 +19,126 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * State and province names mapped to their two-letter codes (US states, DC,
+ * US territories and Canadian provinces). Lower-case keys. Add or remove
+ * entries with the `wpjm_cs_state_map` filter.
+ */
+function wpjm_cs_state_map() {
+	static $map = null;
+
+	if ( null === $map ) {
+		$map = [
+		'alabama' => 'AL',
+		'alaska' => 'AK',
+		'arizona' => 'AZ',
+		'arkansas' => 'AR',
+		'california' => 'CA',
+		'colorado' => 'CO',
+		'connecticut' => 'CT',
+		'delaware' => 'DE',
+		'florida' => 'FL',
+		'georgia' => 'GA',
+		'hawaii' => 'HI',
+		'idaho' => 'ID',
+		'illinois' => 'IL',
+		'indiana' => 'IN',
+		'iowa' => 'IA',
+		'kansas' => 'KS',
+		'kentucky' => 'KY',
+		'louisiana' => 'LA',
+		'maine' => 'ME',
+		'maryland' => 'MD',
+		'massachusetts' => 'MA',
+		'michigan' => 'MI',
+		'minnesota' => 'MN',
+		'mississippi' => 'MS',
+		'missouri' => 'MO',
+		'montana' => 'MT',
+		'nebraska' => 'NE',
+		'nevada' => 'NV',
+		'new hampshire' => 'NH',
+		'new jersey' => 'NJ',
+		'new mexico' => 'NM',
+		'new york' => 'NY',
+		'north carolina' => 'NC',
+		'north dakota' => 'ND',
+		'ohio' => 'OH',
+		'oklahoma' => 'OK',
+		'oregon' => 'OR',
+		'pennsylvania' => 'PA',
+		'rhode island' => 'RI',
+		'south carolina' => 'SC',
+		'south dakota' => 'SD',
+		'tennessee' => 'TN',
+		'texas' => 'TX',
+		'utah' => 'UT',
+		'vermont' => 'VT',
+		'virginia' => 'VA',
+		'washington' => 'WA',
+		'west virginia' => 'WV',
+		'wisconsin' => 'WI',
+		'wyoming' => 'WY',
+		'district of columbia' => 'DC',
+		'washington dc' => 'DC',
+		'washington d.c' => 'DC',
+		'washington, dc' => 'DC',
+		'puerto rico' => 'PR',
+		'guam' => 'GU',
+		'u.s. virgin islands' => 'VI',
+		'us virgin islands' => 'VI',
+		'virgin islands' => 'VI',
+		'american samoa' => 'AS',
+		'northern mariana islands' => 'MP',
+		'alberta' => 'AB',
+		'british columbia' => 'BC',
+		'manitoba' => 'MB',
+		'new brunswick' => 'NB',
+		'newfoundland and labrador' => 'NL',
+		'newfoundland' => 'NL',
+		'nova scotia' => 'NS',
+		'northwest territories' => 'NT',
+		'nunavut' => 'NU',
+		'ontario' => 'ON',
+		'prince edward island' => 'PE',
+		'quebec' => 'QC',
+		'québec' => 'QC',
+		'saskatchewan' => 'SK',
+		'yukon' => 'YT',
+		];
+	}
+
+	return apply_filters( 'wpjm_cs_state_map', $map );
+}
+
+/**
+ * "Texas" or "texas" becomes "TX". A value that is already a valid code is
+ * upper-cased ("tx" becomes "TX"). Anything else, such as a region outside the
+ * list, is left as typed. Return false from `wpjm_cs_abbreviate_state` to turn
+ * this off.
+ */
+function wpjm_cs_abbreviate_state( $state ) {
+	$state = trim( preg_replace( '/\s+/', ' ', (string) $state ) );
+
+	if ( '' === $state || ! apply_filters( 'wpjm_cs_abbreviate_state', true ) ) {
+		return $state;
+	}
+
+	$map   = wpjm_cs_state_map();
+	$clean = rtrim( $state, '.' );
+	$key   = strtolower( str_replace( '&', 'and', $clean ) );
+
+	if ( isset( $map[ $key ] ) ) {
+		return $map[ $key ];
+	}
+
+	if ( in_array( strtoupper( $clean ), array_values( $map ), true ) ) {
+		return strtoupper( $clean );
+	}
+
+	return $state;
+}
+
+/**
  * Combine the parts, for example "Austin, TX 78701". Filterable.
  */
 function wpjm_cs_format_location( $city, $state, $postcode ) {
@@ -39,10 +159,12 @@ function wpjm_cs_format_location( $city, $state, $postcode ) {
  */
 function wpjm_cs_save_combined_location( $job_id, $city, $state, $postcode ) {
 	$city     = sanitize_text_field( $city );
-	$state    = sanitize_text_field( $state );
+	$state    = wpjm_cs_abbreviate_state( sanitize_text_field( $state ) );
 	$postcode = sanitize_text_field( $postcode );
 
 	if ( '' !== $city || '' !== $state || '' !== $postcode ) {
+		// Store the short code, so the form and admin box show "TX" next time.
+		update_post_meta( $job_id, '_job_state', $state );
 		update_post_meta( $job_id, '_job_location', wpjm_cs_format_location( $city, $state, $postcode ) );
 		update_post_meta( $job_id, '_wpjm_cs_location_split', 1 );
 	} elseif ( get_post_meta( $job_id, '_wpjm_cs_location_split', true ) ) {
@@ -76,6 +198,7 @@ add_filter(
 			'label'       => __( 'State / Province', 'wpjm-custom-styles' ),
 			'type'        => 'text',
 			'required'    => false,
+			'description' => __( 'Full names are shortened automatically, for example Texas becomes TX.', 'wpjm-custom-styles' ),
 			'placeholder' => __( 'e.g. "TX"', 'wpjm-custom-styles' ),
 			'priority'    => $priority + 0.1,
 		];
@@ -157,4 +280,41 @@ add_action(
 		);
 	},
 	30
+);
+
+// ---------------------------------------------------------------------------
+// Search: keep "Texas" working now that listings store "TX".
+// ---------------------------------------------------------------------------
+
+// The plugin matches the Location box against the saved text. If someone types
+// a full state name, also search for its code, written ", TX" (the way it
+// appears after the city) so a short code does not match inside other words.
+add_filter(
+	'job_manager_get_listings_args',
+	function ( $args ) {
+		if ( empty( $args['search_location'] ) || ! apply_filters( 'wpjm_cs_abbreviate_state', true ) ) {
+			return $args;
+		}
+
+		$map   = wpjm_cs_state_map();
+		$terms = [];
+
+		foreach ( explode( ';', $args['search_location'] ) as $term ) {
+			$term = trim( $term );
+			if ( '' === $term ) {
+				continue;
+			}
+
+			$terms[] = $term;
+
+			$key = strtolower( $term );
+			if ( isset( $map[ $key ] ) ) {
+				$terms[] = ', ' . $map[ $key ];
+			}
+		}
+
+		$args['search_location'] = implode( '; ', $terms );
+
+		return $args;
+	}
 );
