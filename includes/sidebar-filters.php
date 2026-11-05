@@ -16,15 +16,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Sort options: key => [ label, orderby, order ].
- * The empty key is the default and leaves the shortcode's own ordering alone.
+ * The empty key is the default, selected when the page loads and after Reset.
  */
 function wpjm_cs_sort_options() {
 	return apply_filters(
 		'wpjm_cs_sort_options',
 		[
-			''           => [ __( 'Featured first', 'wpjm-custom-styles' ), null, null ],
-			'newest'     => [ __( 'Newest', 'wpjm-custom-styles' ), 'date', 'DESC' ],
-			'oldest'     => [ __( 'Oldest', 'wpjm-custom-styles' ), 'date', 'ASC' ],
+			''           => [ __( 'Newest first', 'wpjm-custom-styles' ), 'date', 'DESC' ],
+			'oldest'     => [ __( 'Oldest first', 'wpjm-custom-styles' ), 'date', 'ASC' ],
+			'featured'   => [ __( 'Featured first', 'wpjm-custom-styles' ), 'featured', 'DESC' ],
 			'title_asc'  => [ __( 'Title A to Z', 'wpjm-custom-styles' ), 'title', 'ASC' ],
 			'title_desc' => [ __( 'Title Z to A', 'wpjm-custom-styles' ), 'title', 'DESC' ],
 		]
@@ -68,14 +68,18 @@ add_filter(
 			return $args;
 		}
 
+		// Only requests from the filter form carry `form_data`, so listings without
+		// the form keep the shortcode's own ordering. An unknown or missing sort
+		// value falls back to the default option.
 		parse_str( $form_data, $fields );
 		$sort    = isset( $fields['sort'] ) && is_string( $fields['sort'] ) ? sanitize_key( $fields['sort'] ) : '';
 		$options = wpjm_cs_sort_options();
+		$sort    = isset( $options[ $sort ] ) ? $sort : '';
 
-		if ( '' !== $sort && isset( $options[ $sort ] ) && $options[ $sort ][1] ) {
+		if ( ! empty( $options[ $sort ][1] ) ) {
 			$args['orderby'] = $options[ $sort ][1];
 			$args['order']   = $options[ $sort ][2];
-			// Honour the explicit sort instead of pinning featured listings on top.
+			// Honour the chosen sort instead of pinning featured listings on top.
 			$args['featured_first'] = false;
 		}
 
@@ -112,8 +116,8 @@ add_action(
  * and the remote checkbox earlier, inside the search block. We hide its copy of
  * the remote checkbox, capture the job types output, and print both inside the
  * drawer. Field names and ids are unchanged, so the plugin's JS (search on
- * change, Reset) keeps working. Drawer is open by default; return false from
- * the `wpjm_cs_types_drawer_open` filter to start it closed.
+ * change, Reset) keeps working. Drawer is closed by default; return true from
+ * the `wpjm_cs_types_drawer_open` filter to start it open.
  */
 function wpjm_cs_remote_enabled( $set = null ) {
 	static $enabled = false;
@@ -163,7 +167,7 @@ add_action(
 			return;
 		}
 
-		$open = apply_filters( 'wpjm_cs_types_drawer_open', true ) ? ' open' : '';
+		$open = apply_filters( 'wpjm_cs_types_drawer_open', false ) ? ' open' : '';
 
 		echo '<details class="wpjm-drawer"' . $open . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		// The hint (for example "2 of 5 · Remote") is filled in by js/sidebar.js.

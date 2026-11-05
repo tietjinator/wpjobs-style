@@ -20,9 +20,10 @@
 	   theme's content column and centres itself. Use e.g. 1440px for a fixed
 	   width, or 100% to stay inside the theme's column. */
 	--wpjm-listings-width: 80vw;
-	/* How far the Sort by control sits above the filters and results. Raise or
-	   lower it until it lines up with your page heading ("Jobs"). */
-	--wpjm-sort-lift: 28px;
+	/* How far the Sort by control sits above the filters and results. Lower it
+	   to move the dropdown down, raise it to move it up, until it lines up with
+	   the bottom of your page heading ("Jobs"). */
+	--wpjm-sort-lift: 14px;
 }
 
 /* ---------- Layout ---------- */
