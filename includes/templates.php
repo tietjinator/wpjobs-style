@@ -8,6 +8,7 @@
  * wins, as it does for any plugin template.
  *
  *   job-application.php                    Apply button: a direct link
+ *   account-signin.php                     Post a Job: no "Have an account?" prompt
  *   form-fields/term-multiselect-field.php Job category on the form: checkboxes
  */
 
@@ -20,6 +21,7 @@ add_filter(
 	function ( $template, $template_name ) {
 		$ours = [
 			'job-application.php'                    => 'templates/job-application.php',
+			'account-signin.php'                     => 'templates/account-signin.php',
 			'form-fields/term-multiselect-field.php' => 'templates/form-fields/term-multiselect-field.php',
 		];
 
