@@ -35,6 +35,7 @@ require_once __DIR__ . '/includes/submit-form.php';
 require_once __DIR__ . '/includes/job-page.php';
 require_once __DIR__ . '/includes/templates.php';
 require_once __DIR__ . '/includes/apply-button.php';
+require_once __DIR__ . '/includes/no-preview.php';
 require_once __DIR__ . '/includes/category-filter.php';
 require_once __DIR__ . '/includes/compat.php';
 
