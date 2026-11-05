@@ -2,7 +2,7 @@
  * Sidebar layout for the [jobs] shortcode.
  *
  * div.job_listings is the wrapper the plugin outputs. Its children are:
- *   form.job_filters        (search, location, job types, remote, category, buttons)
+ *   form.job_filters        (keywords or city, state, job type drawer, category, buttons)
  *   div.wpjm-sort-bar       (sort dropdown, added by this plugin)
  *   ul.job_listings         (results)
  *   a.load_more_jobs / nav.job-manager-pagination

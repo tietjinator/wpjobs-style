@@ -569,12 +569,7 @@ body .widget ul.job_listings li.job_listing {
 }
 
 /* ==========================================================================
-   12. Your overrides
-   Add anything site-specific below this line.
-   ========================================================================== */
-
-/* ==========================================================================
-   Button hover: Deep Navy
+   12. Button hover: Deep Navy
    ========================================================================== */
 body .job_application.application .application_button:hover,
 body form.job-manager-form input[type="submit"].button:hover,
@@ -584,7 +579,7 @@ body form.job_filters .search_submit input[type="submit"]:hover {
 }
 
 /* ==========================================================================
-   Type scale
+   13. Type scale
    Sizes for everything outside the listing rows (those are in section 4 and
    the sidebar sizes are in wpjm-sidebar.css). All use the --wpjm-fs-* tokens
    at the top, so changing the scale in one place resizes the whole layout.
@@ -669,6 +664,10 @@ body .jm-dashboard-action {
 	font-size: var(--wpjm-fs-body);
 }
 
+/* ==========================================================================
+   14. Single job page extras
+   ========================================================================== */
+
 /* Single job page: the job type as the same soft pill used in the listings
    (the plugin default is white text on a bright block). */
 body .single_job_listing ul.job-listing-meta li.job-type {
@@ -710,3 +709,9 @@ body .single_job_listing .company .tagline {
 body form.job-manager-form .account-sign-in a {
 	font-size: var(--wpjm-fs-body);
 }
+
+/* ==========================================================================
+   15. Your overrides
+   Add anything site-specific below this line. It is the last thing in the
+   file, so it wins over everything above.
+   ========================================================================== */

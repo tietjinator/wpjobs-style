@@ -1,77 +1,102 @@
 # WPJM Custom Styles
 
-A stylesheet for [WP Job Manager](https://github.com/Automattic/WP-Job-Manager) with its own tiny loader plugin. Written against plugin version 2.4.9.
+Customisations for [WP Job Manager](https://github.com/Automattic/WP-Job-Manager), kept in a small separate plugin so the main plugin is never edited and its updates install as normal. Written against WP Job Manager 2.4.9.
+
+What it does:
+
+- A sidebar layout for the `[jobs]` page: keywords or city, State / Province, a collapsible Job type drawer (with the remote checkbox), category, Search Jobs and Reset Filters. Sort by sits at the top right of the results.
+- City, State / Province and ZIP / Postal code fields in place of the single Location field, with state names shortened to codes ("Texas" becomes "TX").
+- A State / Province filter and searches that find states, cities and ZIP codes.
+- The Wesleyan brand colours and a consistent type scale across listings, the job page and the forms.
+- Google geolocation turned off.
+
+## Contents
+
+| File | What it is |
+|---|---|
+| `wpjm-custom-styles.php` | The plugin file. Loads the files below. |
+| `css/wpjm-custom.css` | Colours, type scale, listings, job page, forms, dashboard. Start here. |
+| `css/wpjm-sidebar.css` | The sidebar layout, Job type drawer and Sort by control. |
+| `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, and keeps the drawer hint up to date. |
+| `includes/sidebar-filters.php` | Sort by, the Job type drawer markup, the Reset Filters button, and removing the "Showing N jobs" message and RSS link. |
+| `includes/location-fields.php` | City / State / ZIP fields, state shortening, the State / Province filter, and the location search rules. |
+| `includes/no-geolocation.php` | Turns off Google geolocation. |
+| `includes/compat.php` | Admin warning when WP Job Manager is a newer major version than this was built for. |
+| `blueprint.json`, `blueprint-states.json` | WordPress Playground blueprints for previewing and testing. |
+| `tests/` | Seed data and automated search checks. |
 
 ## Install
 
 1. Zip this folder, or copy it to `wp-content/plugins/wpjm-custom-styles/`.
 2. Activate **WPJM Custom Styles** in the WordPress admin.
 
-If you would rather not run a plugin, copy `css/wpjm-custom.css` into your child theme and enqueue it from `functions.php` at priority 100 or higher.
+Requires WP Job Manager. Browser support: the layout uses `:has()`, container queries and `color-mix()`, which need Chrome and Edge 111+, Safari 16.2+ or Firefox 121+ (all from 2023). Older browsers show the plugin's plain styles with the sidebar stacked above the results.
 
 ## Live preview
 
-Open this in a browser to get a throwaway WordPress site with WP Job Manager, this plugin and sample listings (needs a public repo, and it pulls the `main` branch, so reload after each push).:
+Open this in a browser for a throwaway WordPress site with WP Job Manager, this plugin and sample listings. It needs the repo to be public and it pulls the `main` branch, so reload after each push.
 
 https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json
 
-## Sidebar filters
+## Sidebar and sorting
 
-`css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right (screens 900px and wider; it stacks above the results on smaller screens). It is pure CSS on the plugin's own markup, so no template overrides are needed. Width, gap and sticky offset are variables at the top of the file (`--wpjm-sidebar-width`, `--wpjm-sidebar-gap`, `--wpjm-sidebar-top`).
+`css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right on screens 900px and wider. Below that the filters stack above the results. It works on the plugin's own markup, with no template overrides. Wrappers without a filter form (`[jobs show_filters="false"]`, widgets) are not touched.
 
-The sidebar order is keywords, location, a collapsible **Job type** drawer (job types plus the remote checkbox), category, then the Search Jobs and Reset Filters buttons. The drawer header shows a hint of what is filtered ("All types", "2 of 5", plus "Remote"), which `js/sidebar.js` keeps up to date. The drawer is a native `<details>` element, closed by default; return `true` from the `wpjm_cs_types_drawer_open` filter to start it open. `includes/sidebar-filters.php` adds a **Sort by** dropdown above the block at the top right, on the same line as your page heading (newest first by default, then oldest first, featured first, title A to Z, title Z to A) and applies it to the AJAX query. The dropdown sits outside the filter form, so `js/sidebar.js` links it back to the form and clears it on Reset Filters. Change the options with the `wpjm_cs_sort_options` filter. Listings without the filter form (`show_filters="false"`, widgets) are not affected.
+Sidebar order: **Keywords or city**, **State / Province**, the **Job type** drawer, **Category**, then **Search Jobs** and **Reset Filters**. The separate Location box is hidden (see below).
 
-## Geolocation is off
+- **Job type drawer.** A native `<details>` element holding the job types and the "Remote positions only" checkbox. It starts closed. The header shows what is filtered ("All types", "2 of 5", plus "Remote"), kept up to date by `js/sidebar.js`. While open or focused the header has a grey background (`--wpjm-drawer-bg`). To start it open, return `true` from the `wpjm_cs_types_drawer_open` filter.
+- **Reset Filters.** A button under Search Jobs. It uses the plugin's own reset handling, and also clears Sort by.
+- **Sort by.** A dropdown above the block at the top right, on the same line as your page heading. Options are Newest first (default), Oldest first, Featured first, Title A to Z and Title Z to A. It sits outside the filter form, so `js/sidebar.js` links it back to the form. Change the options with the `wpjm_cs_sort_options` filter. Featured listings are only pinned to the top when "Featured first" is chosen.
+- **Removed on purpose.** The "Showing N jobs" message and its RSS link under the filters.
+- **Layout variables** at the top of `css/wpjm-sidebar.css`:
+  - `--wpjm-sidebar-width` and `--wpjm-sidebar-gap`
+  - `--wpjm-sidebar-top`: raise it if you have a sticky site header.
+  - `--wpjm-listings-width`: the width of the whole filters and results block (default `80vw`). Use e.g. `1440px` for a fixed width, or `100%` to stay inside the theme's column.
+  - `--wpjm-sort-lift`: how far above the block Sort by sits. Adjust it until the dropdown lines up with your page heading, since the gap under a heading differs between themes.
 
-WP Job Manager normally sends each listing's location to Google's Geocoding API on save and stores coordinates. `includes/no-geolocation.php` turns that off, so no location data leaves your site and no API key is needed. Location search still works by matching the text people typed (for example "Austin" matches "Austin, TX"). Searching by state name (such as "Texas") only matches if the listing text contains it. Listings saved earlier keep any coordinates Google already gave them.
+## Location, State / Province and search
 
-An OpenStreetMap (Nominatim) and Geoapify version of this, with a switch to turn it off, is in the git history at commit `d3204b1` if you want it back.
+### Fields
 
-The Sort by control is positioned above the filters and results, so the first listing lines up with the top of the filter card. How far above is `--wpjm-sort-lift` at the top of `css/wpjm-sidebar.css`. Adjust it until the dropdown lines up with your page heading, since the gap under a heading differs between themes. On screens under 900px it sits right-aligned above the results instead.
+`includes/location-fields.php` replaces the single Location field with **City**, **State / Province** (free text) and **ZIP / Postal code** on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are optional. They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only reads that combined value, so listing cards, the job page and search keep working.
 
-## City, State / Province and ZIP fields
-
-`includes/location-fields.php` replaces the single Location field with three: City, State / Province (free text) and ZIP / Postal code, on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are optional. They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only knows that combined value, so listing cards, the single job page and the Location search box keep working, and searching "Austin", "TX" or "78701" finds the listing.
-
-- State names are shortened when a listing is saved: "Texas", "texas" or "tx" all become `TX`. This covers US states, DC, US territories and Canadian provinces. Anything not in that list, such as a region in another country, is kept as typed. Add or remove entries with the `wpjm_cs_state_map` filter, or return `false` from `wpjm_cs_abbreviate_state` to turn it off. "Washington" means the state (WA). Type "Washington DC" or "DC" for the district.
-- Searching by state works with the code or the full name, in any case: `TX`, `tx`, `Texas`, `TEXAS` all find the same listings, including ones with no city. Typing a state alone searches for that exact state, so `IN` finds Indiana and not every listing with "in" inside a word, and `Virginia` does not also return West Virginia. "Washington" returns Washington state and the listing in Washington, DC. How it works: each time a listing is saved, `geolocation_state_long` (a field the plugin's Location search already checks) is set to the name plus a bracketed code, such as `Texas (TX)`, and a state-only search looks for the bracketed code. Older listings saved as `Austin, TX` are found through a `, TX` search until they are next saved.
-- **Location box hidden.** The sidebar no longer shows a separate Location box. Keywords is relabelled "Keywords or city", and it finds a city, a ZIP, "City, ST" or "City, Texas" as well as titles, companies and descriptions. State has its own dropdown. Typing a state name in Keywords works too, because the full name is added to the fields Keywords searches. Short codes are noisy in Keywords (it matches letters anywhere, so "IN" matches many listings), which is why the dropdown is the precise way to filter by state. The Location search code still exists and still works if a link passes `?search_location=`. To bring the box back, delete the last rule in `css/wpjm-sidebar.css`.
-- **State / Province filter.** The sidebar has a State / Province dropdown under Location, listing only the states and provinces that have published listings, grouped under United States and Canada, with a count for each ("Texas (3)"). Choosing one filters the results straight away, and Reset Filters clears it. It combines with the Location box, keywords, job types, remote and category (all must match). The list is built from each listing's saved state and cached for an hour. It refreshes when a listing is saved, published, trashed or deleted. Older listings saved as "Austin, TX" are included in the results for that state, but are not counted in the dropdown until they are next saved. If no listing has a state, the dropdown is not shown.
-- "City, State" works in any form: `Austin, TX`, `Austin, Texas`, `Austin TX` and `Austin Texas` all find `Austin, TX 78701`. Other text, a partial name like "Tex", a city, or a ZIP, is searched as typed.
-- With "Remote positions only" ticked, a listing has to be remote and match the location.
 - Remote listings with no city, state or ZIP show just "Remote".
 - Older listings keep their existing location text until someone fills in the new fields. Editing an old listing without filling them in does not wipe its location.
-- In the admin the old Location field is relabelled "Location (combined)" and is filled in automatically when any part is set.
-- To change the combined format, use the `wpjm_cs_format_location` filter.
+- In the admin the old field is relabelled "Location (combined)" and is filled in automatically when any part is set.
 - Listing page URLs no longer include the location, because the plugin builds that from the old single field. Titles and company names still apply.
+- Change the combined format with the `wpjm_cs_format_location` filter.
 
-## Testing the state search
+### State names become codes
 
-`blueprint-states.json` is a Playground blueprint with a listing for every US state, DC and Canadian province, entered the way people type them (full names, lower and upper case codes, some with no city):
+When a listing is saved, "Texas", "texas" or "tx" all become `TX`. This covers US states, DC, US territories and Canadian provinces. Anything not in that list, such as a region in another country, is kept as typed. "Washington" means the state (WA); type "Washington DC" or "DC" for the district.
 
-https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint-states.json
+Add or remove entries with the `wpjm_cs_state_map` filter, or return `false` from `wpjm_cs_abbreviate_state` to turn shortening off.
 
-For an automated check against any WordPress site that has this plugin and the seeded listings, `tests/seed-states.php` creates them (`wp eval-file tests/seed-states.php`) and `tests/state-filter.php` checks the State / Province dropdown (every state alone, combined with other filters, and edge cases). `tests/search-matrix.php` runs about 600 searches (add `keywords` as a second argument to type them into the Keywords box instead of the Location box) (code, lower-case code, full name in three cases, city, ZIP, "City, ST", "City, Full name", "City ST", "City Full name", and a name followed by an unrelated term) through the plugin's search request and reports whether the right listing comes back and what else matches with it:
+### State / Province filter
 
-```bash
-php tests/search-matrix.php https://your-site.example
-php tests/state-filter.php https://your-site.example
-```
+A dropdown under Keywords. It lists only the states and provinces that have published listings, grouped under United States and Canada, with a count for each ("Texas (3)"). Choosing one filters straight away, and Reset Filters clears it. It combines with keywords, job types, remote and category (all must match). The list is built from each listing's saved state and cached for an hour. It refreshes when a listing is saved, published, trashed or deleted. If no listing has a state, the dropdown is not shown.
 
-## Keeping up with WP Job Manager updates
+Older listings saved as "Austin, TX" appear in that state's results, but are not counted in the dropdown until they are next saved.
 
-Nothing here edits WP Job Manager, so its updates install as normal. The location fields, sort and geolocation switch use its documented hooks. The sidebar layout depends on its current page markup. After updating WP Job Manager, open the Playground link above (it builds a fresh site from the latest release) and check:
+### Searching
 
-1. The sidebar order and the Job type drawer, including its hint.
-2. Search, Reset Filters and Sort by reload the results.
-3. Posting a job shows City, State and ZIP, and the saved listing displays "City, ST 12345".
-4. Searching a city, a state and a ZIP finds the listing.
+The separate Location box is hidden, and Keywords is relabelled "Keywords or city". Keywords finds a city, a ZIP, "City, ST" or "City, Texas" as well as titles, companies and descriptions. A full state name typed in Keywords also works, because the full name is added to the fields Keywords searches. Typing a short code such as "IN" in Keywords is noisy, since it matches those letters anywhere, which is why the dropdown is the precise way to filter by state.
 
-`includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
+The old Location search still exists and still works for a link that passes `?search_location=`. For it, a state typed alone matches that exact state, so `IN` finds Indiana and `Virginia` does not also return West Virginia. "Washington" returns Washington state and the listing in Washington, DC (extend that list with `wpjm_cs_state_terms_also_searched_as_text`). "Austin, Texas" and "Austin TX" are read as "Austin, TX". To show the Location box again, delete the last rule in `css/wpjm-sidebar.css`.
+
+How it works: each time a listing is saved, `geolocation_state_long` (a field the plugin's searches already check) is set to the name plus a bracketed code, such as `Texas (TX)`, and a state-only search looks for the bracketed code. Older listings are found through a `, TX` search until they are next saved.
+
+With "Remote positions only" ticked, a listing has to be remote and match the other filters.
+
+### Geolocation is off
+
+WP Job Manager normally sends each listing's location to Google's Geocoding API on save and stores coordinates. `includes/no-geolocation.php` turns that off, so no location data leaves your site and no API key is needed. Listings saved earlier keep any coordinates Google already gave them. A version that used OpenStreetMap (Nominatim) or Geoapify instead, with a switch to turn it off, is in the git history at commit `d3204b1`.
+
+The job page still links the location to Google Maps. Change that with the plugin's `the_job_location_map_link` filter.
 
 ## Brand colours
 
-The colours come from the Wesleyan brand refresh guide and are defined once at the top of `css/wpjm-custom.css` (`--twc-*`). Everything else points at them, so changing a swatch there changes it everywhere. The guide lists print (CMYK) values only, so the hex values here are those swatches converted to RGB. If you have official web values, replace them in that one block.
+The colours come from the Wesleyan brand refresh guide and are defined once at the top of `css/wpjm-custom.css` (`--twc-*`). Everything else points at them, so changing a swatch there changes it everywhere. The guide lists print (CMYK) values only, so these hex values are those swatches converted to RGB. If you have official web values, replace them in that one block.
 
 | Colour | Hex | Used for |
 |---|---|---|
@@ -86,12 +111,19 @@ The colours come from the Wesleyan brand refresh guide and are defined once at t
 | Scarlet | `#cb2d4c` | Errors, Temporary, filled and expired notices |
 | Seafoam | `#78b4af` | Full Time |
 | Celery | `#adbb73` | Internship |
+| White | `#ffffff` | Surfaces, text on buttons |
 
-Two accessibility choices follow from the palette. White text on Bright Blue is only 2.7:1, so buttons and links use Navy (9.6:1) and Bright Blue is kept for accents. Celery, Seafoam and Gold are about 2:1 as text on white, so the job type pills use a darker mix of each colour (45% of the colour, 55% Deep Navy; 70% for Scarlet) on a light tint of it, which gives 4.9:1 or better. The coloured dots in the sidebar use the pure brand colours. The Job type drawer header is `#e7e7e7`, which you asked for and is not a brand colour. Change `--wpjm-drawer-bg` in `css/wpjm-sidebar.css` to `var(--twc-milky)` or `var(--twc-hazy)` to bring it into the palette.
+Derived colours: featured listing background `#fdf3e5` (a light tint of Gold). Job type pills, text on background: Full Time `#366e79` on `#e7f2f1`, Part Time `#6c684a` on `#fcefde`, Internship `#4e715e` on `#f0f3e6`, Freelance `#17678e` on `#daeff9`, Temporary `#8e2f4c` on `#f6d9df`.
+
+Two accessibility choices follow from the palette. White text on Bright Blue is only 2.7:1, so buttons and links use Navy (9.6:1) and Bright Blue is kept for accents. Celery, Seafoam and Gold are about 2:1 as text on white, so the pills use a darker mix of each colour (45% of the colour and 55% Deep Navy; 70% for Scarlet) on a light tint of it, which gives 4.9:1 or better. The coloured dots in the sidebar use the pure brand colours.
+
+The Job type drawer header is `#e7e7e7`, which is not a brand colour. Set `--wpjm-drawer-bg` in `css/wpjm-sidebar.css` to `var(--twc-milky)` or `var(--twc-hazy)` to bring it into the palette.
+
+Add a colour for a new job type by adding a `--wpjm-type-<slug>` token and a rule in section 5 of `css/wpjm-custom.css`, following the pattern of the existing types.
 
 ## Type scale
 
-All sizes come from a few tokens at the top of `css/wpjm-custom.css` (`--wpjm-fs-*`), in `rem`, so they no longer depend on how large the theme sets its text (many themes use 20px or more, which made the listings huge and the form fields tiny by comparison).
+All sizes come from tokens at the top of `css/wpjm-custom.css` (`--wpjm-fs-*`), in `rem`, so they do not depend on how large the theme sets its text. Many themes use 20px or more, which made the listings huge and the form fields tiny by comparison.
 
 | Token | Size | Used for |
 |---|---|---|
@@ -102,18 +134,57 @@ All sizes come from a few tokens at the top of `css/wpjm-custom.css` (`--wpjm-fs
 | `--wpjm-fs-title` | 18px | Listing titles, company name on the job page |
 | `--wpjm-fs-reading` | 16px | Job description |
 
-Other changes made with it: form fields and buttons use the theme font instead of the browser default, the company logo/placeholder icon is hidden in the listing rows, and each row is a grid (title and company, location, then job type and date) instead of the plugin's floated percentage columns. The row switches to a stacked layout when the listings column is narrower than 640px, which happens on phones and also on a laptop with the sidebar open, so dates no longer wrap.
+Related changes: form fields and buttons use the theme font instead of the browser default; the company logo and placeholder icon are hidden in the listing rows (the job page keeps its own); and each listing row is a grid (title and company, location, then job type and date) instead of the plugin's floated percentage columns. The row stacks, with the location under the title, when the listings column is narrower than 640px. That happens on phones and also on a laptop with the sidebar open, so dates no longer wrap.
 
 ## Customising
 
-Start with the tokens at the top of `css/wpjm-custom.css` (colours, radius, spacing, job type colours). The file is split into numbered sections, one per area: notices, search filters, listings, single page, submit form, dashboard, pagination, widgets. Put site-specific rules in section 12.
+`css/wpjm-custom.css` is split into numbered sections: tokens, notices, search filters, listings, job type colours, the single job page, the submit form, the dashboard, pagination, widgets, responsive rules, button hover, type scale and job page extras. Put your own rules in the last section, "Your overrides", at the end of the file, so they win over everything above.
 
 Selectors are prefixed with `body` to beat the plugin's own specificity without `!important`. If a rule does not apply, check specificity in your browser's dev tools before reaching for `!important`.
 
-The plugin also exposes `--jm-ui-*` CSS variables for the dashboard and newer UI components. The two most useful are already mapped to the tokens, and the full list is in the plugin's `assets/css/ui.neutral.scss`.
+The plugin also exposes `--jm-ui-*` CSS variables for the dashboard and newer UI components. The accent, danger and radius ones are mapped to the tokens, and the full list is in the plugin's `assets/css/ui.neutral.scss`.
 
-## Notes
+The plugin only loads its CSS on pages it detects as job pages. If you use the shortcodes elsewhere, see the `job_manager_enqueue_frontend_style` filter.
 
-- Job type colours depend on the type slug (`full-time`, `part-time`, ...). Add a rule in section 5 for each type you create.
-- The plugin only loads its CSS on pages it detects as job pages. If you use the shortcodes in unusual places, see the `job_manager_enqueue_frontend_style` filter.
-- Plugin markup changes between major versions. After upgrading WP Job Manager, re-check the listings, single page and dashboard.
+### Filters this plugin adds
+
+| Filter | What it does |
+|---|---|
+| `wpjm_cs_sort_options` | Change the Sort by options |
+| `wpjm_cs_types_drawer_open` | Return `true` to start the Job type drawer open |
+| `wpjm_cs_state_map` | Add or remove state and province names |
+| `wpjm_cs_abbreviate_state` | Return `false` to keep state names as typed |
+| `wpjm_cs_state_terms_also_searched_as_text` | Names that should also be searched as plain text (default: `washington`) |
+| `wpjm_cs_format_location` | Change the combined location text |
+
+## Keeping up with WP Job Manager updates
+
+Nothing here edits WP Job Manager. The location fields, sort and geolocation switch use its documented hooks. The sidebar layout depends on its current page markup, so that is the part that can need a touch-up after a major update. After updating WP Job Manager, open the Playground link above (it builds a fresh site from the latest release) and check:
+
+1. The sidebar order and the Job type drawer, including its hint.
+2. Search, State / Province, Reset Filters and Sort by reload the results.
+3. Posting a job shows City, State and ZIP, and the saved listing displays "City, ST 12345".
+4. Searching a city, a state and a ZIP finds the listing.
+
+`includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
+
+## Testing the state search
+
+`blueprint-states.json` is a Playground blueprint with a listing for every US state, DC and Canadian province, entered the way people type them (full names, lower and upper case codes, some with no city):
+
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint-states.json
+
+For automated checks you need a WordPress site that has WP Job Manager and this plugin active, such as one from Local, wp-env or a similar tool. The listings are titled "Listing 01", "Listing 02" and so on, and avoid state names and codes, so a search can only match through the saved location.
+
+```bash
+wp eval-file tests/seed-states.php
+php tests/state-filter.php https://your-site.example
+php tests/search-matrix.php https://your-site.example
+php tests/search-matrix.php https://your-site.example keywords
+```
+
+- `tests/seed-states.php` creates the 64 listings.
+- `tests/state-filter.php` checks the State / Province dropdown: every state alone, combined with other filters, and edge cases.
+- `tests/search-matrix.php` runs about 600 searches (code, lower-case code, full name in three cases, city, ZIP, "City, ST", "City, Full name", "City ST", "City Full name", and a name followed by an unrelated term). It reports whether the right listing comes back and what else matches with it. Add `keywords` to type the searches into the Keywords box instead of the old Location box.
+
+The plugin caches search results. If a result looks stale after a code change, save or publish any listing to clear the cache.
