@@ -25,6 +25,7 @@ What it does:
 | `includes/no-geolocation.php` | Turns off Google geolocation. |
 | `includes/compat.php` | Admin warning when WP Job Manager is a newer major version than this was built for. |
 | `blueprint.json`, `blueprint-states.json` | WordPress Playground blueprints for previewing and testing. |
+| `sample-data/` | The sample listings for the preview (`seed.php`) and the script that puts them into `blueprint.json` (`build-blueprint.php`). |
 | `tests/` | Seed data and automated search checks. |
 
 ## Install
@@ -214,6 +215,24 @@ Nothing here edits WP Job Manager. The location fields, sort and geolocation swi
 4. Searching a city, a state and a ZIP finds the listing.
 
 `includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
+
+## Sample listings
+
+The Playground preview comes with 26 realistic, made-up listings so every screen has something to show. They are in `sample-data/seed.php`:
+
+- Churches and ministries across 22 states and provinces, including a Canadian role with a CAD salary. All names, people and websites are invented, and websites and emails use `example.org`.
+- Every job type: full time, part time, internship, freelance and temporary, across six categories.
+- Salaries by the year, month or hour; featured listings; three remote roles; one position marked filled; and PDFs attached to three listings (generated when the site is built).
+- Descriptions with an introduction, "What you will do", "What we are looking for", "What we offer", "About" and "How to apply" sections, from a long Lead Pastor posting to short part-time ones.
+- Locations saved the way the form saves them, with some states typed in full (for example "Texas"), so the state shortening and filter are exercised.
+
+To change them, edit `sample-data/seed.php`, then run:
+
+```bash
+php sample-data/build-blueprint.php
+```
+
+That copies the file into `blueprint.json`. The seed also works on its own against a site you are testing on: `wp eval-file sample-data/seed.php`. Run on its own it assumes a fresh site, so delete existing listings first if you do not want duplicates.
 
 ## Testing the state search
 

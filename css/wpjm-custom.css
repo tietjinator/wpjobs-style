@@ -926,6 +926,7 @@ body .single_job_listing .wpjm-job-side ul.job-listing-meta li.location::before 
 body .single_job_listing .wpjm-job-side ul.job-listing-meta li.salary::before { content: "Salary"; }
 
 body .single_job_listing .wpjm-job-side ul.job-listing-meta li.date-posted {
+	order: 1; /* last, after salary */
 	font-size: var(--wpjm-fs-small);
 	color: var(--wpjm-muted);
 }
