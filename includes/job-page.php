@@ -9,7 +9,9 @@
  *
  *   .single_job_listing
  *     h1.wpjm-job-title      the title (the theme's own title is hidden in CSS)
- *     div.wpjm-job-side      details card: the plugin's meta list and company box
+ *     div.wpjm-job-aside     left column, sticky on wide screens
+ *       div.wpjm-job-side    details card: the plugin's meta list and company box
+ *       a.wpjm-job-all       "View All Listings" button under the card
  *     div.wpjm-job-main      description, PDF link and Apply button
  *
  * Only the main job page is wrapped. A [job] shortcode, the preview step and an
@@ -18,6 +20,20 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
+
+/**
+ * Where "View All Listings" and "Back to the job board" go: the page that holds
+ * the [jobs] shortcode, else the listings archive, else the home page. Filter
+ * `wpjm_cs_all_listings_url` to point somewhere else.
+ */
+function wpjm_cs_all_listings_url() {
+	$url = function_exists( 'job_manager_get_permalink' ) ? job_manager_get_permalink( 'jobs' ) : '';
+	if ( ! $url ) {
+		$url = get_post_type_archive_link( 'job_listing' );
+	}
+
+	return apply_filters( 'wpjm_cs_all_listings_url', $url ? $url : home_url( '/' ) );
 }
 
 /**
@@ -42,7 +58,7 @@ add_action(
 
 		wpjm_cs_job_layout_open( true );
 		echo '<h1 class="wpjm-job-title">' . esc_html( get_the_title() ) . '</h1>';
-		echo '<div class="wpjm-job-side">';
+		echo '<div class="wpjm-job-aside"><div class="wpjm-job-side">';
 	},
 	5
 );
@@ -53,6 +69,8 @@ add_action(
 	'single_job_listing_start',
 	function () {
 		if ( wpjm_cs_job_layout_open() ) {
+			echo '</div>';
+			echo '<a class="button wpjm-job-all" href="' . esc_url( wpjm_cs_all_listings_url() ) . '">' . esc_html__( 'View All Listings', 'wpjm-custom-styles' ) . '</a>';
 			echo '</div><div class="wpjm-job-main">';
 		}
 	},

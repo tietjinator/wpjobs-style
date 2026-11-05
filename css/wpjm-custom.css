@@ -877,8 +877,37 @@ body .single_job_listing .wpjm-job-title {
 }
 
 /* Details card */
-body .single_job_listing .wpjm-job-side {
+body .single_job_listing .wpjm-job-aside {
 	margin: 0 0 1.5rem;
+}
+
+/* "View All Listings" under the details card: the primary button, full width. */
+body .single_job_listing a.button.wpjm-job-all {
+	display: block;
+	box-sizing: border-box;
+	margin: 12px 0 0;
+	padding: 0.75em 1.5em;
+	font-family: inherit;
+	font-size: var(--wpjm-fs-body);
+	font-weight: 600;
+	line-height: 1.3;
+	text-align: center;
+	text-decoration: none;
+	color: var(--wpjm-accent-contrast);
+	background: var(--wpjm-accent);
+	border: 1px solid var(--wpjm-accent);
+	border-radius: 6px;
+}
+
+body .single_job_listing a.button.wpjm-job-all:hover,
+body .single_job_listing a.button.wpjm-job-all:focus-visible {
+	color: var(--wpjm-accent-contrast);
+	background: var(--wpjm-accent-hover);
+	border-color: var(--wpjm-accent-hover);
+}
+
+body .single_job_listing .wpjm-job-side {
+	margin: 0;
 	padding: 18px;
 	background: var(--wpjm-surface);
 	border: 1px solid var(--wpjm-border);
@@ -1026,9 +1055,12 @@ body .single_job_listing .wpjm-job-main .job_description {
 
 @media (min-width: 900px) {
 	/* Two columns when the page has the structure above. */
-	body div.single_job_listing:not(.job_listing_preview):has(> .wpjm-job-side) {
+	body div.single_job_listing:not(.job_listing_preview):has(> .wpjm-job-aside) {
 		display: grid;
 		grid-template-columns: var(--wpjm-sidebar-width, 290px) minmax(0, 1fr);
+		/* Title row sized to the title; the left column's height goes to the
+		   second row, so the description sits right under the title. */
+		grid-template-rows: auto 1fr;
 		grid-template-areas:
 			"side title"
 			"side main";
@@ -1039,7 +1071,7 @@ body .single_job_listing .wpjm-job-main .job_description {
 	body .single_job_listing .wpjm-job-title { grid-area: title; }
 	body .single_job_listing .wpjm-job-main { grid-area: main; }
 
-	body .single_job_listing .wpjm-job-side {
+	body .single_job_listing .wpjm-job-aside {
 		grid-area: side;
 		position: sticky;
 		top: var(--wpjm-sidebar-top, 24px);

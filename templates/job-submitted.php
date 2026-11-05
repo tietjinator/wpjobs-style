@@ -49,7 +49,7 @@ elseif ( 'pending' === $job->post_status ) :
 				<a href="mailto:<?php echo esc_attr( antispambot( $contact ) ); ?>"><?php echo esc_html( antispambot( $contact ) ); ?></a>.
 			</p>
 		<?php endif; ?>
-		<p class="wpjm-submitted__actions"><a class="button" href="<?php echo esc_url( get_post_type_archive_link( 'job_listing' ) ?: home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to the job board', 'wpjm-custom-styles' ); ?></a></p>
+		<p class="wpjm-submitted__actions"><a class="button" href="<?php echo esc_url( function_exists( 'wpjm_cs_all_listings_url' ) ? wpjm_cs_all_listings_url() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to the job board', 'wpjm-custom-styles' ); ?></a></p>
 	</div>
 	<?php
 else :
