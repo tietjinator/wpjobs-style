@@ -145,7 +145,8 @@ add_action(
 	'job_manager_job_filters_end',
 	function ( $atts ) {
 		$types_html = ob_get_clean();
-		$has_list   = false !== strpos( (string) $types_html, 'class="job_types"' );
+		// A list with no <li> (job types disabled in the plugin settings) is treated as no list.
+		$has_list   = false !== strpos( (string) $types_html, 'class="job_types"' ) && false !== strpos( (string) $types_html, '<li' );
 		$remote     = '';
 
 		if ( wpjm_cs_remote_enabled() ) {
@@ -165,7 +166,8 @@ add_action(
 		$open = apply_filters( 'wpjm_cs_types_drawer_open', true ) ? ' open' : '';
 
 		echo '<details class="wpjm-drawer"' . $open . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
-		echo '<summary>' . esc_html__( 'Job type', 'wpjm-custom-styles' ) . '</summary>';
+		// The hint (for example "2 of 5 · Remote") is filled in by js/sidebar.js.
+		echo '<summary>' . esc_html__( 'Job type', 'wpjm-custom-styles' ) . '<span class="wpjm-drawer__hint"></span></summary>';
 		echo '<div class="wpjm-drawer__body">' . $types_html . $remote . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		echo '</details>';
 	},

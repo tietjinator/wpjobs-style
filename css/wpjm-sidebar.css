@@ -20,6 +20,9 @@
 	   theme's content column and centres itself. Use e.g. 1440px for a fixed
 	   width, or 100% to stay inside the theme's column. */
 	--wpjm-listings-width: 80vw;
+	/* How far the Sort by control sits above the filters and results. Raise or
+	   lower it until it lines up with your page heading ("Jobs"). */
+	--wpjm-sort-lift: 28px;
 }
 
 /* ---------- Layout ---------- */
@@ -45,10 +48,17 @@
 		overflow-y: auto;
 	}
 
+	/* The sort bar sits above the block, on the same line as the page heading,
+	   so the first listing lines up with the top of the filter card. */
+	body div.job_listings:has(> form.job_filters) {
+		position: relative;
+	}
+
 	body div.job_listings > .wpjm-sort-bar {
-		grid-column: 2;
-		grid-row: 1;
-		justify-self: end;
+		position: absolute;
+		right: 0;
+		bottom: 100%;
+		margin: 0 0 var(--wpjm-sort-lift);
 	}
 
 	body div.job_listings > ul.job_listings,
@@ -127,13 +137,23 @@ body form.job_filters .showing_jobs { order: 8; }
 
 /* Drawer: <details> holding the job types and the remote checkbox. */
 body form.job_filters details.wpjm-drawer {
-	border-bottom: 1px solid var(--wpjm-border);
+	margin: 0;
+	padding: 0;
+	background: transparent;
+	border: 0 !important;
+	border-bottom: 1px solid var(--wpjm-border) !important;
+	box-shadow: none;
 }
 
 body form.job_filters .wpjm-drawer > summary {
+	/* Themes often add borders and backgrounds to <summary>. Reset them. */
+	margin: 0;
+	background: transparent;
+	border: 0 !important;
+	box-shadow: none;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-start;
 	padding: 16px 18px;
 	cursor: pointer;
 	list-style: none;
@@ -142,6 +162,20 @@ body form.job_filters .wpjm-drawer > summary {
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	color: var(--wpjm-muted);
+}
+
+body form.job_filters .wpjm-drawer__hint {
+	margin: 0 12px 0 auto;
+	font-size: 1.1em;
+	font-weight: 500;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--wpjm-muted);
+}
+
+body form.job_filters .wpjm-drawer__hint.is-active {
+	color: var(--wpjm-accent);
+	font-weight: 600;
 }
 
 body form.job_filters .wpjm-drawer > summary::-webkit-details-marker {
