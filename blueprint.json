@@ -14,7 +14,8 @@
 			"options": {
 				"blogname": "WPJM Style Preview",
 				"permalink_structure": "/%postname%/",
-				"job_manager_enable_types": 1
+				"job_manager_enable_types": 1,
+				"job_manager_enable_remote_position": 1
 			}
 		},
 		{
