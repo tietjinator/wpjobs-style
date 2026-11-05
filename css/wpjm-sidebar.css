@@ -2,7 +2,8 @@
  * Sidebar layout for the [jobs] shortcode.
  *
  * div.job_listings is the wrapper the plugin outputs. Its children are:
- *   form.job_filters        (search, location, remote, category, types, sort)
+ *   form.job_filters        (search, location, job types, remote, category, buttons)
+ *   div.wpjm-sort-bar       (sort dropdown, added by this plugin)
  *   ul.job_listings         (results)
  *   a.load_more_jobs / nav.job-manager-pagination
  * so a two-column grid on the wrapper is all that is needed, no template
@@ -44,6 +45,12 @@
 		overflow-y: auto;
 	}
 
+	body div.job_listings > .wpjm-sort-bar {
+		grid-column: 2;
+		grid-row: 1;
+		justify-self: end;
+	}
+
 	body div.job_listings > ul.job_listings,
 	body div.job_listings > a.load_more_jobs,
 	body div.job_listings > nav.job-manager-pagination {
@@ -59,15 +66,21 @@ body form.job_filters {
 	padding: 0;
 }
 
-body form.job_filters .search_jobs {
+/* ul.job_types is a sibling of .search_jobs, not a child, so dissolve
+   .search_jobs and lay every group out as one flex column on the form. That
+   is what lets Job type sit between Location and the rest. */
+body form.job_filters {
 	display: flex;
 	flex-direction: column;
-	padding: 0;
+}
+
+body form.job_filters .search_jobs {
+	display: contents;
 }
 
 /* Cancel the plugin's floated half-width columns and hidden labels. */
 /* :is() raises specificity above the plugin's `.search_jobs div.search_*` rules. */
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort, .search_reset) {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_reset) {
 	float: none;
 	width: 100%;
 	clear: none;
@@ -75,7 +88,7 @@ body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, 
 	border-bottom: 1px solid var(--wpjm-border);
 }
 
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_sort, .search_reset) label {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_reset) label {
 	display: block;
 	margin-bottom: 6px;
 	font-size: 0.8em;
@@ -105,12 +118,12 @@ body form.job_filters .select2-container {
 /* ---------- Order of the groups ---------- */
 body form.job_filters .search_keywords { order: 1; }
 body form.job_filters .search_location { order: 2; }
-body form.job_filters .search_remote_position { order: 3; }
-body form.job_filters .search_categories { order: 4; }
-body form.job_filters ul.job_types { order: 5; }
-body form.job_filters .search_sort { order: 6; }
-body form.job_filters .search_submit { order: 7; }
-body form.job_filters .search_reset { order: 8; }
+body form.job_filters ul.job_types { order: 3; }
+body form.job_filters .search_remote_position { order: 4; }
+body form.job_filters .search_categories { order: 5; }
+body form.job_filters .search_submit { order: 6; }
+body form.job_filters .search_reset { order: 7; }
+body form.job_filters .showing_jobs { order: 8; }
 
 /* Remote toggle: label sits beside the checkbox */
 body form.job_filters .search_jobs div.search_remote_position {
@@ -215,14 +228,19 @@ body form.job_filters .search_submit input[type="submit"] {
 	}
 
 	/* Two-up for the short fields so the stack is not endless. */
-	body form.job_filters .search_jobs {
+	body form.job_filters {
 		flex-direction: row;
 		flex-wrap: wrap;
+	}
+
+	body div.job_listings > .wpjm-sort-bar {
+		justify-content: flex-end;
 	}
 
 	body form.job_filters .search_jobs > div,
 	body form.job_filters ul.job_types {
 		flex: 1 1 100%;
+		box-sizing: border-box;
 	}
 
 	body form.job_filters .search_jobs div.search_keywords,
@@ -272,4 +290,30 @@ body form.job_filters .search_reset button.reset:hover,
 body form.job_filters .search_reset button.reset:focus-visible {
 	background: var(--wpjm-accent);
 	color: var(--wpjm-accent-contrast);
+}
+
+/* ---------- Sort by (top right of the results) ---------- */
+body .wpjm-sort-bar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 12px;
+}
+
+body .wpjm-sort-bar label {
+	font-size: 0.8em;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wpjm-muted);
+}
+
+body .wpjm-sort-bar select {
+	width: auto;
+	min-width: 170px;
+	padding: 0.45em 2em 0.45em 0.7em;
+	border: 1px solid var(--wpjm-border);
+	border-radius: 6px;
+	background-color: var(--wpjm-surface);
+	color: var(--wpjm-text);
 }

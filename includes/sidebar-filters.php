@@ -2,8 +2,8 @@
 /**
  * Sidebar filter extras for WP Job Manager.
  *
- * Adds a "Sort by" control to the [jobs] filter form and applies it to the
- * AJAX listing query. The layout itself is pure CSS (css/wpjm-sidebar.css).
+ * Adds a "Sort by" control above the results and applies it to the AJAX
+ * listing query. The layout itself is pure CSS (css/wpjm-sidebar.css).
  *
  * The plugin's JS re-runs the search whenever an element with the class
  * `job-manager-filter` changes, and it sends the whole form as `form_data`,
@@ -31,19 +31,30 @@ function wpjm_cs_sort_options() {
 	);
 }
 
-// Render the sort control inside the filter form.
+// Render the sort control as a bar above the results (styled to sit at the top
+// right of them). It is output after the filter form, inside the listings
+// wrapper, and linked back to the form by js/sidebar.js so it is still sent
+// with the other filters. The class `job-manager-filter` makes the plugin's JS
+// re-run the search when it changes.
 add_action(
-	'job_manager_job_filters_search_jobs_end',
+	'job_manager_job_filters_after',
 	function () {
-		echo '<div class="search_sort">';
+		wp_enqueue_script(
+			'wpjm-custom-sidebar',
+			plugins_url( 'js/sidebar.js', dirname( __FILE__ ) ),
+			[],
+			filemtime( dirname( __DIR__ ) . '/js/sidebar.js' ),
+			true
+		);
+
+		echo '<div class="wpjm-sort-bar">';
 		echo '<label for="wpjm_sort">' . esc_html__( 'Sort by', 'wpjm-custom-styles' ) . '</label>';
 		echo '<select name="sort" id="wpjm_sort" class="job-manager-filter">';
 		foreach ( wpjm_cs_sort_options() as $key => $option ) {
 			echo '<option value="' . esc_attr( $key ) . '">' . esc_html( $option[0] ) . '</option>';
 		}
 		echo '</select></div>';
-	},
-	20
+	}
 );
 
 // Apply the chosen sort to the AJAX listing query.

@@ -19,7 +19,7 @@ https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.co
 
 `css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right (screens 900px and wider; it stacks above the results on smaller screens). It is pure CSS on the plugin's own markup, so no template overrides are needed. Width, gap and sticky offset are variables at the top of the file (`--wpjm-sidebar-width`, `--wpjm-sidebar-gap`, `--wpjm-sidebar-top`).
 
-`includes/sidebar-filters.php` adds a **Sort by** dropdown to the form (featured first, newest, oldest, title A to Z, title Z to A) and applies it to the AJAX query. Change the options with the `wpjm_cs_sort_options` filter. Listings without the filter form (`show_filters="false"`, widgets) are not affected.
+The sidebar order is keywords, location, job type, remote, category, then the Search Jobs and Reset Filters buttons. `includes/sidebar-filters.php` adds a **Sort by** dropdown at the top right of the results (featured first, newest, oldest, title A to Z, title Z to A) and applies it to the AJAX query. The dropdown sits outside the filter form, so `js/sidebar.js` links it back to the form and clears it on Reset Filters. Change the options with the `wpjm_cs_sort_options` filter. Listings without the filter form (`show_filters="false"`, widgets) are not affected.
 
 ## Geolocation is off
 
