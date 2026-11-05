@@ -191,10 +191,13 @@ function wpjm_cs_save_combined_location( $job_id, $city, $state, $postcode ) {
 		update_post_meta( $job_id, '_job_state', $state );
 
 		// WP Job Manager's Location search also looks in `geolocation_state_long`.
-		// Geolocation is off, so fill it ourselves with the full name. Searching
-		// "Texas" then finds the listing even when it has no city.
+		// Geolocation is off, so fill it ourselves. Searching "Texas" or "TX"
+		// then finds the listing even when it has no city.
 		if ( '' !== $state ) {
-			update_post_meta( $job_id, 'geolocation_state_long', wpjm_cs_state_name( $state ) );
+			// "Texas (TX)": the full name for partial searches, and the bracketed
+			// code as a whole-word token that only an exact state search matches.
+			$name = wpjm_cs_state_name( $state );
+			update_post_meta( $job_id, 'geolocation_state_long', $name === $state ? $name : $name . ' (' . $state . ')' );
 			update_post_meta( $job_id, 'geolocation_state_short', $state );
 		} else {
 			delete_post_meta( $job_id, 'geolocation_state_long' );
@@ -320,38 +323,106 @@ add_action(
 );
 
 // ---------------------------------------------------------------------------
-// Search: keep "Texas" working now that listings store "TX".
+// Search
 // ---------------------------------------------------------------------------
 
-// Backup for listings saved before the full state name was stored (see
-// wpjm_cs_save_combined_location). The plugin matches the Location box against
-// the saved text. If someone types a full state name, also search for its code, written ", TX" (the way it
-// appears after the city) so a short code does not match inside other words.
+/**
+ * The state code for a search term that is exactly a state name or code, such
+ * as "Texas", "texas", "TX" or "tx". Empty string for anything else.
+ */
+function wpjm_cs_state_code_from_term( $term ) {
+	$clean = rtrim( trim( preg_replace( '/\s+/', ' ', (string) $term ) ), '.' );
+	if ( '' === $clean ) {
+		return '';
+	}
+
+	$map = wpjm_cs_state_map();
+	$key = strtolower( str_replace( '&', 'and', $clean ) );
+
+	if ( isset( $map[ $key ] ) ) {
+		return $map[ $key ];
+	}
+
+	return in_array( strtoupper( $clean ), array_values( $map ), true ) ? strtoupper( $clean ) : '';
+}
+
+/**
+ * Turns "Austin, Texas" or "Austin Texas" into "Austin, TX", the way locations
+ * are stored. Returns an empty string when the term does not end in a state.
+ */
+function wpjm_cs_city_state_term( $term ) {
+	$term = trim( (string) $term );
+	$pos  = strrpos( $term, ',' );
+
+	if ( false !== $pos ) {
+		$city = trim( substr( $term, 0, $pos ) );
+		$code = wpjm_cs_state_code_from_term( substr( $term, $pos + 1 ) );
+
+		return ( '' !== $city && '' !== $code ) ? $city . ', ' . $code : '';
+	}
+
+	// No comma: try the last three, two, then one word as the state.
+	$words = preg_split( '/\s+/', $term );
+	for ( $n = min( 3, count( $words ) - 1 ); $n >= 1; $n-- ) {
+		$code = wpjm_cs_state_code_from_term( implode( ' ', array_slice( $words, -$n ) ) );
+		if ( '' !== $code ) {
+			return implode( ' ', array_slice( $words, 0, -$n ) ) . ', ' . $code;
+		}
+	}
+
+	return '';
+}
+
+/**
+ * Rewrites the Location box text before the plugin searches with it.
+ *
+ * The plugin matches the text anywhere in the saved location, so a short code
+ * such as "IN" or "OR" would match every listing with those letters inside a
+ * word, and "Virginia" would match "West Virginia". For a term that is exactly
+ * a state we search the whole-word token "(TX)" saved with each listing (see
+ * wpjm_cs_save_combined_location), plus ", TX" for older listings saved as
+ * "Austin, TX". "Austin, Texas" is searched as "Austin, TX". Other terms are
+ * left as typed. Terms are separated with ";" as in the plugin.
+ */
+function wpjm_cs_expand_location_search( $search ) {
+	$terms = [];
+
+	foreach ( explode( ';', (string) $search ) as $term ) {
+		$term = trim( $term );
+		if ( '' === $term ) {
+			continue;
+		}
+
+		$code = wpjm_cs_state_code_from_term( $term );
+		if ( '' !== $code ) {
+			$terms[] = '(' . $code . ')';
+			$terms[] = ', ' . $code;
+
+			// Names that are also a city people search for: "Washington" is the
+			// state and the city in DC, so keep the plain text search too.
+			$also_text = apply_filters( 'wpjm_cs_state_terms_also_searched_as_text', [ 'washington' ] );
+			if ( in_array( strtolower( $term ), $also_text, true ) ) {
+				$terms[] = $term;
+			}
+			continue;
+		}
+
+		$terms[]    = $term;
+		$normalised = wpjm_cs_city_state_term( $term );
+		if ( '' !== $normalised && 0 !== strcasecmp( $normalised, $term ) ) {
+			$terms[] = $normalised;
+		}
+	}
+
+	return implode( '; ', $terms );
+}
+
 add_filter(
 	'job_manager_get_listings_args',
 	function ( $args ) {
-		if ( empty( $args['search_location'] ) || ! apply_filters( 'wpjm_cs_abbreviate_state', true ) ) {
-			return $args;
+		if ( ! empty( $args['search_location'] ) && apply_filters( 'wpjm_cs_abbreviate_state', true ) ) {
+			$args['search_location'] = wpjm_cs_expand_location_search( $args['search_location'] );
 		}
-
-		$map   = wpjm_cs_state_map();
-		$terms = [];
-
-		foreach ( explode( ';', $args['search_location'] ) as $term ) {
-			$term = trim( $term );
-			if ( '' === $term ) {
-				continue;
-			}
-
-			$terms[] = $term;
-
-			$key = strtolower( $term );
-			if ( isset( $map[ $key ] ) ) {
-				$terms[] = ', ' . $map[ $key ];
-			}
-		}
-
-		$args['search_location'] = implode( '; ', $terms );
 
 		return $args;
 	}

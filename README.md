@@ -34,12 +34,26 @@ The Sort by control is positioned above the filters and results, so the first li
 `includes/location-fields.php` replaces the single Location field with three: City, State / Province (free text) and ZIP / Postal code, on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are optional. They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only knows that combined value, so listing cards, the single job page and the Location search box keep working, and searching "Austin", "TX" or "78701" finds the listing.
 
 - State names are shortened when a listing is saved: "Texas", "texas" or "tx" all become `TX`. This covers US states, DC, US territories and Canadian provinces. Anything not in that list, such as a region in another country, is kept as typed. Add or remove entries with the `wpjm_cs_state_map` filter, or return `false` from `wpjm_cs_abbreviate_state` to turn it off. "Washington" means the state (WA). Type "Washington DC" or "DC" for the district.
-- Searching the full name works. Each time a listing is saved, the full state name is also stored in `geolocation_state_long`, one of the fields WP Job Manager's Location search already checks, so typing "Texas" finds `Austin, TX 78701` and a state-only listing like `TX 78701`. For listings saved before this was added, the search also looks for `, TX` when someone types a full state name, which finds them until they are next saved.
+- Searching by state works with the code or the full name, in any case: `TX`, `tx`, `Texas`, `TEXAS` all find the same listings, including ones with no city. Typing a state alone searches for that exact state, so `IN` finds Indiana and not every listing with "in" inside a word, and `Virginia` does not also return West Virginia. "Washington" returns Washington state and the listing in Washington, DC. How it works: each time a listing is saved, `geolocation_state_long` (a field the plugin's Location search already checks) is set to the name plus a bracketed code, such as `Texas (TX)`, and a state-only search looks for the bracketed code. Older listings saved as `Austin, TX` are found through a `, TX` search until they are next saved.
+- "City, State" works in any form: `Austin, TX`, `Austin, Texas`, `Austin TX` and `Austin Texas` all find `Austin, TX 78701`. Other text, a partial name like "Tex", a city, or a ZIP, is searched as typed.
+- With "Remote positions only" ticked, a listing has to be remote and match the location.
 - Remote listings with no city, state or ZIP show just "Remote".
 - Older listings keep their existing location text until someone fills in the new fields. Editing an old listing without filling them in does not wipe its location.
 - In the admin the old Location field is relabelled "Location (combined)" and is filled in automatically when any part is set.
 - To change the combined format, use the `wpjm_cs_format_location` filter.
 - Listing page URLs no longer include the location, because the plugin builds that from the old single field. Titles and company names still apply.
+
+## Testing the state search
+
+`blueprint-states.json` is a Playground blueprint with a listing for every US state, DC and Canadian province, entered the way people type them (full names, lower and upper case codes, some with no city):
+
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint-states.json
+
+For an automated check against any WordPress site that has this plugin and the seeded listings, `tests/seed-states.php` creates them (`wp eval-file tests/seed-states.php`) and `tests/search-matrix.php` runs about 600 searches (code, lower-case code, full name in three cases, city, ZIP, "City, ST", "City, Full name", "City ST", "City Full name", and a name followed by an unrelated term) through the plugin's search request and reports whether the right listing comes back and what else matches with it:
+
+```bash
+php tests/search-matrix.php https://your-site.example
+```
 
 ## Keeping up with WP Job Manager updates
 
