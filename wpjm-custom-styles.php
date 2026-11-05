@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPJM Custom Styles
- * Description: Loads css/wpjm-custom.css and css/wpjm-sidebar.css (sidebar filter layout, sort control) after WP Job Manager's own styles.
+ * Description: Custom styles, a sidebar filter layout with sorting, and OpenStreetMap geocoding for WP Job Manager.
  * Version:     1.0.0
  * Requires Plugins: wp-job-manager
  */
@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/includes/sidebar-filters.php';
+require_once __DIR__ . '/includes/geocoding.php';
 
 add_action(
 	'wp_enqueue_scripts',
