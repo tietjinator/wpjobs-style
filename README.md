@@ -38,6 +38,14 @@ Open this in a browser for a throwaway WordPress site with WP Job Manager, this 
 
 https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json
 
+The preview site also has the other screens. Add `&url=/page/` to the link to open one directly:
+
+- Post a Job form: `&url=/post-a-job/`
+- Employer dashboard: `&url=/job-dashboard/`
+- Jobs list (the default): `&url=/jobs/`
+
+For example, https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint.json&url=/post-a-job/
+
 ## Sidebar and sorting
 
 `css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right on screens 900px and wider. Below that the filters stack above the results. It works on the plugin's own markup, with no template overrides. Wrappers without a filter form (`[jobs show_filters="false"]`, widgets) are not touched.
