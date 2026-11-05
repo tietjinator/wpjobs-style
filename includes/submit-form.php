@@ -6,7 +6,9 @@
  * - The X / Twitter username, tagline, video and logo upload are removed.
  * - An optional "Job description (PDF)" upload is added after the description,
  *   and shown as a download link under the description on the job page.
- * - The Remote Position checkbox is on unless it is switched off in the settings.
+ * - The Remote Position checkbox is on unless it is switched off in the settings,
+ *   and sits just below Job type.
+ * - The "Your account / signed in as ..." panel is hidden for logged-in people.
  *
  * Removing a field from the form only stops it being asked for. Listings that
  * already have a tagline, logo or video keep them, and the admin edit screen
@@ -152,4 +154,32 @@ add_filter(
 	},
 	10,
 	2
+);
+
+// ---------------------------------------------------------------------------
+// Field order and the account panel
+// ---------------------------------------------------------------------------
+
+// Remote Position directly under Job type (the plugin puts it after Location).
+add_filter(
+	'submit_job_form_fields',
+	function ( $fields ) {
+		if ( isset( $fields['job']['remote_position'] ) ) {
+			$type_priority                                  = isset( $fields['job']['job_type']['priority'] ) ? (float) $fields['job']['job_type']['priority'] : 4;
+			$fields['job']['remote_position']['priority'] = $type_priority + 0.5;
+		}
+
+		return $fields;
+	},
+	30
+);
+
+// "Your account: You are currently signed in as ... Sign out" is not needed.
+// Visitors who are not signed in still see "Have an account? Sign in", which is
+// also where creating an account happens.
+add_filter(
+	'submit_job_form_show_signin',
+	function ( $show ) {
+		return is_user_logged_in() ? false : $show;
+	}
 );

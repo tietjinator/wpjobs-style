@@ -578,9 +578,15 @@ body .widget ul.job_listings li.job_listing {
    ========================================================================== */
 body .job_application.application .application_button:hover,
 body form.job-manager-form input[type="submit"].button:hover,
+body form.job-manager-form input[type="submit"].button:focus-visible,
 body .job_listing_preview_title input.button:hover,
+body .job_listing_preview_title input.button:focus-visible,
 body form.job_filters .search_submit input[type="submit"]:hover {
 	background: var(--wpjm-accent-hover);
+	border-color: var(--wpjm-accent-hover);
+	/* The outlined buttons (Save Draft, Edit listing) have navy text, which
+	   would vanish on the dark hover background. */
+	color: var(--wpjm-accent-contrast);
 }
 
 /* ==========================================================================
