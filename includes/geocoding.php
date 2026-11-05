@@ -23,6 +23,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Contact sent to Nominatim so OpenStreetMap can reach you about your traffic.
+// Override by defining WPJM_CS_GEOCODER_EMAIL in wp-config.php.
+if ( ! defined( 'WPJM_CS_GEOCODER_EMAIL' ) ) {
+	define( 'WPJM_CS_GEOCODER_EMAIL', 'design@wesleyan.org' );
+}
+
 /**
  * Which provider is active: 'nominatim', 'geoapify' or 'off'.
  */

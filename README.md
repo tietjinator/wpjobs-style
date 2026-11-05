@@ -42,7 +42,7 @@ define( 'WPJM_CS_GEOCODER', 'off' );
 
 With geocoding off, nothing is looked up or saved. Location search still works on the text people typed. You lose the stored coordinates and searching by state name when the listing only says a city.
 
-Optional, recommended for Nominatim, so OpenStreetMap can contact you if your site causes problems:
+The contact email sent to Nominatim, so OpenStreetMap can reach you if your site causes problems, defaults to `design@wesleyan.org`. Override it with:
 
 ```php
 define( 'WPJM_CS_GEOCODER_EMAIL', 'you@example.com' );
