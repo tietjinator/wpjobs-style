@@ -35,6 +35,7 @@ The Sort by control is positioned above the filters and results, so the first li
 
 - State names are shortened when a listing is saved: "Texas", "texas" or "tx" all become `TX`. This covers US states, DC, US territories and Canadian provinces. Anything not in that list, such as a region in another country, is kept as typed. Add or remove entries with the `wpjm_cs_state_map` filter, or return `false` from `wpjm_cs_abbreviate_state` to turn it off. "Washington" means the state (WA). Type "Washington DC" or "DC" for the district.
 - Searching by state works with the code or the full name, in any case: `TX`, `tx`, `Texas`, `TEXAS` all find the same listings, including ones with no city. Typing a state alone searches for that exact state, so `IN` finds Indiana and not every listing with "in" inside a word, and `Virginia` does not also return West Virginia. "Washington" returns Washington state and the listing in Washington, DC. How it works: each time a listing is saved, `geolocation_state_long` (a field the plugin's Location search already checks) is set to the name plus a bracketed code, such as `Texas (TX)`, and a state-only search looks for the bracketed code. Older listings saved as `Austin, TX` are found through a `, TX` search until they are next saved.
+- **State / Province filter.** The sidebar has a State / Province dropdown under Location, listing only the states and provinces that have published listings, grouped under United States and Canada, with a count for each ("Texas (3)"). Choosing one filters the results straight away, and Reset Filters clears it. It combines with the Location box, keywords, job types, remote and category (all must match). The list is built from each listing's saved state and cached for an hour. It refreshes when a listing is saved, published, trashed or deleted. Older listings saved as "Austin, TX" are included in the results for that state, but are not counted in the dropdown until they are next saved. If no listing has a state, the dropdown is not shown.
 - "City, State" works in any form: `Austin, TX`, `Austin, Texas`, `Austin TX` and `Austin Texas` all find `Austin, TX 78701`. Other text, a partial name like "Tex", a city, or a ZIP, is searched as typed.
 - With "Remote positions only" ticked, a listing has to be remote and match the location.
 - Remote listings with no city, state or ZIP show just "Remote".
@@ -49,10 +50,11 @@ The Sort by control is positioned above the filters and results, so the first li
 
 https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/tietjinator/wpjobs-style/main/blueprint-states.json
 
-For an automated check against any WordPress site that has this plugin and the seeded listings, `tests/seed-states.php` creates them (`wp eval-file tests/seed-states.php`) and `tests/search-matrix.php` runs about 600 searches (code, lower-case code, full name in three cases, city, ZIP, "City, ST", "City, Full name", "City ST", "City Full name", and a name followed by an unrelated term) through the plugin's search request and reports whether the right listing comes back and what else matches with it:
+For an automated check against any WordPress site that has this plugin and the seeded listings, `tests/seed-states.php` creates them (`wp eval-file tests/seed-states.php`) and `tests/state-filter.php` checks the State / Province dropdown (every state alone, combined with other filters, and edge cases). `tests/search-matrix.php` runs about 600 searches (code, lower-case code, full name in three cases, city, ZIP, "City, ST", "City, Full name", "City ST", "City Full name", and a name followed by an unrelated term) through the plugin's search request and reports whether the right listing comes back and what else matches with it:
 
 ```bash
 php tests/search-matrix.php https://your-site.example
+php tests/state-filter.php https://your-site.example
 ```
 
 ## Keeping up with WP Job Manager updates

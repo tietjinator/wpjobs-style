@@ -427,3 +427,189 @@ add_filter(
 		return $args;
 	}
 );
+
+// ---------------------------------------------------------------------------
+// State / Province filter in the sidebar
+// ---------------------------------------------------------------------------
+
+/**
+ * States and provinces that have published listings, as code => count, read
+ * from the `_job_state` meta this file saves. Cached; cleared when a listing's
+ * state or status changes.
+ */
+function wpjm_cs_state_counts() {
+	$counts = get_transient( 'wpjm_cs_state_counts' );
+
+	if ( false === $counts ) {
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			"SELECT pm.meta_value AS state, COUNT(*) AS total
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			WHERE pm.meta_key = '_job_state' AND pm.meta_value <> ''
+				AND p.post_type = 'job_listing' AND p.post_status = 'publish'
+			GROUP BY pm.meta_value" // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Cached below, no user input.
+		);
+
+		$counts = [];
+		foreach ( (array) $rows as $row ) {
+			$counts[ $row->state ] = (int) $row->total;
+		}
+
+		set_transient( 'wpjm_cs_state_counts', $counts, HOUR_IN_SECONDS );
+	}
+
+	return $counts;
+}
+
+function wpjm_cs_clear_state_counts() {
+	delete_transient( 'wpjm_cs_state_counts' );
+}
+add_action( 'transition_post_status', 'wpjm_cs_clear_state_counts' );
+add_action( 'deleted_post', 'wpjm_cs_clear_state_counts' );
+add_action(
+	'updated_post_meta',
+	function ( $meta_id, $post_id, $meta_key ) {
+		if ( '_job_state' === $meta_key ) {
+			wpjm_cs_clear_state_counts();
+		}
+	},
+	10,
+	3
+);
+add_action(
+	'added_post_meta',
+	function ( $meta_id, $post_id, $meta_key ) {
+		if ( '_job_state' === $meta_key ) {
+			wpjm_cs_clear_state_counts();
+		}
+	},
+	10,
+	3
+);
+
+// Print the dropdown inside the filter form, after the Location box.
+add_action(
+	'job_manager_job_filters_search_jobs_end',
+	function () {
+		$counts = wpjm_cs_state_counts();
+		if ( ! $counts ) {
+			return;
+		}
+
+		$canada = [ 'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT' ];
+		$us     = array_values( array_unique( array_values( wpjm_cs_state_map() ) ) );
+		$groups = [
+			__( 'United States', 'wpjm-custom-styles' ) => [],
+			__( 'Canada', 'wpjm-custom-styles' )        => [],
+			__( 'Other', 'wpjm-custom-styles' )         => [],
+		];
+		$keys   = array_keys( $groups );
+
+		foreach ( $counts as $state => $total ) {
+			$group                              = in_array( $state, $canada, true ) ? $keys[1] : ( in_array( $state, $us, true ) ? $keys[0] : $keys[2] );
+			$groups[ $group ][ (string) $state ] = $total;
+		}
+
+		echo '<div class="search_state">';
+		echo '<label for="search_state">' . esc_html__( 'State / Province', 'wpjm-custom-styles' ) . '</label>';
+		// `job-manager-filter` makes the plugin's JS search again on change and clear it on Reset.
+		echo '<select name="filter_state" id="search_state" class="job-manager-filter">';
+		echo '<option value="">' . esc_html__( 'Any state / province', 'wpjm-custom-styles' ) . '</option>';
+
+		foreach ( $groups as $label => $states ) {
+			if ( ! $states ) {
+				continue;
+			}
+
+			// Sort by the name shown, not the code.
+			uksort(
+				$states,
+				function ( $a, $b ) {
+					return strcasecmp( wpjm_cs_state_name( $a ), wpjm_cs_state_name( $b ) );
+				}
+			);
+
+			echo '<optgroup label="' . esc_attr( $label ) . '">';
+			foreach ( $states as $state => $total ) {
+				printf(
+					'<option value="%s">%s (%d)</option>',
+					esc_attr( $state ),
+					esc_html( wpjm_cs_state_name( $state ) ),
+					(int) $total
+				);
+			}
+			echo '</optgroup>';
+		}
+
+		echo '</select></div>';
+	},
+	15
+);
+
+/**
+ * The value of one field in the filter form's submitted data. The plugin's JS
+ * sends the whole form as one `form_data` string.
+ */
+function wpjm_cs_form_value( $name ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public, read-only listing query.
+	$form_data = isset( $_REQUEST['form_data'] ) ? wp_unslash( $_REQUEST['form_data'] ) : '';
+	if ( ! is_string( $form_data ) || '' === $form_data ) {
+		return '';
+	}
+
+	parse_str( $form_data, $fields );
+
+	return isset( $fields[ $name ] ) && is_string( $fields[ $name ] ) ? sanitize_text_field( $fields[ $name ] ) : '';
+}
+
+// Pass the chosen state to the listing query.
+add_filter(
+	'job_manager_get_listings_args',
+	function ( $args ) {
+		$state = wpjm_cs_form_value( 'filter_state' );
+		if ( '' !== $state ) {
+			$args['wpjm_cs_state'] = $state;
+		}
+
+		return $args;
+	}
+);
+
+add_filter(
+	'get_job_listings_query_args',
+	function ( $query_args, $args ) {
+		if ( empty( $args['wpjm_cs_state'] ) ) {
+			return $query_args;
+		}
+
+		$state  = $args['wpjm_cs_state'];
+		$clause = [
+			'relation' => 'OR',
+			[
+				'key'     => '_job_state',
+				'value'   => $state,
+				'compare' => '=',
+			],
+		];
+
+		// Older listings saved as "Austin, TX" have no `_job_state` yet.
+		if ( 2 === strlen( $state ) ) {
+			$clause[] = [
+				'key'     => '_job_location',
+				'value'   => ', ' . $state,
+				'compare' => 'LIKE',
+			];
+		}
+
+		if ( ! isset( $query_args['meta_query'] ) || ! is_array( $query_args['meta_query'] ) ) {
+			$query_args['meta_query'] = [];
+		}
+		$query_args['meta_query'][] = $clause;
+
+		return $query_args;
+	},
+	10,
+	2
+);

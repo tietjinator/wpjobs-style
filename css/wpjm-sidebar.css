@@ -93,15 +93,16 @@ body form.job_filters .search_jobs {
 
 /* Cancel the plugin's floated half-width columns and hidden labels. */
 /* :is() raises specificity above the plugin's `.search_jobs div.search_*` rules. */
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_categories, .search_submit, .search_reset) {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_state, .search_categories, .search_submit, .search_reset) {
 	float: none;
 	width: 100%;
+	box-sizing: border-box; /* the plugin's own CSS does this, but do not depend on it */
 	clear: none;
 	padding: 16px 18px;
 	border-bottom: 1px solid var(--wpjm-border);
 }
 
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_categories, .search_submit, .search_reset) label {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_state, .search_categories, .search_submit, .search_reset) label {
 	display: block;
 	margin-bottom: 6px;
 	font-size: 0.8em;
@@ -131,8 +132,9 @@ body form.job_filters .select2-container {
 /* ---------- Order of the groups ---------- */
 body form.job_filters .search_keywords { order: 1; }
 body form.job_filters .search_location { order: 2; }
+body form.job_filters .search_state { order: 3; }
 body form.job_filters .wpjm-drawer,
-body form.job_filters ul.job_types { order: 3; }
+body form.job_filters ul.job_types { order: 4; }
 body form.job_filters .search_categories { order: 5; }
 body form.job_filters .search_submit { order: 6; }
 body form.job_filters .search_reset { order: 7; }
