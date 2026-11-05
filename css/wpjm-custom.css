@@ -51,7 +51,7 @@
 	/* Width of the Post a Job form and its preview on screens 900px and wider.
 	   It breaks out of the theme's narrow column and centres itself. Use 80vw to
 	   match the Jobs page, or 100% to stay inside the theme's column. */
-	--wpjm-form-width: min(80vw, 1000px);
+	--wpjm-form-width: var(--wpjm-listings-width, min(80vw, 1080px));
 	/* The single job page uses the same width as the Jobs board, so the two
 	   line up. It uses the board's sidebar width and gap for its details card. */
 	--wpjm-job-width: var(--wpjm-listings-width, 80vw);

@@ -96,7 +96,7 @@ Sidebar order: **Keywords or city**, **State / Province**, the **Job type** draw
 - **Layout variables** at the top of `css/wpjm-sidebar.css`:
   - `--wpjm-sidebar-width` and `--wpjm-sidebar-gap`
   - `--wpjm-sidebar-top`: raise it if you have a sticky site header.
-  - `--wpjm-listings-width`: the width of the whole filters and results block, 80% of the window up to a maximum of 1440px (default `min(80vw, 1440px)`). The job page uses the same width. Use a fixed width such as `1200px`, or `100%` to stay inside the theme's column.
+  - `--wpjm-listings-width`: the width of the whole filters and results block, 80% of the window up to a maximum of 1080px (default `min(80vw, 1080px)`). The job page uses the same width. Use a fixed width such as `1200px`, or `100%` to stay inside the theme's column.
   - `--wpjm-sort-lift`: how far above the block Sort by sits. Adjust it until the dropdown lines up with your page heading, since the gap under a heading differs between themes.
 
 ## Location, State / Province and search
@@ -151,7 +151,7 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 - The Preview step is a soft title bar joined to a light bordered box, with Edit listing (outlined) and Submit Listing (filled) side by side.
 - Notices ("Job listed successfully") fit the page column. The plugin padded them without including the padding in their width, so they stuck out.
 - Preview and Submit Listing fill the row on phones. The outlined buttons (Save Draft, Edit listing) turn white text on dark navy when hovered or focused.
-- On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`, a narrower cap than the Jobs board because a long form is easier to fill in; use `80vw` to match the Jobs page exactly or `100%` to stay in the theme's column).
+- On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css`. It follows `--wpjm-listings-width` (80% of the window up to 1080px), so the form, job page and Jobs board line up; set it to something like `min(80vw, 900px)` for a narrower form, or `100%` to stay in the theme's column).
 - Checkbox fields such as Remote Position show their help text to the right of the box instead of underneath.
 - Wording: "Company Details", "Company name" and the name placeholder become "Church / Company ...", set in `includes/submit-form.php`. This applies on the public site only, not in the admin.
 - **Other category.** An "Other" category is created once (and never re-created if you delete it in Job Listings > Job categories), and is always listed last in both the sidebar drawer and the form checklist, not sorted into the middle alphabetically.
