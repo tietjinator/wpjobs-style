@@ -24,6 +24,8 @@
 	   to move the dropdown down, raise it to move it up, until it lines up with
 	   the bottom of your page heading ("Jobs"). */
 	--wpjm-sort-lift: 14px;
+	/* Background of the Job type header while the drawer is open or focused. */
+	--wpjm-drawer-bg: #e7e7e7;
 }
 
 /* ---------- Layout ---------- */
@@ -208,6 +210,12 @@ body form.job_filters .wpjm-drawer > summary:focus,
 body form.job_filters .wpjm-drawer > summary:active {
 	outline: none !important;
 	box-shadow: none !important;
+}
+
+/* Highlight the header with a background instead of a border. */
+body form.job_filters .wpjm-drawer[open] > summary,
+body form.job_filters .wpjm-drawer > summary:focus {
+	background: var(--wpjm-drawer-bg);
 }
 
 body form.job_filters .wpjm-drawer > summary:focus-visible {
