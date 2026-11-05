@@ -19,6 +19,10 @@ What it does:
 | `css/wpjm-sidebar.css` | The sidebar layout, Job type drawer and Sort by control. |
 | `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, and keeps the drawer hint up to date. |
 | `includes/sidebar-filters.php` | Sort by, the Job type drawer markup, the Reset Filters button, and removing the "Showing N jobs" message and RSS link. |
+| `includes/category-filter.php` | The sidebar Category drawer (a checklist, like Job type). |
+| `includes/apply-button.php` | The email subject for the Apply link. |
+| `includes/templates.php` | Swaps two of WP Job Manager's templates for this plugin's own copies in `templates/`. |
+| `templates/` | `job-application.php` (Apply button as a direct link) and `form-fields/term-multiselect-field.php` (job category checklist on the form). |
 | `includes/job-page.php` | The single job page as two columns: adds the title inside the page and wraps the details and main column. |
 | `includes/submit-form.php` | The Post a Job form: "Church / Company" wording, removed company fields, the Remote Position checkbox and the job description PDF upload. |
 | `includes/location-fields.php` | City / State / ZIP fields, state shortening, the State / Province filter, and the location search rules. |
@@ -55,9 +59,10 @@ GitHub caches raw files for about five minutes, so a link opened right after a p
 
 `css/wpjm-sidebar.css` turns the `[jobs]` filter form into a sticky left sidebar with the results on the right on screens 900px and wider. Below that the filters stack above the results. It works on the plugin's own markup, with no template overrides. Wrappers without a filter form (`[jobs show_filters="false"]`, widgets) are not touched.
 
-Sidebar order: **Keywords or city**, **State / Province**, the **Job type** drawer, **Category**, then **Search Jobs** and **Reset Filters**. The separate Location box is hidden (see below).
+Sidebar order: **Keywords or city**, **State / Province**, the **Job type** drawer, the **Category** drawer, then **Search Jobs** and **Reset Filters**. The separate Location box is hidden (see below).
 
 - **Job type drawer.** A native `<details>` element holding the job types and the "Remote positions only" checkbox. It starts closed. The header shows what is filtered ("All types", "2 of 5", plus "Remote"), kept up to date by `js/sidebar.js`. While open or focused the header has a grey background (`--wpjm-drawer-bg`). To start it open, return `true` from the `wpjm_cs_types_drawer_open` filter.
+- **Category drawer.** The same pattern as Job type: a header with a hint ("All categories", "2 selected"), a caret, and a checklist with the number of listings in each. Nothing ticked means every category; ticking several shows listings in any of them. The plugin's own category dropdown (a search-as-you-type box that did not match the rest of the sidebar) is kept in the page but hidden, because the plugin's JavaScript reads it, and `js/sidebar.js` keeps it in step with the checkboxes. This overrides two settings in Job Listings > Settings, because the checklist depends on them: the category filter is always multiple choice and always "match any". Only categories that have published listings are shown, and the drawer does not appear if categories are switched off or no listing uses one.
 - **Reset Filters.** A button under Search Jobs. It uses the plugin's own reset handling, and also clears Sort by.
 - **Sort by.** A dropdown above the block at the top right, on the same line as your page heading. Options are Newest first (default), Oldest first, Featured first, Title A to Z and Title Z to A. It sits outside the filter form, so `js/sidebar.js` links it back to the form. Change the options with the `wpjm_cs_sort_options` filter. Featured listings are only pinned to the top when "Featured first" is chosen.
 - **Removed on purpose.** The "Showing N jobs" message and its RSS link under the filters.
@@ -122,6 +127,9 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 - On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`; use `80vw` to match the Jobs page exactly or `100%` to stay in the theme's column).
 - Checkbox fields such as Remote Position show their help text to the right of the box instead of underneath.
 - Wording: "Company Details", "Company name" and the name placeholder become "Church / Company ...", set in `includes/submit-form.php`. This applies on the public site only, not in the admin.
+- **Job category.** The plugin adds a required "Job category" field once categories are switched on. It is shown as a checklist, two columns, instead of the plugin's search-as-you-type box, which is awkward for a short list and made the page jump when it lost focus. At least one must be ticked (the plugin checks this on the server). The boxes are named like the original field, so saving works as before. Template: `templates/form-fields/term-multiselect-field.php`.
+- **Salary.** If Salary is switched on in Job Listings > Settings, the form asks for a salary, and optionally a currency and a unit (per year, month or hour). It shows on the job page as "52,000 - 61,000 USD / year".
+- **Approval.** By default the plugin holds new submissions for approval before they appear ("Your listing will be visible once approved"). That is a setting in Job Listings > Settings.
 - **Job description PDF.** An optional "Job description (PDF)" upload sits right after the Description box. It accepts only `.pdf`, up to 5 MB (or the server's upload limit if that is lower; change it with the `wpjm_cs_pdf_max_size` filter). A "Download the full job description (PDF)" button then appears under the description on the preview and the job page. It is not shown on the Jobs list rows. In the admin "Job Listing Data" box the field is a file address plus an Upload button, so staff can attach or replace a PDF. The file is saved in the plugin's `uploads/job-manager-uploads/` folder, and is public to anyone with the link, like logos were. Only files in this site's uploads folder are linked.
 - **Account panel.** The "Your account: You are currently signed in as ... Sign out" panel is hidden for logged-in people. Visitors who are not signed in still see "Have an account? Sign in", because that is how returning users sign in and where account creation fields live. Return `true` from the `submit_job_form_show_signin` filter (the plugin's own) to bring the logged-in panel back.
 - **Field order.** Remote Position sits directly under Job type.
@@ -137,6 +145,7 @@ The single job page is two columns, matching the Jobs board: a details card on t
 - **Details card.** Job type (as the same pill used in the list), location, how long ago it was posted, salary if there is one, and the church or company with its website link. It sticks to the top as you scroll, like the sidebar on the Jobs board.
 - **Main column.** The title, the description (kept to a readable line length, with headings in the same style as the form), the job description PDF button if there is one, and Apply for job.
 - **How it is built.** `includes/job-page.php` wraps the plugin's own output with its `single_job_listing_start` and `single_job_listing_end` hooks and adds the title inside the page, so the title can share the wide column with the description. The theme's own title is hidden with CSS when ours is on the page. Only the main job page is changed. A `[job]` shortcode, the preview step and an expired listing keep the plugin's normal markup.
+- **Apply for job.** The button is a direct link instead of revealing the contact details when clicked. If the listing's application is a website, it goes straight there (in a new tab). If it is an email address, it opens the person's mail app addressed to that email with a subject like "Application for Youth Pastor at Riverside Community Church". The subject uses the plugin's own `job_manager_application_email_subject` filter, and you can change it with `wpjm_cs_application_subject`. The email address is still obfuscated against spam harvesters, as the plugin does. The template is `templates/job-application.php` and keeps the plugin's `job_application_start` and `job_application_end` hooks.
 - **Theme leftovers hidden.** Twenty Twenty-Five prints blog-post parts around a job: an empty "Written by ... in ..." line, previous / next post links and a "More posts" list. They are hidden on job pages. These rules use that theme's block class names, so on another theme they do nothing, and you may need equivalent rules for its leftovers.
 - The plugin puts an icon-font glyph on the location and date. The card's small labels override that font, or they would show as symbols.
 
@@ -202,6 +211,7 @@ The plugin only loads its CSS on pages it detects as job pages. If you use the s
 | `wpjm_cs_abbreviate_state` | Return `false` to keep state names as typed |
 | `wpjm_cs_state_terms_also_searched_as_text` | Names that should also be searched as plain text (default: `washington`) |
 | `wpjm_cs_format_location` | Change the combined location text |
+| `wpjm_cs_application_subject` | Change the subject of the Apply email link |
 | `wpjm_cs_pdf_max_size` | Largest job description PDF in bytes (default 5 MB) |
 | `wpjm_cs_removed_company_fields` | Which company fields are removed from the Post a Job form (default: Twitter, tagline, video, logo) |
 
@@ -213,6 +223,9 @@ Nothing here edits WP Job Manager. The location fields, sort and geolocation swi
 2. Search, State / Province, Reset Filters and Sort by reload the results.
 3. Posting a job shows City, State and ZIP, and the saved listing displays "City, ST 12345".
 4. Searching a city, a state and a ZIP finds the listing.
+5. The Category drawer filters, and a job page's Apply button goes to the website or opens an email.
+
+Two files in `templates/` are copies of WP Job Manager templates (`job-application.php` and `form-fields/term-multiselect-field.php`). They are swapped in by `includes/templates.php`. After a major update, compare them with the plugin's own versions in `wp-job-manager/templates/` for changes worth bringing across.
 
 `includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
 
@@ -222,6 +235,7 @@ The Playground preview comes with 26 realistic, made-up listings so every screen
 
 - Churches and ministries across 22 states and provinces, including a Canadian role with a CAD salary. All names, people and websites are invented, and websites and emails use `example.org`.
 - Every job type: full time, part time, internship, freelance and temporary, across six categories.
+- Most apply by email, and six send people to the church's own application page, so both Apply behaviours show.
 - Salaries by the year, month or hour; featured listings; three remote roles; one position marked filled; and PDFs attached to three listings (generated when the site is built).
 - Descriptions with an introduction, "What you will do", "What we are looking for", "What we offer", "About" and "How to apply" sections, from a long Lead Pastor posting to short part-time ones.
 - Locations saved the way the form saves them, with some states typed in full (for example "Texas"), so the state shortening and filter are exercised.

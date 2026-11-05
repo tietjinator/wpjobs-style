@@ -31,6 +31,9 @@
 			if ( sort ) {
 				sort.value = '';
 			}
+			reset.closest( '.job_listings' ).querySelectorAll( '.wpjm-drawer--categories input[type="checkbox"]' ).forEach( function ( box ) {
+				box.checked = false;
+			} );
 		},
 		true
 	);
@@ -43,6 +46,14 @@
 		document.querySelectorAll( '.wpjm-drawer' ).forEach( function ( drawer ) {
 			var hint = drawer.querySelector( '.wpjm-drawer__hint' );
 			if ( ! hint ) {
+				return;
+			}
+
+			// Category drawer: nothing ticked is "All categories".
+			if ( drawer.classList.contains( 'wpjm-drawer--categories' ) ) {
+				var ticked = drawer.querySelectorAll( 'input[type="checkbox"]:checked' ).length;
+				hint.textContent = ticked ? ticked + ' selected' : 'All categories';
+				hint.classList.toggle( 'is-active', ticked > 0 );
 				return;
 			}
 
@@ -66,7 +77,48 @@
 		} );
 	}
 
+	/*
+	 * 3. Category checklist <-> the plugin's own (hidden) category dropdown. The
+	 * plugin's JavaScript reads that dropdown, so the checklist drives it.
+	 */
+	function categorySelect( drawer ) {
+		var wrap = drawer.closest( 'div.job_listings' );
+		return wrap ? wrap.querySelector( 'select[name^="search_categories"]' ) : null;
+	}
+
+	// Tick the boxes to match the dropdown (page load, restored filters).
+	function syncChecklistFromSelect() {
+		document.querySelectorAll( '.wpjm-drawer--categories' ).forEach( function ( drawer ) {
+			var select = categorySelect( drawer );
+			if ( ! select ) {
+				return;
+			}
+			var chosen = Array.prototype.map.call( select.selectedOptions, function ( o ) {
+				return o.value;
+			} );
+			drawer.querySelectorAll( 'input[type="checkbox"]' ).forEach( function ( box ) {
+				box.checked = chosen.indexOf( box.value ) !== -1;
+			} );
+		} );
+	}
+
 	document.addEventListener( 'change', function ( event ) {
+		var box = event.target.closest && event.target.closest( '.wpjm-drawer--categories input[type="checkbox"]' );
+		if ( box ) {
+			var drawer = box.closest( '.wpjm-drawer--categories' );
+			var select = categorySelect( drawer );
+			if ( select ) {
+				var ticked = Array.prototype.map.call( drawer.querySelectorAll( 'input[type="checkbox"]:checked' ), function ( b ) {
+					return b.value;
+				} );
+				Array.prototype.forEach.call( select.options, function ( o ) {
+					o.selected = ticked.indexOf( o.value ) !== -1;
+				} );
+				// The plugin runs the search when this dropdown changes.
+				select.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+			}
+		}
+
 		if ( event.target.closest && event.target.closest( '.wpjm-drawer' ) ) {
 			updateHints();
 		}
@@ -79,14 +131,19 @@
 		}
 	} );
 
-	updateHints();
-	document.addEventListener( 'DOMContentLoaded', updateHints );
-	window.addEventListener( 'load', updateHints );
+	function refresh() {
+		syncChecklistFromSelect();
+		updateHints();
+	}
+
+	refresh();
+	document.addEventListener( 'DOMContentLoaded', refresh );
+	window.addEventListener( 'load', refresh );
 
 	// The plugin restores saved filter values after load, then fires this after each search.
 	if ( window.jQuery ) {
 		window.jQuery( function ( $ ) {
-			$( 'div.job_listings' ).on( 'updated_results', updateHints );
+			$( 'div.job_listings' ).on( 'updated_results', refresh );
 		} );
 	}
 } )();

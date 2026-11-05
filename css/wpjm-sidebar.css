@@ -443,3 +443,47 @@ body form.job_filters > .search_remote_position label {
 body form.job_filters .search_jobs div.search_location {
 	display: none;
 }
+
+/* ---------- Category drawer ----------
+   includes/category-filter.php prints a drawer of checkboxes like Job type. The
+   plugin's own category dropdown stays in the page (the plugin's JavaScript reads
+   it, and js/sidebar.js keeps it in step with the checkboxes) but is hidden. */
+body form.job_filters .search_jobs div.search_categories {
+	display: none;
+}
+
+body form.job_filters .wpjm-drawer ul.wpjm-checklist {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: var(--wpjm-fs-body);
+}
+
+body form.job_filters .wpjm-drawer ul.wpjm-checklist li {
+	margin: 0;
+	padding: 0;
+}
+
+body form.job_filters .wpjm-drawer ul.wpjm-checklist label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 0;
+	cursor: pointer;
+	font-size: var(--wpjm-fs-body);
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+body form.job_filters .wpjm-drawer ul.wpjm-checklist input {
+	flex: none;
+	width: auto !important;
+	margin: 0;
+}
+
+/* The number of listings, pushed to the right edge. */
+body form.job_filters .wpjm-checklist__count {
+	margin-left: auto;
+	font-size: var(--wpjm-fs-small);
+	color: var(--wpjm-muted);
+}

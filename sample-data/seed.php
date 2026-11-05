@@ -398,7 +398,9 @@ foreach ( $listings as $L ) {
 	$slug = sanitize_title( $L['church'] );
 	update_post_meta( $id, '_company_name', $L['church'] );
 	update_post_meta( $id, '_company_website', $L['site'] );
-	update_post_meta( $id, '_application', 'careers@' . $slug . '.example.org' );
+	// Most apply by email; a few send people to the church's own application page.
+	$apply_by_site = in_array( $L['title'], [ 'Lead Pastor', 'Executive Pastor', 'Worship Pastor', 'Communications Director', 'Campus Pastor', 'Facilities & Grounds Manager' ], true );
+	update_post_meta( $id, '_application', $apply_by_site ? $L['site'] . '/careers/' . sanitize_title( $L['title'] ) : 'careers@' . $slug . '.example.org' );
 	update_post_meta( $id, '_featured', in_array( 'featured', $L['flags'], true ) ? 1 : 0 );
 	update_post_meta( $id, '_filled', in_array( 'filled', $L['flags'], true ) ? 1 : 0 );
 	update_post_meta( $id, '_remote_position', in_array( 'remote', $L['flags'], true ) ? 1 : 0 );

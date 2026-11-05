@@ -1116,6 +1116,64 @@ body .single_job_listing .job_description p.wpjm-pdf a:focus-visible {
 	background: var(--wpjm-accent);
 }
 
+/* Job category on the form: a checklist (templates/form-fields/term-multiselect-field.php). */
+body form.job-manager-form .wpjm-checks {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px 20px;
+	padding: 6px 0;
+}
+
+/* The plugin gives every label in a form row a fixed width and floats it left, and
+   that rule is quite specific, so this one has to be at least as specific. */
+body form.job-manager-form fieldset div.field .wpjm-checks label.wpjm-check {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	float: none;
+	width: auto;
+	margin: 0;
+	font-size: var(--wpjm-fs-body);
+	font-weight: 500;
+	line-height: 1.4;
+	cursor: pointer;
+}
+
+body form.job-manager-form fieldset div.field .wpjm-checks input {
+	flex: none;
+	width: auto;
+	margin: 0;
+}
+
+@media (max-width: 560px) {
+	body form.job-manager-form .wpjm-checks {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Apply for job: a link now (website or email), styled like the primary button. */
+body .job_application.application .wpjm-apply {
+	display: inline-block;
+	padding: 0.75em 1.5em;
+	font-family: inherit;
+	font-size: var(--wpjm-fs-body);
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--wpjm-accent-contrast);
+	text-decoration: none;
+	background: var(--wpjm-accent);
+	border: 1px solid var(--wpjm-accent);
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+body .job_application.application .wpjm-apply:hover,
+body .job_application.application .wpjm-apply:focus-visible {
+	color: var(--wpjm-accent-contrast);
+	background: var(--wpjm-accent-hover);
+	border-color: var(--wpjm-accent-hover);
+}
+
 /* ==========================================================================
    16. Your overrides
    Add anything site-specific below this line. It is the last thing in the
