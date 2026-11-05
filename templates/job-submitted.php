@@ -27,7 +27,7 @@ if ( 'publish' === $job->post_status ) :
 	<div class="job-manager-message wpjm-submitted wpjm-submitted--live">
 		<h2 class="wpjm-submitted__title"><?php esc_html_e( 'Your listing is live', 'wpjm-custom-styles' ); ?></h2>
 		<p><?php esc_html_e( 'Thank you for posting. People can find it on the job board now.', 'wpjm-custom-styles' ); ?></p>
-		<p><a class="button" href="<?php echo esc_url( get_permalink( $job->ID ) ); ?>"><?php esc_html_e( 'View your listing', 'wpjm-custom-styles' ); ?></a></p>
+		<p class="wpjm-submitted__actions"><a class="button" href="<?php echo esc_url( get_permalink( $job->ID ) ); ?>"><?php esc_html_e( 'View your listing', 'wpjm-custom-styles' ); ?></a></p>
 	</div>
 	<?php
 elseif ( 'pending' === $job->post_status ) :
@@ -49,7 +49,7 @@ elseif ( 'pending' === $job->post_status ) :
 				<a href="mailto:<?php echo esc_attr( antispambot( $contact ) ); ?>"><?php echo esc_html( antispambot( $contact ) ); ?></a>.
 			</p>
 		<?php endif; ?>
-		<p><a href="<?php echo esc_url( get_post_type_archive_link( 'job_listing' ) ?: home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to the job board', 'wpjm-custom-styles' ); ?></a></p>
+		<p class="wpjm-submitted__actions"><a class="button" href="<?php echo esc_url( get_post_type_archive_link( 'job_listing' ) ?: home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to the job board', 'wpjm-custom-styles' ); ?></a></p>
 	</div>
 	<?php
 else :
