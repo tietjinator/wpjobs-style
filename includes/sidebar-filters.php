@@ -103,3 +103,71 @@ add_action(
 	},
 	30
 );
+
+/**
+ * Job type "drawer": the job type checkboxes and the "Remote positions only"
+ * checkbox inside one collapsible <details> block.
+ *
+ * The plugin prints the job types at `job_manager_job_filters_end` priority 20
+ * and the remote checkbox earlier, inside the search block. We hide its copy of
+ * the remote checkbox, capture the job types output, and print both inside the
+ * drawer. Field names and ids are unchanged, so the plugin's JS (search on
+ * change, Reset) keeps working. Drawer is open by default; return false from
+ * the `wpjm_cs_types_drawer_open` filter to start it closed.
+ */
+function wpjm_cs_remote_enabled( $set = null ) {
+	static $enabled = false;
+	if ( null !== $set ) {
+		$enabled = (bool) $set;
+	}
+	return $enabled;
+}
+
+// Remember whether the remote checkbox is enabled, then stop the template printing it.
+add_filter(
+	'job_manager_job_filters_show_remote_position',
+	function ( $show ) {
+		wpjm_cs_remote_enabled( $show );
+		return false;
+	},
+	999
+);
+
+add_action(
+	'job_manager_job_filters_end',
+	function () {
+		ob_start();
+	},
+	19
+);
+
+add_action(
+	'job_manager_job_filters_end',
+	function ( $atts ) {
+		$types_html = ob_get_clean();
+		$has_list   = false !== strpos( (string) $types_html, 'class="job_types"' );
+		$remote     = '';
+
+		if ( wpjm_cs_remote_enabled() ) {
+			$checked = ! empty( $atts['remote_position'] ) ? ' checked="checked"' : '';
+			$remote  = '<div class="search_remote_position">'
+				. '<input type="checkbox" class="input-checkbox" name="remote_position" id="remote_position" value="1"' . $checked . ' />'
+				. '<label for="remote_position" id="remote_position_label">' . esc_html__( 'Remote positions only', 'wp-job-manager' ) . '</label>'
+				. '</div>';
+		}
+
+		// No job type list (for example on a job type archive): no drawer to build.
+		if ( ! $has_list ) {
+			echo $types_html . $remote; // phpcs:ignore WordPress.Security.EscapeOutput -- Plugin template output and static markup above.
+			return;
+		}
+
+		$open = apply_filters( 'wpjm_cs_types_drawer_open', true ) ? ' open' : '';
+
+		echo '<details class="wpjm-drawer"' . $open . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo '<summary>' . esc_html__( 'Job type', 'wpjm-custom-styles' ) . '</summary>';
+		echo '<div class="wpjm-drawer__body">' . $types_html . $remote . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo '</details>';
+	},
+	21
+);

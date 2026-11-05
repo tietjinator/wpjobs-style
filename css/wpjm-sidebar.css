@@ -80,7 +80,7 @@ body form.job_filters .search_jobs {
 
 /* Cancel the plugin's floated half-width columns and hidden labels. */
 /* :is() raises specificity above the plugin's `.search_jobs div.search_*` rules. */
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_reset) {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_categories, .search_submit, .search_reset) {
 	float: none;
 	width: 100%;
 	clear: none;
@@ -88,7 +88,7 @@ body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, 
 	border-bottom: 1px solid var(--wpjm-border);
 }
 
-body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_remote_position, .search_categories, .search_submit, .search_reset) label {
+body form.job_filters .search_jobs > div:is(.search_keywords, .search_location, .search_categories, .search_submit, .search_reset) label {
 	display: block;
 	margin-bottom: 6px;
 	font-size: 0.8em;
@@ -118,56 +118,90 @@ body form.job_filters .select2-container {
 /* ---------- Order of the groups ---------- */
 body form.job_filters .search_keywords { order: 1; }
 body form.job_filters .search_location { order: 2; }
+body form.job_filters .wpjm-drawer,
 body form.job_filters ul.job_types { order: 3; }
-body form.job_filters .search_remote_position { order: 4; }
 body form.job_filters .search_categories { order: 5; }
 body form.job_filters .search_submit { order: 6; }
 body form.job_filters .search_reset { order: 7; }
 body form.job_filters .showing_jobs { order: 8; }
 
-/* Remote toggle: label sits beside the checkbox */
-body form.job_filters .search_jobs div.search_remote_position {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-body form.job_filters .search_jobs div.search_remote_position input {
-	width: auto !important;
-	margin: 0;
-}
-
-body form.job_filters .search_jobs div.search_remote_position label,
-body form.job_filters .search_jobs div.search_remote_position label#remote_position_label {
-	display: inline;
-	margin: 0;
-	font-size: 0.95em;
-	font-weight: 600;
-	letter-spacing: 0;
-	text-transform: none;
-	color: var(--wpjm-text);
-}
-
-/* ---------- Job type checklist ---------- */
-body form.job_filters ul.job_types {
-	list-style: none;
-	margin: 0;
-	padding: 16px 18px;
-	font-size: 1em;
-	background: transparent;
-	border-top: 0;
+/* Drawer: <details> holding the job types and the remote checkbox. */
+body form.job_filters details.wpjm-drawer {
 	border-bottom: 1px solid var(--wpjm-border);
 }
 
-body form.job_filters ul.job_types::before {
-	content: "Job type";
-	display: block;
-	margin-bottom: 8px;
+body form.job_filters .wpjm-drawer > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 18px;
+	cursor: pointer;
+	list-style: none;
 	font-size: 0.8em;
 	font-weight: 700;
 	letter-spacing: 0.05em;
 	text-transform: uppercase;
 	color: var(--wpjm-muted);
+}
+
+body form.job_filters .wpjm-drawer > summary::-webkit-details-marker {
+	display: none;
+}
+
+/* The caret: points down when closed, up when open. */
+body form.job_filters .wpjm-drawer > summary::after {
+	content: "";
+	width: 7px;
+	height: 7px;
+	margin: -4px 2px 0 0;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(45deg);
+	transition: transform 0.15s ease, margin 0.15s ease;
+}
+
+body form.job_filters .wpjm-drawer[open] > summary::after {
+	margin-top: 4px;
+	transform: rotate(-135deg);
+}
+
+body form.job_filters .wpjm-drawer > summary:focus-visible {
+	outline: 2px solid var(--wpjm-accent);
+	outline-offset: -2px;
+}
+
+body form.job_filters .wpjm-drawer__body {
+	padding: 0 18px 14px;
+}
+
+body form.job_filters .wpjm-drawer ul.job_types {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	background: transparent;
+	border: 0;
+}
+
+/* Remote positions checkbox, below the job types inside the drawer. */
+body form.job_filters .wpjm-drawer .search_remote_position {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 8px;
+	padding-top: 12px;
+	border-top: 1px solid var(--wpjm-border);
+}
+
+body form.job_filters .wpjm-drawer .search_remote_position input {
+	width: auto !important;
+	margin: 0;
+}
+
+body form.job_filters .wpjm-drawer .search_remote_position label {
+	display: inline;
+	margin: 0;
+	font-weight: 500;
 }
 
 body form.job_filters ul.job_types li {
@@ -238,6 +272,7 @@ body form.job_filters .search_submit input[type="submit"] {
 	}
 
 	body form.job_filters .search_jobs > div,
+	body form.job_filters .wpjm-drawer,
 	body form.job_filters ul.job_types {
 		flex: 1 1 100%;
 		box-sizing: border-box;
@@ -316,4 +351,26 @@ body .wpjm-sort-bar select {
 	border-radius: 6px;
 	background-color: var(--wpjm-surface);
 	color: var(--wpjm-text);
+}
+
+/* Remote checkbox when there is no job type list (e.g. a job type archive),
+   so it is not inside the drawer. */
+body form.job_filters > .search_remote_position {
+	order: 4;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 16px 18px;
+	border-bottom: 1px solid var(--wpjm-border);
+}
+
+body form.job_filters > .search_remote_position input {
+	width: auto !important;
+	margin: 0;
+}
+
+body form.job_filters > .search_remote_position label {
+	display: inline;
+	margin: 0;
+	font-weight: 500;
 }
