@@ -9,6 +9,7 @@
  *
  *   job-application.php                    Apply button: a direct link
  *   account-signin.php                     Post a Job: no "Have an account?" prompt
+ *   job-submitted.php                      After submitting: review notice
  *   form-fields/term-multiselect-field.php Job category on the form: checkboxes
  */
 
@@ -22,6 +23,7 @@ add_filter(
 		$ours = [
 			'job-application.php'                    => 'templates/job-application.php',
 			'account-signin.php'                     => 'templates/account-signin.php',
+			'job-submitted.php'                      => 'templates/job-submitted.php',
 			'form-fields/term-multiselect-field.php' => 'templates/form-fields/term-multiselect-field.php',
 		];
 
