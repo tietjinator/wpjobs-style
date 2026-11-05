@@ -15,6 +15,10 @@
 	--wpjm-sidebar-gap: 28px;
 	/* Raise this if you have a sticky site header. */
 	--wpjm-sidebar-top: 24px;
+	/* Width of the whole filters + results block on desktop. Breaks out of the
+	   theme's content column and centres itself. Use e.g. 1440px for a fixed
+	   width, or 100% to stay inside the theme's column. */
+	--wpjm-listings-width: 80vw;
 }
 
 /* ---------- Layout ---------- */
@@ -24,6 +28,10 @@
 		grid-template-columns: var(--wpjm-sidebar-width) minmax(0, 1fr);
 		column-gap: var(--wpjm-sidebar-gap);
 		align-items: start;
+		width: var(--wpjm-listings-width);
+		max-width: 100vw;
+		/* Centre on the page even when the theme column is narrower. */
+		margin-inline: calc(50% - var(--wpjm-listings-width) / 2);
 	}
 
 	body div.job_listings > form.job_filters {
