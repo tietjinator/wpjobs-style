@@ -14,6 +14,7 @@ require_once __DIR__ . '/includes/sidebar-filters.php';
 require_once __DIR__ . '/includes/no-geolocation.php';
 require_once __DIR__ . '/includes/location-fields.php';
 require_once __DIR__ . '/includes/submit-form.php';
+require_once __DIR__ . '/includes/job-page.php';
 require_once __DIR__ . '/includes/compat.php';
 
 add_action(

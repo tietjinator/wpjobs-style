@@ -52,8 +52,9 @@
 	   It breaks out of the theme's narrow column and centres itself. Use 80vw to
 	   match the Jobs page, or 100% to stay inside the theme's column. */
 	--wpjm-form-width: min(80vw, 1000px);
-	/* Same idea for the single job page. */
-	--wpjm-job-width: min(80vw, 1000px);
+	/* The single job page uses the same width as the Jobs board, so the two
+	   line up. It uses the board's sidebar width and gap for its details card. */
+	--wpjm-job-width: var(--wpjm-listings-width, 80vw);
 
 	--wpjm-fs-label: 0.75rem;   /* 12px  small uppercase labels, pills */
 	--wpjm-fs-small: 0.8125rem; /* 13px  dates, hints, help text */
@@ -858,9 +859,194 @@ body .job_listing_preview_title h2 {
 	}
 }
 
-/* Single job page: wider than the theme's narrow column, centred on the page.
-   Not applied to the preview step, which is already inside the wider form. */
+/* ---- Single job page: two columns, like the Jobs board ------------------------
+   Details card on the left (the board's sidebar width), title, description and
+   Apply on the right. The markup is built in includes/job-page.php. */
+
+/* The theme's own title is hidden once ours is on the page. */
+body.single-job_listing:has(.wpjm-job-title) :is(h1.wp-block-post-title, h1.entry-title, .entry-header h1) {
+	display: none;
+}
+
+body .single_job_listing .wpjm-job-title {
+	margin: 0 0 1.25rem;
+	font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+	font-weight: 600;
+	line-height: 1.2;
+	color: var(--wpjm-text);
+}
+
+/* Details card */
+body .single_job_listing .wpjm-job-side {
+	margin: 0 0 1.5rem;
+	padding: 18px;
+	background: var(--wpjm-surface);
+	border: 1px solid var(--wpjm-border);
+	border-radius: var(--wpjm-radius);
+}
+
+body .single_job_listing .wpjm-job-side ul.job-listing-meta {
+	display: grid;
+	gap: 14px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li {
+	float: none;
+	margin: 0;
+	padding: 0;
+	font-size: var(--wpjm-fs-body);
+	line-height: 1.4;
+	color: var(--wpjm-text);
+}
+
+/* Small label above each detail. The job type is the pill and the date already
+   says "Posted ...", so neither has one. The plugin puts an icon-font glyph on
+   these same spots, so reset its font and sizing or the label shows as garbage. */
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.location::before,
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.salary::before {
+	display: block;
+	width: auto;
+	height: auto;
+	margin: 0 0 2px;
+	/* The plugin sets its icon font with !important, so this needs it too. */
+	font-family: inherit !important;
+	font-style: normal;
+	font-size: var(--wpjm-fs-label);
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	line-height: 1.3;
+	text-transform: uppercase;
+	color: var(--wpjm-muted);
+}
+
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.location::before { content: "Location"; }
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.salary::before { content: "Salary"; }
+
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.date-posted {
+	font-size: var(--wpjm-fs-small);
+	color: var(--wpjm-muted);
+}
+
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.date-posted::before {
+	content: none;
+}
+
+/* The job type pill (the card's general li rule above would flatten it). */
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.job-type {
+	justify-self: start;
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--wpjm-c) 18%, #fff);
+	color: color-mix(in srgb, var(--wpjm-c) var(--wpjm-c-mix), var(--twc-deep-navy));
+	font-size: var(--wpjm-fs-label);
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+/* The location links to a map; keep it plain and readable. */
+body .single_job_listing .wpjm-job-side ul.job-listing-meta li.location a {
+	color: var(--wpjm-text);
+	text-decoration: none;
+}
+
+/* Company, as a section of the card rather than its own box. */
+body .single_job_listing .wpjm-job-side .company {
+	margin: 16px 0 0;
+	padding: 16px 0 0;
+	background: transparent;
+	border: 0;
+	border-top: 1px solid var(--wpjm-border);
+	border-radius: 0;
+	box-shadow: none;
+}
+
+body .single_job_listing .wpjm-job-side .company::before {
+	content: "Church / Company";
+	display: block;
+	margin-bottom: 2px;
+	font-size: var(--wpjm-fs-label);
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--wpjm-muted);
+}
+
+/* The name first, then the website link under it (the plugin floats the link right). */
+body .single_job_listing .wpjm-job-side .company .name {
+	display: flex;
+	flex-direction: column-reverse;
+	align-items: flex-start;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+}
+
+body .single_job_listing .wpjm-job-side .company .name a.website,
+body .single_job_listing .wpjm-job-side .company .name a.company_twitter {
+	float: none;
+	margin: 0;
+	font-size: var(--wpjm-fs-body);
+}
+
+/* Blog-post leftovers from the theme (Twenty Twenty-Five): the empty "Written by
+   ... in ..." line under the title, the previous / next post links and the "More
+   posts" list. They mean nothing on a job. Only on job pages that have our title,
+   and only rules for this theme's block classes, so on another theme they do
+   nothing. */
+body.single-job_listing:has(.wpjm-job-title) h1.wp-block-post-title + .wp-block-group,
+body.single-job_listing:has(.wpjm-job-title) .wp-block-post-navigation-link,
+body.single-job_listing:has(.wpjm-job-title) nav.wp-block-group:has(.wp-block-post-navigation-link),
+body.single-job_listing:has(.wpjm-job-title) .wp-block-group:has(> .wp-block-query) {
+	display: none;
+}
+
+/* No icon glyph before the website link, so it lines up with the name above. */
+body .single_job_listing .wpjm-job-side .company .name a.website::before,
+body .single_job_listing .wpjm-job-side .company .name a.company_twitter::before {
+	display: none;
+}
+
+/* Headings written inside a description, in the same style as the form headings. */
+body .single_job_listing .wpjm-job-main .job_description :is(h2, h3, h4) {
+	margin: 1.75rem 0 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--wpjm-text);
+}
+
+/* Main column text stays at a comfortable line length. */
+body .single_job_listing .wpjm-job-main .job_description {
+	max-width: 46rem;
+}
+
 @media (min-width: 900px) {
+	/* Two columns when the page has the structure above. */
+	body div.single_job_listing:not(.job_listing_preview):has(> .wpjm-job-side) {
+		display: grid;
+		grid-template-columns: var(--wpjm-sidebar-width, 290px) minmax(0, 1fr);
+		grid-template-areas:
+			"side title"
+			"side main";
+		column-gap: var(--wpjm-sidebar-gap, 28px);
+		align-items: start;
+	}
+
+	body .single_job_listing .wpjm-job-title { grid-area: title; }
+	body .single_job_listing .wpjm-job-main { grid-area: main; }
+
+	body .single_job_listing .wpjm-job-side {
+		grid-area: side;
+		position: sticky;
+		top: var(--wpjm-sidebar-top, 24px);
+		margin: 0;
+	}
+
+	/* Wider than the theme's narrow column, centred on the page. Not applied to
+	   the preview step, which is already inside the wider form. */
 	body div.single_job_listing:not(.job_listing_preview) {
 		width: var(--wpjm-job-width);
 		max-width: 100vw;

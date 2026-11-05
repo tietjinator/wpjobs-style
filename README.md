@@ -19,6 +19,7 @@ What it does:
 | `css/wpjm-sidebar.css` | The sidebar layout, Job type drawer and Sort by control. |
 | `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, and keeps the drawer hint up to date. |
 | `includes/sidebar-filters.php` | Sort by, the Job type drawer markup, the Reset Filters button, and removing the "Showing N jobs" message and RSS link. |
+| `includes/job-page.php` | The single job page as two columns: adds the title inside the page and wraps the details and main column. |
 | `includes/submit-form.php` | The Post a Job form: "Church / Company" wording, removed company fields, the Remote Position checkbox and the job description PDF upload. |
 | `includes/location-fields.php` | City / State / ZIP fields, state shortening, the State / Province filter, and the location search rules. |
 | `includes/no-geolocation.php` | Turns off Google geolocation. |
@@ -130,7 +131,13 @@ The form was tested end to end in a browser: filling it in, previewing, and publ
 
 ## Job page
 
-On screens 900px and wider the single job page is wider than the theme's narrow column and centred on the page, like the Jobs list and the form. The width is `--wpjm-job-width` at the top of `css/wpjm-custom.css` (default `min(80vw, 1000px)`). The preview step is not affected, because it sits inside the form, which has its own width.
+The single job page is two columns, matching the Jobs board: a details card on the left at the board's sidebar width (290px), and the title, description and Apply button on the right. It is as wide as the Jobs board, so moving between the two lines the columns up exactly. Both use `--wpjm-listings-width`, `--wpjm-sidebar-width` and `--wpjm-sidebar-gap` (see Sidebar and sorting). `--wpjm-job-width` in `css/wpjm-custom.css` is the page width and follows `--wpjm-listings-width` by default. Below 900px the page is one column: title, details, description, Apply.
+
+- **Details card.** Job type (as the same pill used in the list), location, how long ago it was posted, salary if there is one, and the church or company with its website link. It sticks to the top as you scroll, like the sidebar on the Jobs board.
+- **Main column.** The title, the description (kept to a readable line length, with headings in the same style as the form), the job description PDF button if there is one, and Apply for job.
+- **How it is built.** `includes/job-page.php` wraps the plugin's own output with its `single_job_listing_start` and `single_job_listing_end` hooks and adds the title inside the page, so the title can share the wide column with the description. The theme's own title is hidden with CSS when ours is on the page. Only the main job page is changed. A `[job]` shortcode, the preview step and an expired listing keep the plugin's normal markup.
+- **Theme leftovers hidden.** Twenty Twenty-Five prints blog-post parts around a job: an empty "Written by ... in ..." line, previous / next post links and a "More posts" list. They are hidden on job pages. These rules use that theme's block class names, so on another theme they do nothing, and you may need equivalent rules for its leftovers.
+- The plugin puts an icon-font glyph on the location and date. The card's small labels override that font, or they would show as symbols.
 
 ## Brand colours
 
