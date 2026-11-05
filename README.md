@@ -32,12 +32,38 @@ What it does:
 | `sample-data/` | The sample listings for the preview (`seed.php`) and the script that puts them into `blueprint.json` (`build-blueprint.php`). |
 | `tests/` | Seed data and automated search checks. |
 
-## Install
+## Install on your site
 
-1. Zip this folder, or copy it to `wp-content/plugins/wpjm-custom-styles/`.
-2. Activate **WPJM Custom Styles** in the WordPress admin.
+**Before you start**
 
-Requires WP Job Manager. Browser support: the layout uses `:has()`, container queries and `color-mix()`, which need Chrome and Edge 111+, Safari 16.2+ or Firefox 121+ (all from 2023). Older browsers show the plugin's plain styles with the sidebar stacked above the results.
+- Take a backup, or try it on a staging copy first. Nothing in WP Job Manager is edited, and deactivating this plugin puts the site back as it was, but this changes how the Jobs page, job pages and the Post a Job form look and what the form asks for.
+- WP Job Manager must be installed and active, and your Jobs, Post a Job and Job Dashboard pages should already use its shortcodes (`[jobs]`, `[submit_job_form]`, `[job_dashboard]`).
+- Check your theme. The two-column job page prints the title itself and hides the theme's title, and the rules that hide blog leftovers (author line, previous / next post, "More posts") are written for Twenty Twenty-Five. On another theme, look at one job page afterwards for a doubled title or leftover blog parts, and tell whoever maintains the plugin which theme you use.
+- If your theme has a `job_manager` folder (templates copied from WP Job Manager), a theme copy of `job-application.php` or `form-fields/term-multiselect-field.php` would win over this plugin's version. Remove or update those copies if you want the direct Apply link or the category checklist.
+
+**Steps**
+
+1. Download `wpjm-custom-styles.zip` (the installable plugin, without the test files).
+2. In WordPress: **Plugins > Add New Plugin > Upload Plugin**, choose the zip, **Install Now**, then **Activate**. To update later, upload a newer zip and choose "Replace current with uploaded". Install only one copy; if a second is active you will see a notice on the Plugins screen.
+3. In **Job Listings > Settings**, check these are on: Job Types, Categories, Remote Position, and Salary (with Salary Currency and Salary Unit). Decide whether new submissions need approval, and whether posting needs an account (people who are not signed in see "Have an account? Sign in" above the form). The category settings for the filter are handled by this plugin.
+4. In **Job Listings > Job categories**, add your own categories. "Other" is created for you.
+5. Existing listings keep their old single-line location until each one is opened in the admin, City, State and ZIP are filled in, and it is saved. Until then they show on the Jobs page and match location text searches, but are not counted in the State / Province dropdown. Listings also need a category to appear in the Category drawer.
+6. Clear any caches: a caching plugin, your host's cache and a CDN. Saving or publishing any listing also clears the Jobs search cache.
+7. Check, in a private window so you see what visitors see:
+   - The Jobs page: filters, sort, Reset Filters and Load more.
+   - A job page: details card, description, the PDF button if there is one, and Apply for job.
+   - The Post a Job form: required fields, category, salary, PDF upload, Preview and Submit.
+   - The Job Dashboard.
+8. Make sure Google Maps is not needed anywhere: geolocation is switched off, so the Google Maps API key setting does nothing.
+
+**If something looks wrong**
+
+- Deactivate the plugin. The site returns to normal and your listings are untouched (this plugin only adds extra fields to them).
+- Widths, columns and colours are variables at the top of `css/wpjm-custom.css` and `css/wpjm-sidebar.css` (see Customising). If your theme's content area is not centred, set `--wpjm-listings-width`, `--wpjm-form-width` and `--wpjm-job-width` to `100%`.
+
+**Settings it relies on, and what it overrides**
+
+It switches Google geolocation off, treats "Remote Position" as on unless you turn it off, and makes the category filter always multiple choice and "match any". Everything else follows your Job Listings settings.
 
 ## Live preview
 
