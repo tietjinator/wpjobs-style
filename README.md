@@ -69,6 +69,26 @@ Nothing here edits WP Job Manager, so its updates install as normal. The locatio
 
 `includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
 
+## Brand colours
+
+The colours come from the Wesleyan brand refresh guide and are defined once at the top of `css/wpjm-custom.css` (`--twc-*`). Everything else points at them, so changing a swatch there changes it everywhere. The guide lists print (CMYK) values only, so the hex values here are those swatches converted to RGB. If you have official web values, replace them in that one block.
+
+| Colour | Hex | Used for |
+|---|---|---|
+| Navy | `#08496f` | Buttons, links, focus rings, the drawer hint |
+| Deep Navy | `#00344d` | Text, button hover |
+| Bright Blue | `#34a6de` | Freelance job type (accent only, see below) |
+| Mist | `#d9eae8` | Card borders and dividers |
+| Milky | `#f3f0e9` | Soft panels (company box, application details, notices) |
+| Hazy | `#cbcaca` | Form field borders |
+| Charcoal | `#414042` | Secondary text (company, location, labels) |
+| Gold | `#f1a846` | Featured listings, Part Time |
+| Scarlet | `#cb2d4c` | Errors, Temporary, filled and expired notices |
+| Seafoam | `#78b4af` | Full Time |
+| Celery | `#adbb73` | Internship |
+
+Two accessibility choices follow from the palette. White text on Bright Blue is only 2.7:1, so buttons and links use Navy (9.6:1) and Bright Blue is kept for accents. Celery, Seafoam and Gold are about 2:1 as text on white, so the job type pills use a darker mix of each colour (45% of the colour, 55% Deep Navy; 70% for Scarlet) on a light tint of it, which gives 4.9:1 or better. The coloured dots in the sidebar use the pure brand colours. The Job type drawer header is `#e7e7e7`, which you asked for and is not a brand colour. Change `--wpjm-drawer-bg` in `css/wpjm-sidebar.css` to `var(--twc-milky)` or `var(--twc-hazy)` to bring it into the palette.
+
 ## Customising
 
 Start with the tokens at the top of `css/wpjm-custom.css` (colours, radius, spacing, job type colours). The file is split into numbered sections, one per area: notices, search filters, listings, single page, submit form, dashboard, pagination, widgets. Put site-specific rules in section 12.

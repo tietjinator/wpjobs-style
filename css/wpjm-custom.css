@@ -13,29 +13,54 @@
    1. Design tokens
    ========================================================================== */
 :root {
-	--wpjm-accent: #2563eb;
-	--wpjm-accent-contrast: #ffffff;
-	--wpjm-text: #1f2937;
-	--wpjm-muted: #6b7280;
-	--wpjm-border: #e5e7eb;
-	--wpjm-surface: #ffffff;
-	--wpjm-surface-alt: #f9fafb;
-	--wpjm-featured-bg: #fffbeb;
-	--wpjm-featured-border: #f59e0b;
+	/* Brand palette: The Wesleyan Church brand refresh guide. The guide gives
+	   print (CMYK) values only, so these are those swatches converted to RGB.
+	   If you have official web values, change them here and nothing else. */
+	--twc-navy: #08496f;
+	--twc-bright-blue: #34a6de;
+	--twc-deep-navy: #00344d;
+	--twc-mist: #d9eae8;
+	--twc-celery: #adbb73;
+	--twc-seafoam: #78b4af;
+	--twc-scarlet: #cb2d4c;
+	--twc-gold: #f1a846;
+	--twc-hazy: #cbcaca;
+	--twc-milky: #f3f0e9;
+	--twc-charcoal: #414042;
+	--twc-white: #ffffff;
+
+	/* Roles. Navy (not Bright Blue) carries buttons and links, because white
+	   on Bright Blue is only 2.7:1; Navy is 9.6:1. Bright Blue is for accents. */
+	--wpjm-accent: var(--twc-navy);
+	--wpjm-accent-hover: var(--twc-deep-navy);
+	--wpjm-accent-contrast: var(--twc-white);
+	--wpjm-text: var(--twc-deep-navy);
+	--wpjm-muted: var(--twc-charcoal);
+	--wpjm-border: var(--twc-mist);
+	--wpjm-input-border: var(--twc-hazy);
+	--wpjm-surface: var(--twc-white);
+	--wpjm-surface-alt: var(--twc-milky);
+	--wpjm-danger: var(--twc-scarlet);
+	/* Gold at about 14% on white, for the featured listing background. */
+	--wpjm-featured-bg: #fdf3e5;
+	--wpjm-featured-border: var(--twc-gold);
 	--wpjm-radius: 8px;
 	--wpjm-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 	--wpjm-gap: 16px;
 
-	/* Job type colours. Slugs come from your Job Types, add your own below. */
-	--wpjm-type-full-time: #16a34a;
-	--wpjm-type-part-time: #ea580c;
-	--wpjm-type-internship: #7c3aed;
-	--wpjm-type-freelance: #0284c7;
-	--wpjm-type-temporary: #db2777;
+	/* Job type colours. Slugs come from your Job Types, add your own below.
+	   These are the brand colours as they appear (the sidebar dots). The text
+	   on the pills is a darker mix of the same colour, see section 5. */
+	--wpjm-type-full-time: var(--twc-seafoam);
+	--wpjm-type-part-time: var(--twc-gold);
+	--wpjm-type-internship: var(--twc-celery);
+	--wpjm-type-freelance: var(--twc-bright-blue);
+	--wpjm-type-temporary: var(--twc-scarlet);
 
 	/* Feed the plugin's own UI variables (dashboard, dialogs, newer forms). */
 	--jm-ui-accent-color: var(--wpjm-accent);
 	--jm-ui-accent-color-contrast: var(--wpjm-accent-contrast);
+	--jm-ui-danger-color: var(--twc-scarlet);
 	--jm-ui-radius: 4px;
 }
 
@@ -54,7 +79,7 @@ body .job-manager-error {
 }
 
 body .job-manager-error {
-	border-left-color: #dc2626;
+	border-left-color: var(--wpjm-danger);
 }
 
 /* ==========================================================================
@@ -75,7 +100,7 @@ body form.job_filters label {
 
 body form.job_filters input[type="text"],
 body form.job_filters select {
-	border: 1px solid var(--wpjm-border);
+	border: 1px solid var(--wpjm-input-border);
 	border-radius: 6px;
 	background: var(--wpjm-surface);
 }
@@ -146,31 +171,17 @@ body ul.job_listings li.job_listing .meta {
 	color: var(--wpjm-muted);
 }
 
-/* Job type label as a pill */
+/* Job type label as a pill: a light tint of the type colour behind darker text
+   (colours are set per type in section 5). */
 body ul.job_listings li.job_listing .meta .job-type {
 	display: inline-block;
 	margin-left: auto;
 	padding: 2px 10px;
 	border-radius: 999px;
-	background: currentColor;
+	background: color-mix(in srgb, var(--wpjm-c) 18%, #fff);
 	font-size: 0.8em;
 	font-weight: 600;
 	line-height: 1.6;
-	/* Text colour set per type below; pill background uses the same colour
-	   through a pseudo-layer so the label stays readable. */
-	position: relative;
-	z-index: 0;
-	isolation: isolate;
-}
-
-body ul.job_listings li.job_listing .meta .job-type::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: var(--wpjm-surface);
-	border-radius: inherit;
-	opacity: 0.85;
-	z-index: -1;
 }
 
 /* Featured listings */
@@ -212,13 +223,23 @@ body a.load_more_jobs {
    Applied to .job-type in listings and on the single page. Add a block per
    type slug (Job Listings > Job Types) to colour new types.
    ========================================================================== */
+/* Text is the type colour mixed with Deep Navy, so every pill and label clears
+   4.5:1 contrast (Celery, Seafoam and Gold are about 2:1 on white as plain
+   text). --wpjm-c-mix is how much of the type colour to keep. */
 body .job-types .job-type,
-body .job_listing .job-type { color: var(--wpjm-type-part-time); }
-body .job_listing .job-type.full-time { color: var(--wpjm-type-full-time); }
-body .job_listing .job-type.part-time { color: var(--wpjm-type-part-time); }
-body .job_listing .job-type.internship { color: var(--wpjm-type-internship); }
-body .job_listing .job-type.freelance { color: var(--wpjm-type-freelance); }
-body .job_listing .job-type.temporary { color: var(--wpjm-type-temporary); }
+body .job_listing .job-type {
+	--wpjm-c: var(--twc-charcoal);
+	--wpjm-c-mix: 45%;
+	color: color-mix(in srgb, var(--wpjm-c) var(--wpjm-c-mix), var(--twc-deep-navy));
+}
+body .job_listing .job-type.full-time { --wpjm-c: var(--wpjm-type-full-time); }
+body .job_listing .job-type.part-time { --wpjm-c: var(--wpjm-type-part-time); }
+body .job_listing .job-type.internship { --wpjm-c: var(--wpjm-type-internship); }
+body .job_listing .job-type.freelance { --wpjm-c: var(--wpjm-type-freelance); }
+body .job_listing .job-type.temporary {
+	--wpjm-c: var(--wpjm-type-temporary);
+	--wpjm-c-mix: 70%;
+}
 
 /* ==========================================================================
    6. Single job page  (.single_job_listing)
@@ -249,7 +270,7 @@ body .single_job_listing ul.job-listing-meta li.salary {
 
 body .single_job_listing ul.job-listing-meta li.position-filled,
 body .single_job_listing ul.job-listing-meta li.listing-expired {
-	color: #b91c1c;
+	color: var(--wpjm-danger);
 	font-weight: 600;
 }
 
@@ -315,7 +336,7 @@ body form.job-manager-form fieldset label {
 body form.job-manager-form fieldset .field input.input-text,
 body form.job-manager-form fieldset .field textarea,
 body form.job-manager-form fieldset .field select {
-	border: 1px solid var(--wpjm-border);
+	border: 1px solid var(--wpjm-input-border);
 	border-radius: 6px;
 	background: var(--wpjm-surface);
 	padding: 0.6em 0.8em;
@@ -390,7 +411,7 @@ body .jm-dashboard-action {
 }
 
 body .jm-dashboard-action.job-dashboard-action-delete {
-	color: #b91c1c;
+	color: var(--wpjm-danger);
 }
 
 body .jm-dashboard-empty {
@@ -457,3 +478,13 @@ body .widget ul.job_listings li.job_listing {
    12. Your overrides
    Add anything site-specific below this line.
    ========================================================================== */
+
+/* ==========================================================================
+   Button hover: Deep Navy
+   ========================================================================== */
+body .job_application.application .application_button:hover,
+body form.job-manager-form input[type="submit"].button:hover,
+body .job_listing_preview_title input.button:hover,
+body form.job_filters .search_submit input[type="submit"]:hover {
+	background: var(--wpjm-accent-hover);
+}

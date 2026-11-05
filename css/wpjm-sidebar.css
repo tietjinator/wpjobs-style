@@ -24,7 +24,9 @@
 	   to move the dropdown down, raise it to move it up, until it lines up with
 	   the bottom of your page heading ("Jobs"). */
 	--wpjm-sort-lift: 14px;
-	/* Background of the Job type header while the drawer is open or focused. */
+	/* Background of the Job type header while the drawer is open or focused.
+	   This is the one value that is not a brand colour (you asked for #e7e7e7).
+	   Brand neutrals to try: var(--twc-milky) or var(--twc-hazy). */
 	--wpjm-drawer-bg: #e7e7e7;
 }
 
@@ -402,7 +404,7 @@ body .wpjm-sort-bar select {
 	width: auto;
 	min-width: 170px;
 	padding: 0.45em 2em 0.45em 0.7em;
-	border: 1px solid var(--wpjm-border);
+	border: 1px solid var(--wpjm-input-border);
 	border-radius: 6px;
 	background-color: var(--wpjm-surface);
 	color: var(--wpjm-text);
