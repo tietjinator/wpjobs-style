@@ -29,6 +29,27 @@ An OpenStreetMap (Nominatim) and Geoapify version of this, with a switch to turn
 
 The Sort by control is positioned above the filters and results, so the first listing lines up with the top of the filter card. How far above is `--wpjm-sort-lift` at the top of `css/wpjm-sidebar.css`. Adjust it until the dropdown lines up with your page heading, since the gap under a heading differs between themes. On screens under 900px it sits right-aligned above the results instead.
 
+## City, State / Province and ZIP fields
+
+`includes/location-fields.php` replaces the single Location field with three: City, State / Province (free text) and ZIP / Postal code, on the "Post a Job" form, the edit form and the admin "Job Listing Data" box. All three are optional. They are saved separately (`_job_city`, `_job_state`, `_job_postcode`) and combined into the plugin's own location value, for example `Austin, TX 78701`. WP Job Manager only knows that combined value, so listing cards, the single job page and the Location search box keep working, and searching "Austin", "TX" or "78701" finds the listing.
+
+- Remote listings with no city, state or ZIP show just "Remote".
+- Older listings keep their existing location text until someone fills in the new fields. Editing an old listing without filling them in does not wipe its location.
+- In the admin the old Location field is relabelled "Location (combined)" and is filled in automatically when any part is set.
+- To change the combined format, use the `wpjm_cs_format_location` filter.
+- Listing page URLs no longer include the location, because the plugin builds that from the old single field. Titles and company names still apply.
+
+## Keeping up with WP Job Manager updates
+
+Nothing here edits WP Job Manager, so its updates install as normal. The location fields, sort and geolocation switch use its documented hooks. The sidebar layout depends on its current page markup. After updating WP Job Manager, open the Playground link above (it builds a fresh site from the latest release) and check:
+
+1. The sidebar order and the Job type drawer, including its hint.
+2. Search, Reset Filters and Sort by reload the results.
+3. Posting a job shows City, State and ZIP, and the saved listing displays "City, ST 12345".
+4. Searching a city, a state and a ZIP finds the listing.
+
+`includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
+
 ## Customising
 
 Start with the tokens at the top of `css/wpjm-custom.css` (colours, radius, spacing, job type colours). The file is split into numbered sections, one per area: notices, search filters, listings, single page, submit form, dashboard, pagination, widgets. Put site-specific rules in section 12.

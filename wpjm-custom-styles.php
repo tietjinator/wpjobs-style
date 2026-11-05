@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: WPJM Custom Styles
- * Description: Custom styles and a sidebar filter layout with sorting for WP Job Manager, with geolocation turned off.
+ * Description: Custom styles, a sidebar filter layout with sorting, and City / State / ZIP location fields for WP Job Manager, with geolocation turned off.
  * Version:     1.0.0
  * Requires Plugins: wp-job-manager
  */
@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/includes/sidebar-filters.php';
 require_once __DIR__ . '/includes/no-geolocation.php';
+require_once __DIR__ . '/includes/location-fields.php';
+require_once __DIR__ . '/includes/compat.php';
 
 add_action(
 	'wp_enqueue_scripts',
