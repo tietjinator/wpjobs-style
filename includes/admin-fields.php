@@ -7,6 +7,9 @@
  * Hiding a field only stops it being shown and saved here: anything already
  * stored on a listing stays as it is.
  *
+
+ * The Promote column on the Job Listings screen is hidden here too.
+ *
  * To change the list, use the `wpjm_cs_hidden_admin_fields` filter. The names
  * are WP Job Manager meta keys: _company_tagline, _company_video,
  * _company_twitter, _filled, _featured, _job_expires, _remote_position, and so on.
@@ -35,4 +38,18 @@ add_filter(
 		return $fields;
 	},
 	30
+);
+
+// The "Promote" column on the Job Listings screen (WP Job Manager's paid
+// promotion upsell). Return false from `wpjm_cs_hide_promote_column` to show it.
+add_filter(
+	'manage_edit-job_listing_columns',
+	function ( $columns ) {
+		if ( apply_filters( 'wpjm_cs_hide_promote_column', true ) ) {
+			unset( $columns['promoted_jobs'] );
+		}
+
+		return $columns;
+	},
+	99
 );
