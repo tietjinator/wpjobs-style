@@ -5,9 +5,13 @@ Customisations for [WP Job Manager](https://github.com/Automattic/WP-Job-Manager
 What it does:
 
 - A sidebar layout for the `[jobs]` page: keywords or city, State / Province, a collapsible Job type drawer (with the remote checkbox), category, Search Jobs and Reset Filters. Sort by sits at the top right of the results.
-- City, State / Province and ZIP / Postal code fields in place of the single Location field, with state names shortened to codes ("Texas" becomes "TX").
+- City, State / Province and ZIP / Postal code fields in place of the single Location field (in Company Details on the form), with state names shortened to codes ("Texas" becomes "TX").
 - A State / Province filter and searches that find states, cities and ZIP codes.
-- The Wesleyan brand colours and a consistent type scale across listings, the job page and the forms.
+- A two-column job page with a details card, a direct Apply button (website or email, with the address always available) and a View All Listings button.
+- A simpler Post a Job form: no Preview step, a review confirmation ("visible within two business days"), no account prompt, an optional job description PDF, salary in whole US or Canadian dollars.
+- Fewer fields and no Promote column in the admin listing editor.
+- The Wesleyan brand colours, a consistent type scale and a 1080px maximum width across listings, the job page and the forms.
+- A converter for moving listings from the old job board (`tools/csv-to-wxr.py`).
 - Google geolocation turned off.
 
 ## Contents
@@ -17,20 +21,24 @@ What it does:
 | `wpjm-custom-styles.php` | The plugin file. Loads the files below. |
 | `css/wpjm-custom.css` | Colours, type scale, listings, job page, forms, dashboard. Start here. |
 | `css/wpjm-sidebar.css` | The sidebar layout, Job type drawer and Sort by control. |
-| `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, and keeps the drawer hint up to date. |
+| `js/sidebar.js` | Links Sort by to the filter form, clears it on Reset, keeps the drawer hint up to date and runs the mobile Filter bar. |
+| `js/apply.js` | Shows the email address under the Apply button once it is clicked. |
 | `includes/sidebar-filters.php` | Sort by, the Job type drawer markup, the Reset Filters button, and removing the "Showing N jobs" message and RSS link. |
 | `includes/category-filter.php` | The sidebar Category drawer (a checklist, like Job type). |
 | `includes/apply-button.php` | The email subject for the Apply link. |
-| `includes/templates.php` | Swaps two of WP Job Manager's templates for this plugin's own copies in `templates/`. |
-| `templates/` | `job-application.php` (Apply button as a direct link) and `form-fields/term-multiselect-field.php` (job category checklist on the form). |
+| `includes/templates.php` | Swaps four of WP Job Manager's templates for this plugin's own copies in `templates/`. |
+| `templates/` | `job-application.php` (Apply button as a direct link, with the email fallback), `job-submitted.php` (the confirmation after submitting), `account-signin.php` (no "Have an account?" prompt) and `form-fields/term-multiselect-field.php` (job category checklist on the form). |
 | `includes/job-page.php` | The single job page as two columns: adds the title inside the page and wraps the details and main column. |
 | `includes/submit-form.php` | The Post a Job form: "Church / Company" wording, removed company fields, the Remote Position checkbox and the job description PDF upload. |
 | `includes/location-fields.php` | City / State / ZIP fields, state shortening, the State / Province filter, and the location search rules. |
+| `includes/no-preview.php` | Removes the Preview step from Post a Job. |
+| `includes/admin-fields.php` | Hides fields and the Promote column in the admin listing editor. |
 | `includes/no-geolocation.php` | Turns off Google geolocation. |
 | `includes/compat.php` | Admin warning when WP Job Manager is a newer major version than this was built for. |
 | `blueprint.json`, `blueprint-states.json` | WordPress Playground blueprints for previewing and testing. |
 | `sample-data/` | The sample listings for the preview (`seed.php`) and the script that puts them into `blueprint.json` (`build-blueprint.php`). |
 | `tests/` | Seed data and automated search checks. |
+| `tools/csv-to-wxr.py` | Converts the old job board's CSV export into WordPress import files (see "Importing listings"). |
 
 ## Install on your site
 
@@ -39,7 +47,7 @@ What it does:
 - Take a backup, or try it on a staging copy first. Nothing in WP Job Manager is edited, and deactivating this plugin puts the site back as it was, but this changes how the Jobs page, job pages and the Post a Job form look and what the form asks for.
 - WP Job Manager must be installed and active, and your Jobs, Post a Job and Job Dashboard pages should already use its shortcodes (`[jobs]`, `[submit_job_form]`, `[job_dashboard]`).
 - Check your theme. The two-column job page prints the title itself and hides the theme's title, and the rules that hide blog leftovers (author line, previous / next post, "More posts") are written for Twenty Twenty-Five. On another theme, look at one job page afterwards for a doubled title or leftover blog parts, and tell whoever maintains the plugin which theme you use.
-- If your theme has a `job_manager` folder (templates copied from WP Job Manager), a theme copy of `job-application.php` or `form-fields/term-multiselect-field.php` would win over this plugin's version. Remove or update those copies if you want the direct Apply link or the category checklist.
+- If your theme has a `job_manager` folder (templates copied from WP Job Manager), a theme copy of `job-application.php`, `job-submitted.php`, `account-signin.php` or `form-fields/term-multiselect-field.php` would win over this plugin's version. Remove or update those copies if you want the direct Apply link or the category checklist.
 
 **Steps**
 
@@ -52,7 +60,7 @@ What it does:
 7. Check, in a private window so you see what visitors see:
    - The Jobs page: filters, sort, Reset Filters and Load more.
    - A job page: details card, description, the PDF button if there is one, and Apply for job.
-   - The Post a Job form: required fields, category, salary, PDF upload, Preview and Submit.
+   - The Post a Job form: required fields, category, salary, PDF upload, and Submit Listing leading to the review confirmation.
    - The Job Dashboard.
 8. Make sure Google Maps is not needed anywhere: geolocation is switched off, so the Google Maps API key setting does nothing.
 
@@ -145,13 +153,11 @@ The job page still links the location to Google Maps. Change that with the plugi
 Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale, the changes are:
 
 - Section headings such as "Company Details" are 20px semi-bold instead of the theme's large thin heading.
-- The label column is a little wider (34%) so "X / Twitter username (optional)" stays on one line. On phones the plugin stacks the label above the field, and that is left alone.
+- The label column is a little wider (34%) so longer labels stay on one line. On phones the plugin stacks the label above the field, and that is left alone.
 - "(optional)" is smaller, lighter and on the same line as its label.
-- The company logo upload has a branded Choose File button and a dashed field.
-- The Preview step is a soft title bar joined to a light bordered box, with Edit listing (outlined) and Submit Listing (filled) side by side.
 - Notices ("Job listed successfully") fit the page column. The plugin padded them without including the padding in their width, so they stuck out.
-- Preview and Submit Listing fill the row on phones. The outlined buttons (Save Draft, Edit listing) turn white text on dark navy when hovered or focused.
-- On screens 900px and wider the form and its preview are wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css`. It follows `--wpjm-listings-width` (80% of the window up to 1080px), so the form, job page and Jobs board line up; set it to something like `min(80vw, 900px)` for a narrower form, or `100%` to stay in the theme's column).
+- Submit Listing fills the row on phones. The outlined Save Draft button turns white text on dark navy when hovered or focused.
+- On screens 900px and wider the form is wider than the theme's narrow column and centred on the page, like the Jobs page. The width is `--wpjm-form-width` at the top of `css/wpjm-custom.css`. It follows `--wpjm-listings-width` (80% of the window up to 1080px), so the form, job page and Jobs board line up; set it to something like `min(80vw, 900px)` for a narrower form, or `100%` to stay in the theme's column).
 - Checkbox fields such as Remote Position show their help text to the right of the box instead of underneath.
 - Wording: "Company Details", "Company name" and the name placeholder become "Church / Company ...", set in `includes/submit-form.php`. This applies on the public site only, not in the admin.
 - **Other category.** An "Other" category is created once (and never re-created if you delete it in Job Listings > Job categories), and is always listed last in both the sidebar drawer and the form checklist, not sorted into the middle alphabetically.
@@ -163,11 +169,13 @@ Styled in section 15 of `css/wpjm-custom.css`. Beyond the colours and type scale
 - **No Preview step.** `includes/no-preview.php` removes the Preview screen. The form button reads "Submit Listing" and goes straight to the confirmation (listings still wait for approval if that setting is on). "Save Draft" is unchanged. Return `false` from the `wpjm_cs_skip_preview` filter to bring Preview back.
 - **After submitting.** `templates/job-submitted.php` replaces the one-line message. Listings waiting for approval show "Thank you, your listing has been submitted", say it is in review and will be visible within two business days, and give zuberm@wesleyan.org for questions. Change the address or the time with the `wpjm_cs_review_contact` and `wpjm_cs_review_window` filters. If approval is turned off, visitors see "Your listing is live" with a View your listing button.
 - **Account block.** The "Your account" panel (logged in) and the "Have an account? Sign in" prompt (logged out) are both removed by `templates/account-signin.php`. The one exception is a site that requires accounts with registration turned off: visitors then still get a Sign in button, since they could not post otherwise. Registration fields WP Job Manager adds are kept. A copy of `account-signin.php` in your theme overrides this.
+- **Location.** City, State / Province and ZIP / Postal code sit in Company Details, straight after the website, because they describe where the church or company is. They are all required.
+- **Application field.** Under "Application email/URL" the help text reads "The email address or website applicants can reach out to about this position."
 - **Field order.** Remote Position sits directly under Job type.
 - **Remote Position checkbox.** The form only offers it when "Remote Position" is switched on in Job Listings > Settings, and the plugin treats a setting that was never saved as off. This plugin treats "never saved" as on, so the checkbox shows by default. Switching it off in the settings still hides it.
 - Removed from the form: X / Twitter username, tagline, video and logo upload. Because no listing gets a logo now, the placeholder icon in the company box on the job page and preview is hidden. This only stops the form asking for them. Listings that already have those values keep them, and the admin edit screen still shows the fields. To bring one back, return a shorter list from the `wpjm_cs_removed_company_fields` filter.
 
-The form was tested end to end in a browser: filling it in, previewing, and publishing. Typing "texas" in State saved `TX`, the combined location `Austin, TX 78701`, and the State / Province dropdown count updated.
+The form was tested end to end in a browser: filling it in and submitting. Typing "texas" in State saved `TX`, the combined location `Austin, TX 78701`, and the State / Province dropdown count updated.
 
 ## Job page
 
@@ -177,6 +185,9 @@ The single job page is two columns, matching the Jobs board: a details card on t
 - **Main column.** The title, the description (kept to a readable line length, with headings in the same style as the form), the job description PDF button if there is one, and Apply for job.
 - **How it is built.** `includes/job-page.php` wraps the plugin's own output with its `single_job_listing_start` and `single_job_listing_end` hooks and adds the title inside the page, so the title can share the wide column with the description. The theme's own title is hidden with CSS when ours is on the page. Only the main job page is changed. A `[job]` shortcode, the preview step and an expired listing keep the plugin's normal markup.
 - **Apply for job.** The button is a direct link instead of revealing the contact details when clicked. If the listing's application is a website, it goes straight there (in a new tab). If it is an email address, it opens the person's mail app addressed to that email with a subject like "Application for Youth Pastor at Riverside Community Church". The subject uses the plugin's own `job_manager_application_email_subject` filter, and you can change it with `wpjm_cs_application_subject`. The email address is still obfuscated against spam harvesters, as the plugin does. The template is `templates/job-application.php` and keeps the plugin's `job_application_start` and `job_application_end` hooks.
+- **View All Listings.** A full-width navy button under the details card, linking to the page that holds the `[jobs]` list (else the listings archive, else the home page). Change the destination with `wpjm_cs_all_listings_url`. The "Back to the job board" button on the confirmation uses the same address.
+- **Email fallback.** A browser cannot tell whether a mail app opened, so after the Apply button of an email listing is clicked (`js/apply.js`), "Button not opening your email? Send your application to ... with the subject ..." appears under it. Without JavaScript it is always shown. Listings that apply through a website are unchanged.
+- **No bullets in the interface.** Some themes put a bullet on every list item, with a more specific rule than this plugin's reset. The job details, listing rows, filters, forms and dashboard are forced to have none. The job description is the exception, so lists written into a listing keep their bullets.
 - **Theme leftovers hidden.** Twenty Twenty-Five prints blog-post parts around a job: an empty "Written by ... in ..." line, previous / next post links and a "More posts" list. They are hidden on job pages. These rules use that theme's block class names, so on another theme they do nothing, and you may need equivalent rules for its leftovers.
 - The plugin puts an icon-font glyph on the location and date. The card's small labels override that font, or they would show as symbols.
 
@@ -246,6 +257,12 @@ The plugin only loads its CSS on pages it detects as job pages. If you use the s
 | `wpjm_cs_currencies` | The salary currency choices (default USD and CAD) |
 | `wpjm_cs_application_subject` | Change the subject of the Apply email link |
 | `wpjm_cs_pdf_max_size` | Largest job description PDF in bytes (default 5 MB) |
+| `wpjm_cs_skip_preview` | Return `false` to bring the Preview step back |
+| `wpjm_cs_review_contact` | The address shown for questions after submitting (default zuberm@wesleyan.org) |
+| `wpjm_cs_review_window` | The review time promised after submitting (default "two business days") |
+| `wpjm_cs_all_listings_url` | Where View All Listings and Back to the job board go |
+| `wpjm_cs_hidden_admin_fields` | Fields hidden in the admin Job Listing Data box |
+| `wpjm_cs_hide_promote_column` | Return `false` to show the Promote column |
 | `wpjm_cs_removed_company_fields` | Which company fields are removed from the Post a Job form (default: Twitter, tagline, video, logo) |
 
 ## Keeping up with WP Job Manager updates
@@ -257,10 +274,53 @@ Nothing here edits WP Job Manager. The location fields, sort and geolocation swi
 3. Posting a job shows City, State and ZIP, and the saved listing displays "City, ST 12345".
 4. Searching a city, a state and a ZIP finds the listing.
 5. The Category drawer filters, and a job page's Apply button goes to the website or opens an email.
+6. Submitting a listing goes straight to the confirmation (no Preview) and the listing is saved.
 
-Two files in `templates/` are copies of WP Job Manager templates (`job-application.php` and `form-fields/term-multiselect-field.php`). They are swapped in by `includes/templates.php`. After a major update, compare them with the plugin's own versions in `wp-job-manager/templates/` for changes worth bringing across.
+Four files in `templates/` are copies of WP Job Manager templates (`job-application.php`, `job-submitted.php`, `account-signin.php` and `form-fields/term-multiselect-field.php`). They are swapped in by `includes/templates.php`. After a major update, compare them with the plugin's own versions in `wp-job-manager/templates/` for changes worth bringing across.
 
 `includes/compat.php` also shows an admin warning on the Dashboard, Plugins and Job Listings screens when the installed WP Job Manager has a newer major version than the one this was built for (2.x).
+
+## Admin: Editors and the listing editor
+
+**Letting Editors use Featured and Expiry.** Two fields in the admin "Job Listing Data" box, Featured Listing and Listing Expiry Date, only show for users with the `manage_job_listings` capability, which WP Job Manager gives to Administrators alone. Editors who have the other job listing capabilities (edit, publish, delete) still do not see them. With User Role Editor (or any role editor), tick `manage_job_listings` on the Editor role. It also allows the bulk actions Mark filled, Mark not filled and Expire, and managing the Job types and Job categories terms. Job Listings > Settings needs `manage_options`, so Editors still cannot open it. This plugin does not split it: if Editors should get only those two fields, it would need a small addition that allows them through the field's `auth_edit_callback`.
+
+**Fewer fields.** `includes/admin-fields.php` hides Company Tagline, Company Video, Company X / Twitter and Position Filled in the Job Listing Data box, and the Promote column on the Job Listings screen. Only the display is changed: stored values stay on the listing. A promoted listing still shows its "Promoted" badge, and the editor still has its "Promote your job" option.
+
+## Importing listings from the old board
+
+`tools/csv-to-wxr.py` turns the old system's CSV export into WordPress import (WXR) files, using only the Python standard library. It reads the state list from `includes/location-fields.php`, so imported locations match what the form saves.
+
+```bash
+python3 tools/csv-to-wxr.py jobs.csv out/ --today 2026-11-05
+```
+
+It writes `out/wesleyan-jobs-01.xml` (more files if there are over 300 listings) and `out/import-report.csv`, which lists each listing with its category, type, location and any notes. Import with **Tools > Import > WordPress**, map the author to `wesjobs`, and leave "Download and import file attachments" off.
+
+| Option | Default | What it does |
+|---|---|---|
+| `--since YYYY-MM-DD` | two months before `--today` | Only listings that started on or after this date |
+| `--today YYYY-MM-DD` | the current date | Decides which listings count as ended |
+| `--unlisted draft\|private\|skip` | `draft` | What listings marked unlisted in the old system become |
+| `--chunk N` | 300 | Listings per file |
+| `--tz` | `America/Indiana/Indianapolis` | Time zone for post dates |
+
+How the fields map:
+
+- Title, description, church name and dates carry over. The description keeps its paragraphs and lists, with `b`/`i` changed to `strong`/`em`, headings made `h3` and empty tags removed. The start date is the post date. The end date is the expiry date.
+- Public listings that have not ended are published, ended ones become expired, and unlisted ones follow `--unlisted`.
+- The contact email becomes the Apply field (a website link also works; if there are several addresses the first is used).
+- City, state or province and ZIP fill the three location fields, and the combined location and state search data are set the way the form does. Four-digit New England ZIPs get their leading zero back, and Canadian postal codes are spaced as `A1A 1A1`.
+- Job type comes from the old time and type fields: full or part time, Internship for intern or residency, and Temporary when marked temporary.
+- Categories are guessed from keywords in the title ("Youth" becomes Children & Youth, and so on), falling back to Other. Check the report, since this is a heuristic.
+- The old ID, contact name, phone, street address, Wesleyan type and job type are kept as hidden fields (`_legacy_*`). They are not shown on the site.
+
+## Development notes
+
+- The plugin file only requires the files in `includes/` and enqueues the two stylesheets; each file does one job and is described in the table above. Nothing edits WP Job Manager: it all runs through its hooks and its template lookup.
+- Test against a real WordPress with WP Job Manager and this plugin active. The Playground blueprints are the quickest way, and the `tests/` scripts cover state search (see below). Visual changes are best checked in a browser at 390px (phone) and 1280px or wider.
+- To make an installable zip, export the repository without the git folder: `git archive --prefix=wpjm-custom-styles/ HEAD`, then zip the `wpjm-custom-styles` folder it produces. The zip contains the sample data and tests too, which do no harm.
+- Add your own CSS in section "Your overrides" at the end of `css/wpjm-custom.css` so it survives and wins. Changes to the structure or behaviour belong in a new file in `includes/` that is required from the plugin file.
+- The README lists each filter the plugin adds (see "Filters this plugin adds"). When you add one, add it to that table.
 
 ## Sample listings
 
