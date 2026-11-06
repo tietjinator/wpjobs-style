@@ -38,6 +38,19 @@ add_filter(
 	20
 );
 
+// Say what the application field is for.
+add_filter(
+	'submit_job_form_fields',
+	function ( $fields ) {
+		if ( isset( $fields['job']['application'] ) ) {
+			$fields['job']['application']['description'] = __( 'The email address or website applicants can reach out to about this position.', 'wpjm-custom-styles' );
+		}
+
+		return $fields;
+	},
+	20
+);
+
 // Reword the plugin's own strings on the public site. Admin screens and the
 // translation files are not touched.
 add_filter(

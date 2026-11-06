@@ -206,7 +206,7 @@ add_filter(
 			return $valid;
 		}
 
-		$postcode = isset( $values['job']['job_postcode'] ) ? trim( (string) $values['job']['job_postcode'] ) : '';
+		$postcode = trim( (string) wpjm_cs_posted_value( $values, 'job_postcode' ) );
 		if ( '' !== $postcode && ! wpjm_cs_is_valid_postcode( $postcode ) ) {
 			return new WP_Error( 'validation-error', __( 'Enter a US ZIP code (such as 78701) or a Canadian postal code (such as T2P 1J9).', 'wpjm-custom-styles' ) );
 		}
@@ -216,6 +216,21 @@ add_filter(
 	10,
 	3
 );
+
+/**
+ * A posted form value by field name. The location fields sit in the Company
+ * Details group of the form; this also finds them in the Job Details group so
+ * a site that moves them back keeps working.
+ */
+function wpjm_cs_posted_value( $values, $key ) {
+	foreach ( [ 'company', 'job' ] as $group ) {
+		if ( isset( $values[ $group ][ $key ] ) ) {
+			return $values[ $group ][ $key ];
+		}
+	}
+
+	return '';
+}
 
 /**
  * Save the combined location for a listing from the three parts.
@@ -269,32 +284,36 @@ add_filter(
 			return $fields;
 		}
 
-		// Take the old single Location field's place in the form.
-		$priority = isset( $fields['job']['job_location']['priority'] ) ? (float) $fields['job']['job_location']['priority'] : 2;
+		// The old single Location field goes. City, State and ZIP take its place
+		// in Company Details, straight after the website: they describe where the
+		// church or company is.
 		unset( $fields['job']['job_location'] );
 
-		$fields['job']['job_city']     = [
+		$group    = isset( $fields['company'] ) ? 'company' : 'job';
+		$priority = isset( $fields['company']['company_website']['priority'] ) ? (float) $fields['company']['company_website']['priority'] : 2;
+
+		$fields[ $group ]['job_city']     = [
 			'label'       => __( 'City', 'wpjm-custom-styles' ),
 			'type'        => 'text',
 			'required'    => true,
 			'placeholder' => __( 'e.g. "Austin"', 'wpjm-custom-styles' ),
-			'priority'    => $priority,
+			'priority'    => $priority + 0.1,
 		];
-		$fields['job']['job_state']    = [
+		$fields[ $group ]['job_state']    = [
 			'label'       => __( 'State / Province', 'wpjm-custom-styles' ),
 			'type'        => 'text',
 			'required'    => true,
 			'description' => __( 'Full names are shortened automatically, for example Texas becomes TX.', 'wpjm-custom-styles' ),
 			'placeholder' => __( 'e.g. "TX"', 'wpjm-custom-styles' ),
-			'priority'    => $priority + 0.1,
+			'priority'    => $priority + 0.2,
 		];
-		$fields['job']['job_postcode'] = [
+		$fields[ $group ]['job_postcode'] = [
 			'label'       => __( 'ZIP / Postal code', 'wpjm-custom-styles' ),
 			'description' => __( 'A US ZIP code or a Canadian postal code. For a remote position, use the church or company\'s own location.', 'wpjm-custom-styles' ),
 			'type'        => 'text',
 			'required'    => true,
 			'placeholder' => __( 'e.g. "78701" or "T2P 1J9"', 'wpjm-custom-styles' ),
-			'priority'    => $priority + 0.2,
+			'priority'    => $priority + 0.3,
 		];
 
 		return $fields;
@@ -304,15 +323,11 @@ add_filter(
 add_action(
 	'job_manager_update_job_data',
 	function ( $job_id, $values ) {
-		if ( ! isset( $values['job'] ) ) {
-			return;
-		}
-
 		wpjm_cs_save_combined_location(
 			$job_id,
-			isset( $values['job']['job_city'] ) ? $values['job']['job_city'] : '',
-			isset( $values['job']['job_state'] ) ? $values['job']['job_state'] : '',
-			isset( $values['job']['job_postcode'] ) ? $values['job']['job_postcode'] : ''
+			wpjm_cs_posted_value( $values, 'job_city' ),
+			wpjm_cs_posted_value( $values, 'job_state' ),
+			wpjm_cs_posted_value( $values, 'job_postcode' )
 		);
 	},
 	10,

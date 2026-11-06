@@ -179,20 +179,35 @@ add_action(
 );
 
 // The Location box is hidden in the sidebar (see css/wpjm-sidebar.css): city and
-// ZIP are found through Keywords, and State / Province has its own dropdown.
-// Tell people they can type a city in Keywords. This changes the label and the
-// placeholder, which use the plugin's "Keywords" string.
+// ZIP are found through the first box, and State / Province has its own dropdown.
+// The plugin uses one "Keywords" string for both the label and the placeholder,
+// so the label is renamed here and the placeholder is swapped just after.
 add_filter(
 	'gettext',
 	function ( $translation, $text, $domain ) {
 		if ( 'wp-job-manager' === $domain && 'Keywords' === $text && ! is_admin() ) {
-			return __( 'Keywords or city', 'wpjm-custom-styles' );
+			return __( 'Search Terms', 'wpjm-custom-styles' );
 		}
 
 		return $translation;
 	},
 	10,
 	3
+);
+
+// The placeholder goes through esc_attr__(), the label through esc_html__(), so
+// only the placeholder passes this filter.
+add_filter(
+	'attribute_escape',
+	function ( $safe_text, $text ) {
+		if ( ! is_admin() && __( 'Search Terms', 'wpjm-custom-styles' ) === $text ) {
+			return esc_attr( __( 'Keywords, terms, etc.', 'wpjm-custom-styles' ) );
+		}
+
+		return $safe_text;
+	},
+	10,
+	2
 );
 
 // "Filter" bar for small screens. Under 900px the sidebar becomes a block above
