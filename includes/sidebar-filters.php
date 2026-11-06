@@ -22,9 +22,9 @@ function wpjm_cs_sort_options() {
 	return apply_filters(
 		'wpjm_cs_sort_options',
 		[
-			''           => [ __( 'Newest first', 'wpjm-custom-styles' ), 'date', 'DESC' ],
+			''           => [ __( 'Featured first', 'wpjm-custom-styles' ), 'featured', 'DESC' ],
+			'newest'     => [ __( 'Newest first', 'wpjm-custom-styles' ), 'date', 'DESC' ],
 			'oldest'     => [ __( 'Oldest first', 'wpjm-custom-styles' ), 'date', 'ASC' ],
-			'featured'   => [ __( 'Featured first', 'wpjm-custom-styles' ), 'featured', 'DESC' ],
 			'title_asc'  => [ __( 'Title A to Z', 'wpjm-custom-styles' ), 'title', 'ASC' ],
 			'title_desc' => [ __( 'Title Z to A', 'wpjm-custom-styles' ), 'title', 'DESC' ],
 		]
